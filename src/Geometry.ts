@@ -9,7 +9,7 @@ export const DIGITIZE_PRECISION = 2 // cm is enough for screen digitizing
  * @param {number} precision display precision
  * @return {number}
  */
-export function roundNumber (num:number, precision = PRECISION):number {
+export function roundNumber (num:number, precision: number = PRECISION):number {
     let pair = (num + 'e').split('e')
     let value = Math.round(Number(pair[0] + 'e' + (+pair[1] + precision)))
     pair = (value + 'e').split('e')
@@ -18,20 +18,12 @@ export function roundNumber (num:number, precision = PRECISION):number {
 
 export const fixDec = (n:number) => parseFloat(Number(n).toFixed(DIGITIZE_PRECISION))
 
-export function getNumberOrNull(input: string): number | undefined {
-    let value: number
-    try {
-        value = parseFloat(input);
-        if (isNaN(value)) {
-            throw new Error("Invalid number format");
-            return undefined
-        } else {
-            return value;
-        }
-    } catch (error) {
-        throw new Error(`Failed to parse number from input: '${input}'. Error: ${error}`);
-        return undefined
+export function getNumberOrFail(input: string): number {
+    const value = parseFloat(input);
+    if (isNaN(value)) {
+        throw new Error(`Invalid number format for input: '${input}'`);
     }
+    return value;
 }
 
 export function isNumeric(n:any):boolean {

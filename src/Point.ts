@@ -1,5 +1,5 @@
 import Angle from "./Angle.ts";
-import {EPSILON, PRECISION, getNumberOrNull, roundNumber, isNumeric} from "./Geometry.ts";
+import {EPSILON, PRECISION, getNumberOrFail, roundNumber, isNumeric} from "./Geometry.ts";
 
 export interface iPoint {
     x: number,
@@ -20,7 +20,7 @@ export default class Point implements iPoint {
     }
 
     set x(input: number | string) {
-        let value = (typeof input === 'number') ? input : getNumberOrNull(input);
+        let value = (typeof input === 'number') ? input : getNumberOrFail(input);
         if (value !== undefined) {
             this.p.x = value
         }
@@ -31,7 +31,7 @@ export default class Point implements iPoint {
     }
 
     set y(input: number | string) {
-        let value = (typeof input === 'number') ? input : getNumberOrNull(input);
+        let value = (typeof input === 'number') ? input : getNumberOrFail(input);
         if (value !== undefined) {
             this.p.y = value
         }
@@ -55,7 +55,7 @@ export default class Point implements iPoint {
      * @param {number | undefined} name optional name of this point
      */
     constructor(x: number | undefined = 0, y: number | undefined = 0, name?: string) {
-        this.p = {x:0, y:0, name:"" }
+        this.p = {x:0, y:0 }
         this.x = x;
         this.y = y;
         if (name !== undefined) this.name = name;
@@ -64,11 +64,14 @@ export default class Point implements iPoint {
     /**
      * fromPolar creates a new Point in cartesian space from polar coordinates
      * @param {number} radius is the distance from origin to the point
-     * @param {number} theta is the angle from x axes origin to point in mathematical order Counter-Clockwise
-     * @param {Object} angleSystem your choice of one of AngularSystem Enum Radian, Degree or Gradians
+     * @param {Angle} theta is the angle from x axes origin to point in mathematical order Counter-Clockwise
+     * @param {string} name optional name of this point
      * @returns {Point} a new Point(x,y) located at the given polar coordinates
      */
     static fromPolar(radius: number, theta: Angle, name: (string | undefined)): Point {
+        if (!isNumeric(radius)) {
+            throw new TypeError('fromPolar needs radius to be valid numbers !')
+        }
         let tmpPoint: Point = new Point(0, 0, name)
         let angle: number = theta.toRadians()
         const tmpX = radius * Math.cos(angle)
@@ -106,10 +109,20 @@ export default class Point implements iPoint {
     }
 
     /**
+     * clone  returns a new Point that is a copy of itself
+     * @returns {Point} a new Point located at the same cartesian coordinates as otherPoint
+     */
+    clone():Point {
+        return  Point.fromPoint(this)
+    }
+
+    /**
      * dump returns a string with all Point attributes values
      * @returns {string}
       */
-    dump = (): string => `Point[${this.p.name}](${this.p.x}, ${this.p.y})`;
+    dump():string {
+        return `Point[${this.p.name}](${this.p.x}, ${this.p.y})`;
+    }
 
     /**
      * toString returns a string representation of this class instance with options for presentations
@@ -118,7 +131,7 @@ export default class Point implements iPoint {
      * @param {number} precision defines the number of decimals for the coordinates (2 by default)
      * @returns {string}
      */
-    toString (separator = ',', surroundingParenthesis = true, precision = 2) {
+    toString (separator: string = ',', surroundingParenthesis: boolean = true, precision: number = 2): string {
         if (surroundingParenthesis) {
             return `(${roundNumber(this.x, precision)}${separator} ${roundNumber(this.y, 2)})`
         } else {
@@ -130,7 +143,7 @@ export default class Point implements iPoint {
      * toArray returns an array representation of this Point class instance [x, y]
      * @returns {[number, number]} [x, y]
      */
-    toArray ():coordinate2dArray {
+    toArray():coordinate2dArray {
         return [this.x, this.y]
     }
 
@@ -139,17 +152,17 @@ export default class Point implements iPoint {
      * https://en.wikipedia.org/wiki/Well-known_text
      * @returns {string}
      */
-    toWKT ():string {
+    toWKT():string {
         return `POINT(${this.x} ${this.y})`
     }
 
     /**
      * toEWKT returns an Postgis Extended Well-known text (EWKT) representation of this class instance
      * https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT
-     * @param {number} srid is the Spatial reference systems identifier EPSG code default is 21781 for Switzerland MN03
+     * @param {number} srid is the Spatial reference systems identifier EPSG code default is 2056 for Switzerland MN03
      * @returns {string}
      */
-    toEWKT (srid = 21781):string {
+    toEWKT(srid = 2056):string {
         return `SRID=${srid};POINT(${this.x} ${this.y})`
     }
 
@@ -159,73 +172,192 @@ export default class Point implements iPoint {
      * toGeoJSON returns a GeoJSON (http://geojson.org/) representation of this class instance geometry
      * @returns {string}
      */
-    toGeoJSON ():string {
+    toGeoJSON():string {
         return `{"type":"Point","coordinates":[${this.x},${this.y}]}`
     }
 
-    /**
-    * getPoint will return a copy (clone) of the Point
-    */
-    getPoint = (): iPoint => ({
-        x: this.p.x,
-        y: this.p.y,
-        name: this.p.name,
-    })
-    // getDistanceFromOrigin returns the length of the vector from origin to this point
-    getDistanceFromOrigin = (): number => Math.sqrt(this.p.x * this.p.x + this.p.y * this.p.y)
-
-    // getAngleRad gives the angle in Radian from horizontal axis x with the vector from origin to this point
-    getAngleRad = (): number => Math.atan(this.p.y / this.p.x)
-
-    // getAngleDeg gives the angle in degree from horizontal axis x with the vector from origin to this point
-    getAngleDeg = (): number => (Math.atan(this.p.y / this.p.x) * 360) / (2 * Math.PI);
 
     /**
-     * will move this Point to the new position in cartesian space given by the arrCoordinates
-     * @param {Array} arrCoordinates is an array with the 2 cartesian coordinates [x, y]
-     * @returns {Point} return this instance of the object (to allow function chaining)
-     */
-    moveToArray (arrCoordinates:coordinate2dArray) {
-        if ((isNumeric(arrCoordinates[0])) && (isNumeric(arrCoordinates[1]))) {
-            this.x = arrCoordinates[0]
-            this.y = arrCoordinates[1]
-            return this
-        } else {
-            throw new TypeError('moveToArray needs an array of 2 numbers like this [1.0, 2.0]')
-        }
+     * getDistanceFromOrigin returns the length of the vector from origin to this point
+      */
+    getDistanceFromOrigin(): number {
+        return Math.sqrt(this.p.x * this.p.x + this.p.y * this.p.y)
     }
 
     /**
-     * will move this Point to the new position in cartesian space given by the newX and newY values
+     * getAngleRad gives the angle in Radian from horizontal axis x with the vector from origin to this point
+     */
+    getAngleRad():number {
+        return Math.atan(this.p.y / this.p.x)
+    }
+
+    /**
+     * getAngleDeg gives the angle in degree from horizontal axis x with the vector from origin to this point
+     */
+    getAngleDeg():number {
+        return (Math.atan(this.p.y / this.p.x) * 360) / (2 * Math.PI);
+    }
+
+    /**
+     * moveToArray will move this Point to the new position in cartesian space given by the arrCoordinates
+     * @param {Array} arrCoordinates is an array with the 2 cartesian coordinates [x, y]
+     * @returns {Point} return this instance of the object (to allow function chaining)
+     */
+    moveToArray  (arrCoordinates:coordinate2dArray):Point  {
+            this.x = arrCoordinates[0]
+            this.y = arrCoordinates[1]
+            return this
+    }
+
+    /**
+     * moveTo will move this Point to the new position in cartesian space given by the newX and newY values
      * @param {number} newX is the new x coordinates in cartesian space of this Point
      * @param {number} newY is the new y coordinates in cartesian space of this Point
      * @returns {Point} return this instance of the object (to allow function chaining)
      */
-    moveTo (newX:number, newY:number) {
-        if ((isNumeric(newX)) && (isNumeric(newY))) {
-            this.x = newX
-            this.y = newY
+    moveTo  (newX:number, newY:number):Point  {
+        this.x = newX;
+        this.y = newY;
+        return this;
+    }
+
+    /**
+     * moveRel move this Point relative to its position by the deltaX, deltaY displacement in cartesian space
+     * @param {number} deltaX is the new x coordinates in cartesian space of this Point
+     * @param {number} deltaY is the new y coordinates in cartesian space of this Point
+     * @returns {Point} return this instance of the object (to allow function chaining)
+     */
+    moveRel  (deltaX:number, deltaY:number):Point  {
+        this.x += deltaX;
+        this.y += deltaY;
+        return this;
+    }
+
+    /**
+     * move this Point relative to its position by the arrVector displacement in cartesian space
+     * @param {Array} arrVector is an array representing the vector displacement to apply to actual coordinates [deltaX, deltaY]
+     * @returns {Point} return this instance of the object (to allow function chaining)
+     */
+    moveRelArray  (arrVector:coordinate2dArray):Point  {
+        if ((isNumeric(arrVector[0])) && (isNumeric(arrVector[1]))) {
+            this.x = this.x + arrVector[0]
+            this.y = this.y + arrVector[1]
             return this
         } else {
-            throw new TypeError('moveTo needs newX and newY to be valid numbers !')
+            throw new TypeError('moveRelArray needs an array of 2 numbers like this [1.0, 2.0]')
         }
     }
-    // move will put the Point in the absolute position defined by the passed x,y coordinates
-    move = (x: number, y: number): Point => {
-        this.p.x = x;
-        this.p.y = y;
-        return this;
+
+    /**
+     * moveRelPolar this Point relative to its position by the polar displacement in cartesian space
+     * @param {number} radius is the distance from origin to the point
+     * @param {Angle} theta is the angle from x axes origin to point in mathematical order Counter-Clockwise
+     * @returns {Point} return this instance of the object (to allow function chaining)
+     */
+    moveRelPolar  (radius:number, theta:Angle):Point {
+        let tmpPoint = Point.fromPolar(radius, theta, this.name)
+        this.x = this.x + tmpPoint.x
+        this.y = this.y + tmpPoint.y
+        return this
     }
 
-    // moveRelative will move the current Point by the passed x,y coordinates relative to current position
-    moveRelative = (dx: number, dy: number): Point => {
-        this.p.x += dx;
-        this.p.y += dy;
-        return this;
+    /**
+     * copyRelArray copy this Point relative to its position by the arrVector displacement in cartesian space
+     * @param {coordinate2dArray} arrVector is an array representing the vector displacement to apply to actual coordinates [deltaX, deltaY]
+     * @returns {Point} a new Point object at the relative displacement arrVector from original Point
+     */
+    copyRelArray(arrVector:coordinate2dArray):Point {
+        if ((isNumeric(arrVector[0])) && (isNumeric(arrVector[1]))) {
+            let tmpPoint = Point.fromPoint(this)
+            tmpPoint.x = tmpPoint.x + arrVector[0]
+            tmpPoint.y = tmpPoint.y + arrVector[1]
+            return tmpPoint
+        } else {
+            throw new TypeError('copyRelArray needs an array of 2 numbers like this [1.0, 2.0]')
+        }
     }
 
-    // rename allows to change the name attribute of the point
-    rename = (name: string): Point => {
+    /**
+     * copyRel copy this Point relative to its position by the deltaX, deltaY displacement in cartesian space
+     * @param {number} deltaX is the increment to x coordinates to this Point
+     * @param {number} deltaY is the increment to y coordinates to this Point
+     * @returns {Point} a new Point object at the relative deltaX, deltaY displacement from original Point
+     */
+    copyRel(deltaX:number, deltaY:number):Point {
+        if ((isNumeric(deltaX)) && (isNumeric(deltaY))) {
+            let tmpPoint = Point.fromPoint(this)
+            tmpPoint.x = tmpPoint.x + deltaX
+            tmpPoint.y = tmpPoint.y + deltaY
+            return tmpPoint
+        } else {
+            throw new TypeError('copyRel needs deltaX and deltaY to be valid numbers !')
+        }
+    }
+
+    /**
+     * copyRelPolar copy this Point relative to its position by the polar displacement in cartesian space
+     * @param {number} radius is the distance from origin to the point
+     * @param {number} theta is the angle from x axes origin to point in mathematical order Counter-Clockwise
+     * @param {Object} angleSystem your choice of one of AngularSystem Enum Radian, Degree or Gradians
+     * @returns {Point} a new Point at the polar displacement from original Point
+     */
+    copyRelPolar(radius:number, theta:Angle):Point {
+        let tmpPoint = Point.fromPolar(radius, theta, this.name)
+        let tmpPoint2 = Point.fromPoint(this)
+        tmpPoint2.x = tmpPoint2.x + tmpPoint.x
+        tmpPoint2.y = tmpPoint2.y + tmpPoint.y
+        return tmpPoint2
+    }
+
+
+    /**
+     * distance calculates the distance from this point to otherPoint
+     * @param {Point} otherPoint
+     * @return {Number} te distance calculated between this Point and otherPoint
+     */
+    distance(otherPoint:Point):number {
+        if (otherPoint instanceof Point) {
+            let distance = Math.sqrt(
+                ((this.x - otherPoint.x) * (this.x - otherPoint.x)) +
+                ((this.y - otherPoint.y) * (this.y - otherPoint.y))
+            )
+            if (distance <= EPSILON) {
+                return 0
+            } else {
+                return distance
+            }
+        } else {
+            throw new TypeError('Point.distance(otherPoint) expects a Point as parameter')
+        }
+    }
+
+    /**
+     * equal allows to compare equality with otherPoint, they should have the same values for x and y
+     * Math.sqrt(2) * Math.sqrt(2) should give 2 but gives instead 2.0000000000000004
+     * Math.sqrt(3) * Math.sqrt(3) should give 2 but gives instead 2.9999999999999996
+     * i found
+     * So the Point Class equality should take this fact account to test near equality with EPSILON=0.0000000001
+     *  feel free to adapt EPSILON value to your needs in utils.js
+     * @param {Point} otherPoint
+     * @returns {boolean}
+     */
+    equal(otherPoint:Point):boolean {
+        if (otherPoint instanceof Point) {
+            return (
+                (Math.abs(this.x - otherPoint.x) <= EPSILON) &&
+                (Math.abs(this.y - otherPoint.y) <= EPSILON)
+            )
+        } else {
+            throw new TypeError('A Point can only be compared to another Point')
+        }
+    }
+
+    /**
+     * rename allows to change the name attribute of the point
+     * @param name is the new name of the point
+     * @returns {Point} return this instance of the object (to allow function chaining)
+     */
+    rename (name: string): Point  {
         this.name = name;
         return this;
     }
