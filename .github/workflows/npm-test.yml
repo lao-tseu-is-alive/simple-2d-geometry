@@ -1,7 +1,4 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Unit Test with Jest
+name: CI-Unit-Tests
 
 on:
   push:
@@ -12,9 +9,13 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Install modules      
-    - run: npm i    
-    - run: npm run test
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Install modules
+      run: npm install
+    - name: Run tests
+      run: npm run test
