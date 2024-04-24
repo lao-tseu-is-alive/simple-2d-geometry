@@ -1,0 +1,34 @@
+{
+  "name": "simple-2d-geometry",
+  "description": "A Simple 2D Geometry Library with Point and Line classes written with TypeScript",
+  "private": false,
+  "version": "0.0.1",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/2d-geometry.umd.cjs",
+  "module": "./dist/2d-geometry.js",
+  "exports": {
+    ".": {
+      "import": "./dist/2d-geometry.js",
+      "require": "./dist/2d-geometry.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "globals": "^15.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.9.0"
+  }
+}

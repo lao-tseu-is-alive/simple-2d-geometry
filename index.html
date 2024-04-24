@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="/vite.svg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>2dGeom</title>
+  <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div class="container">
+  <div id="app"></div>
+  <div id="svgcontainer" class="svg-container">
+    <svg height="500" width="500">
+      <line id='xaxis' x1="250" y1="0" x2="250" y2="500" class="svgaxis"/>
+      <line id='yaxis' x1="0" y1="250" x2="500" y2="250" class="svgaxis"/>
+      <polyline id='mypolargraph' points="0,40 40,40 40,80 80,80 " class="svg-flower-petal"/>
+      <circle cx="250" cy="250" r="40" class="svg-flower-center"/>
+    </svg>
+  </div>
+  <div id="code-log">log</div>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

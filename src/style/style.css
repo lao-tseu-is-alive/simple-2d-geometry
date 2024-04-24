@@ -1,0 +1,41 @@
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+
+.svg-container {
+  width: 100%;
+  height: 50vh;
+  background-color: #adade8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.svgaxis {
+  stroke: rgb(255,255,255);
+  stroke-width: 2px;
+}
+.svg-flower-center{
+  stroke: orange;
+  stroke-width: 2px;
+  fill: yellow;
+}
+.svg-flower-petal{
+  stroke: rgb(180,180,180);
+  stroke-width: 2px;
+  fill: white;
+}
