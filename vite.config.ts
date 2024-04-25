@@ -11,7 +11,7 @@ export default defineConfig({
             entry: './src/index.ts',
             name: '2dGeometry',
             fileName: '2d-geometry',
-            formats: ['es', 'umd'] // Only build ES module format
+            formats: ['es', 'umd'] // build ES and umd module format
         },
         rollupOptions: {
             input: './src/index.ts',

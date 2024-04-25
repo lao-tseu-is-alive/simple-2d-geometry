@@ -77,7 +77,6 @@ export default class Point implements iPoint {
         const tmpX = radius * Math.cos(angle)
         tmpPoint.x = Math.abs(tmpX) <= EPSILON ? 0 : roundNumber(tmpX, PRECISION)
         const tmpY = radius * Math.sin(angle)
-        // noinspection JSSuspiciousNameCombination
         tmpPoint.y = Math.abs(tmpY) <= EPSILON ? 0 : roundNumber(tmpY, PRECISION)
         return tmpPoint
     }
@@ -297,8 +296,7 @@ export default class Point implements iPoint {
     /**
      * copyRelPolar copy this Point relative to its position by the polar displacement in cartesian space
      * @param {number} radius is the distance from origin to the point
-     * @param {number} theta is the angle from x axes origin to point in mathematical order Counter-Clockwise
-     * @param {Object} angleSystem your choice of one of AngularSystem Enum Radian, Degree or Gradians
+     * @param {Angle} theta is the angle from x axes origin to point in mathematical order Counter-Clockwise
      * @returns {Point} a new Point at the polar displacement from original Point
      */
     copyRelPolar(radius:number, theta:Angle):Point {

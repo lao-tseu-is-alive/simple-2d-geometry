@@ -1,18 +1,15 @@
 import  './style/skeleton.css'
 import './style/style.css'
 
+import {setupDrawPetals} from "./drawPetals.tsx";
+
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>    
-    <h3>2dGeom</h3>
-    <div class="card">
-      <button id="counter" type="button">Add petals</button>
-    </div>
-    <p class="read-the-docs">
-      Now let's create a nice 12 petal's flowers using this polar equation :<br> <strong>r = a sin 6θ </strong>
-    </p>
+    <h3>simple 2d geometry</h3>
+    <div id="petals-div" class="card">  
+    </div>    
   </div>
 `
-
-//setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+setupDrawPetals(document.querySelector('#petals-div')!)
 
 
