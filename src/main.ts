@@ -1,15 +1,16 @@
 import  './style/skeleton.css'
 import './style/style.css'
 
-import {setupDrawPetals} from "./drawPetals.tsx";
+// @ts-ignore
+import {setupDrawPetals} from './drawPetals';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>    
     <h3>simple 2d geometry</h3>
-    <div id="petals-div" class="card">  
+    <div id="flower-div">  
     </div>    
   </div>
 `
-setupDrawPetals(document.querySelector('#petals-div')!)
+setupDrawPetals(document.querySelector('#flower-div')!)
 
 
