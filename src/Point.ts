@@ -120,7 +120,7 @@ export default class Point implements iPoint {
      * @returns {string}
       */
     dump():string {
-        return `Point[${this.p.name}](${this.p.x}, ${this.p.y})`;
+        return `Point[${this.name}](${this.p.x}, ${this.p.y})`;
     }
 
     /**
@@ -161,7 +161,7 @@ export default class Point implements iPoint {
      * @param {number} srid is the Spatial reference systems identifier EPSG code default is 2056 for Switzerland MN03
      * @returns {string}
      */
-    toEWKT(srid = 2056):string {
+    toEWKT(srid: number = 2056):string {
         return `SRID=${srid};POINT(${this.x} ${this.y})`
     }
 

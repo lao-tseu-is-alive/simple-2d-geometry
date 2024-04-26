@@ -1,5 +1,5 @@
 //import {expect, test, describe} from "jest";
-import Point from "../src/Point";
+import Point, {coordinate2dArray} from "../src/Point";
 import Angle from "../src/Angle";
 const P0 = new Point()
 describe('Point module', () => {
@@ -114,6 +114,69 @@ describe('Point module', () => {
       expect(P1.name).toBe('P1')
     })
   })
+
+  describe('Point.fromArray([x,y])', () => {
+    const P1 = Point.fromArray([1.0, 2.0])
+    test('should give a Point(1,2) when given [1,2]', () => {
+      expect(P1.x).toBe(1.0);
+      expect(P1.y).toBe(2.0);
+    })
+    test('should throw an Error when parameter is not a valid Point', () => {
+      expect(Point.fromArray.bind(undefined, [] as unknown as coordinate2dArray)).toThrow(TypeError)
+    })
+    test('should throw an Error when parameter is not a valid Point', () => {
+      expect(Point.fromArray.bind(undefined, undefined as unknown as coordinate2dArray)).toThrow(TypeError)
+    })
+  })
+
+  describe('Point.clone()', () => {
+    const P1 = new Point(1.0, 2.0, 'P1')
+    const P2 = P1.clone()
+    test('should give a Point(1,2) when given [1,2]', () => {
+      expect(P2.x).toBe(1.0);
+      expect(P2.y).toBe(2.0);
+      expect(P2.name).toBe('P1');
+    })
+    test('should give a new Point object', () => {
+      expect(P2).not.toBe(P1);
+    })
+  })
+
+  describe('Point.dump()', () => {
+    const P1 = new Point(1.0, 2.0, 'P1')
+    test('should give a Point(1,2) when given [1,2]', () => {
+      expect(P1.dump()).toEqual(`Point[P1](1, 2)`)
+    })
+    const P2 = new Point()
+    test('should give a Point(0,0) when no name is given', () => {
+      expect(P2.dump()).toEqual(`Point[](0, 0)`)
+    })
+  })
+
+  describe('Point.toArray()', () => {
+    const P1 = new Point(1.0, 2.0, 'P1')
+    test('should give a [1,2] when given Point(1,2)', () => {
+      expect(P1.toArray()).toEqual([1.0, 2.0])
+    })
+  })
+
+  describe('Point can be exported to OGC WKT and GeoJSON', () => {
+    const P1 = new Point(1.0, 2.0, 'P1')
+    test('toWKT should return a correct OGC Well-known text (WKT) representation',() => {
+          expect(P1.toWKT()).toEqual(`POINT(${P1.x} ${P1.y})`)
+        })
+    test('toEWKT should return a correct Postgis Extended Well-known text (EWKT) representation',() => {
+          const srid = 2056
+          expect(P1.toEWKT()).toEqual(`SRID=${srid};POINT(${P1.x} ${P1.y})`
+          )}
+    )
+    test('toGeoJSON should return a correct GeoJSON (http://geojson.org/) representation',() => {
+          expect(P1.toGeoJSON()).toEqual(`{"type":"Point","coordinates":[${P1.x},${P1.y}]}`)
+        })
+  })
+
+
+
 
   describe('Point.toString()', () => {
     const P1 = new Point(1.0, 2.0, 'P1')
