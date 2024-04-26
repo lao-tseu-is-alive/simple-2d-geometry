@@ -52,7 +52,7 @@ describe('Point module', () => {
     test('should throw an Error if invalid point y coordinate is given ', () => {
       expect(function () {
         const PointWithYWrong = new Point()
-        PointWithYWrong.x = badY
+        PointWithYWrong.y = badY
       }).toThrow(`Invalid number format for input: '${badY}'`)
     })
   })
@@ -68,8 +68,7 @@ describe('Point module', () => {
       expect(P0.y).toBe(0);
       expect(P0.equal(new Point(0,0,'P0'))).toEqual(true)
     })
-    test(
-        'should give a Point(0,5) when radius=5 and theta=Pi/2 radians',
+    test('should give a Point(0,5) when radius=5 and theta=Pi/2 radians',
         () => {
           const P1 = Point.fromPolar(5, myAngle, 'P0')
           expect(P1.x).toBe(0);
@@ -77,6 +76,53 @@ describe('Point module', () => {
           expect(P1.equal(new Point(0, 5))).toEqual(true)
         }
     )
+    test('should give a Point(-5,0) when radius=5 and theta=Pi/2 radians',
+        () => {
+          const P1 = Point.fromPolar(5, new Angle(180, "degrees"), 'P1')
+          expect(P1.x).toBe(-5);
+          expect(P1.y).toBe(0);
+          expect(P1.equal(new Point(-5, 0))).toEqual(true)
+        }
+    )
+  })
+
+  describe('Point.fromPoint(otherPoint)', () => {
+    let P0 = Point.fromPoint(new Point())
+    const P1 = Point.fromPoint(P0)
+
+    test('should throw an Error when parameter is not a valid Point', () => {
+      expect(Point.fromPoint.bind(undefined, {} as Point)).toThrow(TypeError)
+    })
+    test('should give a Point(0,0) when given new Point()', () => {
+      expect(P1.equal(P0)).toEqual(true)
+    })
+    test('should copy x,y values in a new point without affecting original point', () => {
+      P1.x = 5.3
+      P1.y = 2.1
+      P1.name = 'P1'
+      expect(P0.x).toBe(0)  // original point should not be affected
+      expect(P0.y).toBe(0)  // original point should not be affected
+      expect(P1.equal(P0)).toEqual(false)
+      expect(P1.x).toBe(5.3)
+      expect(P1.y).toBe(2.1)
+      expect(P1.name).toBe('P1')
+    })
+    test('should still exist when original point is set to null', () => {
+      Object.bind(P0, null)
+      expect(P1.x).toBe(5.3)
+      expect(P1.y).toBe(2.1)
+      expect(P1.name).toBe('P1')
+    })
+  })
+
+  describe('Point.toString()', () => {
+    const P1 = new Point(1.0, 2.0, 'P1')
+    test('should return a correct string representation', () => {
+      expect(P1.toString()).toEqual(`(${1.0}, ${2.0})`)
+    })
+    test('should return a string  without parenthesis when surroundingParenthesis is false', () => {
+      expect(P1.toString(',', false)).toEqual(`${1.0}, ${2.0}`)
+    })
   })
 
 })
