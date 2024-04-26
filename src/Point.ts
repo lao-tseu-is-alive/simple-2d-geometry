@@ -187,14 +187,14 @@ export default class Point implements iPoint {
      * getAngleRad gives the angle in Radian from horizontal axis x with the vector from origin to this point
      */
     getAngleRad():number {
-        return Math.atan(this.p.y / this.p.x)
+        return Math.atan2(this.p.y, this.p.x)
     }
 
     /**
      * getAngleDeg gives the angle in degree from horizontal axis x with the vector from origin to this point
      */
     getAngleDeg():number {
-        return (Math.atan(this.p.y / this.p.x) * 360) / (2 * Math.PI);
+        return (Math.atan2(this.p.y , this.p.x) * 360) / (2 * Math.PI);
     }
 
     /**
@@ -309,11 +309,11 @@ export default class Point implements iPoint {
 
 
     /**
-     * distance calculates the distance from this point to otherPoint
+     * distanceTo calculates the distance from this point to otherPoint
      * @param {Point} otherPoint
      * @return {Number} te distance calculated between this Point and otherPoint
      */
-    distance(otherPoint:Point):number {
+    distanceTo(otherPoint:Point):number {
         if (otherPoint instanceof Point) {
             let distance = Math.sqrt(
                 ((this.x - otherPoint.x) * (this.x - otherPoint.x)) +
@@ -325,7 +325,7 @@ export default class Point implements iPoint {
                 return distance
             }
         } else {
-            throw new TypeError('Point.distance(otherPoint) expects a Point as parameter')
+            throw new TypeError('Point.distanceTo(otherPoint) expects a Point as parameter')
         }
     }
 
@@ -343,7 +343,8 @@ export default class Point implements iPoint {
         if (otherPoint instanceof Point) {
             return (
                 (Math.abs(this.x - otherPoint.x) <= EPSILON) &&
-                (Math.abs(this.y - otherPoint.y) <= EPSILON)
+                (Math.abs(this.y - otherPoint.y) <= EPSILON) &&
+                (this.name === otherPoint.name)
             )
         } else {
             throw new TypeError('A Point can only be compared to another Point')

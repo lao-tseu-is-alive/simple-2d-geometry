@@ -1,49 +1,49 @@
 export type AngleType = 'radians' | 'degrees';
 
 export default class Angle {
-    private value: number;
-    private type: AngleType;
+    private _angle: number;
+    private readonly _type: AngleType;
 
     constructor(value: number, type: AngleType = 'degrees') {
-        this.value = value;
-        this.type = type;
+        this._angle = value;
+        this._type = type;
         this.normalize()
     }
 
     toRadians(): number {
         if (this.type === 'radians') {
-            return this.value;
+            return this.angle;
         }
-        return this.value * Math.PI / 180;
+        return this.angle * Math.PI / 180;
     }
 
     toDegrees(): number {
         if (this.type === 'degrees') {
-            return this.value;
+            return this.angle;
         }
-        return this.value * 180 / Math.PI;
+        return this.angle * 180 / Math.PI;
     }
 
-    setValue(value: number, type: AngleType): void {
-        this.value = value;
-        this.type = type;
+    set angle(value: number) {
+        this._angle = value;
+        this.normalize()
     }
 
-    getValue(): number {
-        return this.value;
+    get angle(): number {
+        return this._angle;
     }
 
-    getType(): AngleType {
-        return this.type;
+    get type(): AngleType {
+        return this._type;
     }
 
     normalize(): void {
         if (this.type === 'degrees') {
-            this.value %= 360;
-            if (this.value < 0) this.value += 360;
+            this._angle %= 360;
+            if (this._angle < 0) this._angle += 360;
         } else {
-            this.value %= (2 * Math.PI);
-            if (this.value < 0) this.value += (2 * Math.PI);
+            this._angle %= (2 * Math.PI);
+            if (this._angle < 0) this._angle += (2 * Math.PI);
         }
     }
 
