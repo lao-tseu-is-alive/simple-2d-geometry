@@ -1,6 +1,7 @@
 # simple-2d-geometry
 
 [![CI-Unit-Tests](https://github.com/lao-tseu-is-alive/simple-2d-geometry/actions/workflows/npm-test.yml/badge.svg)](https://github.com/lao-tseu-is-alive/simple-2d-geometry/actions/workflows/npm-test.yml)
+[![codecov](https://codecov.io/gh/lao-tseu-is-alive/simple-2d-geometry/branch/main/graph/badge.svg)](https://codecov.io/gh/lao-tseu-is-alive/simple-2d-geometry)
 
 A Simple 2D Geometry Library with Point and Line classes written with TypeScript
 
