@@ -16,8 +16,6 @@ export function setupDrawPetals(element: HTMLDivElement) {
     const offsetX = svgCenterX
     const offsetY = svgCenterY
     console.log(`PetalCount : ${petalNumber}`)
-    //because with rose equation if petalNumber is even, we have 2*petalNumber petals
-    // let's detect if we have an even number of petals
     for (let angle = 0; angle <= 360; angle += 1) {
       const myAngle = new Angle(angle, 'degrees')
       let radius =  petalLength * (2 + 2 * Math.cos(petalNumber * myAngle.toRadians()))
