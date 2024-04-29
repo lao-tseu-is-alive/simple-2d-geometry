@@ -24,4 +24,4 @@ here is an excerpt of the code in drawPetal.tsx that creates a 6 petals flower u
     ...
 ```
 
-![alt text](https://raw.githubusercontent.com/lao-tseu-is-alive/simple-2d-geometry/master/examples/images/simple-2d-geometry_example_polar_equation_flower.png "Using the Point class to create a nice 6 petal's flowers from a polar equation")
+![alt text](https://raw.githubusercontent.com/lao-tseu-is-alive/simple-2d-geometry/main/images/simple-2d-geometry_example_polar_equation_flower.png "Using the Point class to create a nice 6 petal's flowers from a polar equation")
