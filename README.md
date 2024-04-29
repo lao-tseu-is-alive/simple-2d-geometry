@@ -7,7 +7,7 @@ A Simple 2D Geometry Library with Point and Line classes written with TypeScript
 This projects code is licensed under the terms of the [GNU GPL-3.0 license](https://www.gnu.org/licenses/quick-guide-gplv3.html).
 
 
-# to run the library in an example page  
+### to run the library in an example page:  
 ```bash
 npm run dev
 ```
