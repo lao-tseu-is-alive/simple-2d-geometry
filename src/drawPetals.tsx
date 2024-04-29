@@ -20,7 +20,6 @@ export function setupDrawPetals(element: HTMLDivElement) {
       // and move the point so it's centered
       TempPoint.moveRel(offsetX, offsetY)
       coordinatesString += TempPoint.toString(',', false) + ' '
-      // console.log(`angle : ${angle}deg [${myAngle.toRadians()}rad] , radius ${radius} : ${TempPoint.toString(',', false,2)}`)
     }
     return coordinatesString;
   }
