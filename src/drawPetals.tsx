@@ -2,10 +2,7 @@ import Angle from './Angle'
 import Point from "./Point.ts";
 export function setupDrawPetals(element: HTMLDivElement) {
 
-  //draw an svg flower with then number of given petals
-  const drawPetals = (svgPolylineId:string, petalLengthInput:HTMLInputElement, petalNumberInput:HTMLInputElement) => {
-    const petalLength = parseFloat(petalLengthInput.value)
-    const petalNumber = parseInt(petalNumberInput.value)
+  function calcPetalsCoordinates(petalNumber: number, petalLength: number) {
     const svg = document.querySelector<SVGSVGElement>('svg')!
     const svgWidth = svg.clientWidth
     const svgHeight = svg.clientHeight
@@ -18,18 +15,24 @@ export function setupDrawPetals(element: HTMLDivElement) {
     console.log(`PetalCount : ${petalNumber}`)
     for (let angle = 0; angle <= 360; angle += 1) {
       const myAngle = new Angle(angle, 'degrees')
-      let radius =  petalLength * (2 + 2 * Math.cos(petalNumber * myAngle.toRadians()))
+      let radius = petalLength * (2 + 2 * Math.cos(petalNumber * myAngle.toRadians()))
       let TempPoint = Point.fromPolar(radius, myAngle, `P-${angle}`)
       // and move the point so it's centered
-      TempPoint.moveRel(offsetX,offsetY)
-      coordinatesString += TempPoint.toString(',', false)  + ' '
+      TempPoint.moveRel(offsetX, offsetY)
+      coordinatesString += TempPoint.toString(',', false) + ' '
       // console.log(`angle : ${angle}deg [${myAngle.toRadians()}rad] , radius ${radius} : ${TempPoint.toString(',', false,2)}`)
     }
+    return coordinatesString;
+  }
 
+//draw an svg flower with then number of given petals
+  const drawPetals = (svgPolylineId:string, petalLengthInput:HTMLInputElement, petalNumberInput:HTMLInputElement) => {
+    const petalLength = parseFloat(petalLengthInput.value)
+    const petalNumber = parseInt(petalNumberInput.value)
+    let coordinatesString = calcPetalsCoordinates(petalNumber, petalLength);
     const msg = document.querySelector<HTMLParagraphElement>('#petal-msg')!
     msg.innerHTML = `Here is a nice petal's flower. <br>  Using this polar equation :<br>
                       <strong>r = ${petalLength} x (2 + 2 x cos( ${petalNumber} x θ)) </strong>`
-
     const polyline = document.querySelector<SVGPolylineElement>(`#${svgPolylineId}`)!
     polyline.setAttribute('points', coordinatesString)
   }
