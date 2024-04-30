@@ -52,7 +52,7 @@ export default class Point implements iPoint {
      * Creates a point
      * @param {number | undefined} x coordinates in cartesian space or array with [x, y] numbers
      * @param {number | undefined} y coordinates in cartesian space, ignored if first argument is an array
-     * @param {number | undefined} name optional name of this point
+     * @param {string | undefined} name optional name of this point
      */
     constructor(x: number | undefined = 0, y: number | undefined = 0, name?: string) {
         this.p = {x:0, y:0 }
