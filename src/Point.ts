@@ -435,7 +435,7 @@ export default class Point implements iPoint {
    * @param {string} newName is the new name of the point
    * @returns {Point} return this instance of the object (to allow function chaining)
    */
-  rename(newName: string): Point {
+  rename(newName: string): this {
     this.name = newName;
     return this;
   }

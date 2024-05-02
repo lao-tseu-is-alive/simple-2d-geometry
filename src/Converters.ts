@@ -1,5 +1,5 @@
 import { iPoint } from "./Point.ts";
-import { iLine } from "./Line.ts";
+import { LineInterface } from "./Line.ts";
 
 export default class Converters {
   public static convertToPointArray(data: any): iPoint[] | undefined {
@@ -19,13 +19,13 @@ export default class Converters {
       : { x: 0, y: 0, name: undefined, isValid: false };
   }
 
-  public static convertToLineArray(data: any): iLine[] | undefined {
+  public static convertToLineArray(data: any): LineInterface[] | undefined {
     return Array.isArray(data)
       ? data.map((item) => Converters.convertToLine(item))
       : undefined;
   }
 
-  public static convertToLine(data: any): iLine {
+  public static convertToLine(data: any): LineInterface {
     return data
       ? {
           start: Converters.convertToPoint(data["start"]),

@@ -1,7 +1,7 @@
 import Point, { coordinate2dArray, iPoint } from "./Point.ts";
 import Converters from "./Converters.ts";
 
-export interface iLine {
+export interface LineInterface {
   start: iPoint;
   end: iPoint;
   name?: string;
@@ -106,7 +106,7 @@ export default class Line {
    */
   static fromArray(coordinatesLine: coordinatesLineArray): Line {
     if (
-      !(typeof coordinatesLine === undefined) &&
+      typeof coordinatesLine !== undefined &&
       coordinatesLine instanceof Array &&
       coordinatesLine.length === 2 &&
       typeof coordinatesLine[0][0] === "number"
@@ -123,7 +123,7 @@ export default class Line {
   }
 
   private static fromObject(data: any) {
-    const tempiLine: iLine = Converters.convertToLine(data);
+    const tempiLine: LineInterface = Converters.convertToLine(data);
     return new Line(
       Point.fromObject(tempiLine.start),
       Point.fromObject(tempiLine.end),
