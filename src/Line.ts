@@ -106,7 +106,7 @@ export default class Line {
    */
   static fromArray(coordinatesLine: coordinatesLineArray): Line {
     if (
-      typeof coordinatesLine !== undefined &&
+      typeof coordinatesLine !== "undefined" &&
       coordinatesLine instanceof Array &&
       coordinatesLine.length === 2 &&
       typeof coordinatesLine[0][0] === "number"
