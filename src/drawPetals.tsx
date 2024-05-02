@@ -57,5 +57,5 @@ export function setupDrawPetals(element: HTMLDivElement) {
   // draw the flower when the button is clicked
   buttonDraw.addEventListener('click', () => drawPetals("my-polyline", inputPetalLength, inputPetalNumber))
   // draw the flower when the page is loaded
-    drawPetals("my-polyline", inputPetalLength, inputPetalNumber)
+  drawPetals("my-polyline", inputPetalLength, inputPetalNumber)
 }
