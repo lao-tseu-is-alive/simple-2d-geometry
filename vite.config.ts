@@ -9,8 +9,8 @@ export default defineConfig({
         target: 'esnext', // Build for modern browsers
         lib: {
             entry: './src/index.ts',
-            name: '2dGeometry',
-            fileName: '2d-geometry',
+            name: 'simple2dGeometry',
+            fileName: 'simple-2d-geometry',
             formats: ['es', 'umd'] // build ES and umd module format
         },
         rollupOptions: {
