@@ -6,7 +6,7 @@ import {setupDrawPetals} from './drawPetals';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>    
-    <h3>simple 2d geometry</h3>
+    <h3>simple 2d geometry !</h3>
     <div id="flower-div">  
     </div>    
   </div>
