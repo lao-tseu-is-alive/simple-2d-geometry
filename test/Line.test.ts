@@ -16,6 +16,11 @@ describe("Line module", () => {
     test("constructor with same points location should throw an Error", () => {
       expect(() => new Line(PO, PObis)).toThrow(RangeError);
     });
+    test("constructor with invalid points should throw an Error", () => {
+      expect(
+        () => new Line({} as unknown as Point, {} as unknown as Point),
+      ).toThrow(TypeError);
+    });
   });
   describe("Line setters", () => {
     test("start setter should store a point", () => {
@@ -100,6 +105,21 @@ describe("Line module", () => {
       ).toThrow(TypeError);
     });
   });
+  describe("Line.fromObject", () => {
+    const L0 = Line.fromObject({
+      start: { x: 0, y: 0, name: "PO" },
+      end: { x: 1, y: 1, name: "P1" },
+      name: "L0",
+    });
+    test("should create a Line from an object", () => {
+      expect(L0.equal(new Line(PO, P1, "L0"))).toBe(true);
+    });
+    test("should throw an Error if object is undefined or null", () => {
+      expect(
+        Line.fromObject.bind(undefined, undefined as unknown as Object),
+      ).toThrow(TypeError);
+    });
+  });
   describe("Line.fromJSON", () => {
     const L0 = Line.fromJSON(
       '{ "start": {"x":0, "y":0}, "end": {"x":1, "y":1}, "name": "L0" }',
@@ -130,6 +150,57 @@ describe("Line module", () => {
     const L0 = new Line(PO, P1, "L0");
     test("should create a string from a Line", () => {
       expect(L0.toString()).toBe("L0:((0,0),(1,1))");
+    });
+    test("should create a correct string from a Line", () => {
+      expect(L0.toString("\t", false)).toBe("L0:0\t0\t1\t1");
+    });
+  });
+  describe("Line.clone", () => {
+    const L0 = new Line(PO, P1, "L0");
+    const L1 = L0.clone();
+    test("should create a new Line with same coordinates", () => {
+      expect(L1.equal(L0)).toBe(true);
+      expect(L1 === L0).toBe(false);
+    });
+  });
+  describe("Line.rename", () => {
+    const L0 = new Line(PO, P1, "L0");
+    L0.rename("L1");
+    test("should rename the Line", () => {
+      expect(L0.name).toBe("L1");
+    });
+  });
+  describe("Line.sameLocation", () => {
+    const L0 = new Line(PO, P1, "L0");
+    const L1 = new Line(new Point(0, 0), P1, "L1");
+    test("should return true if same location", () => {
+      expect(L0.sameLocation(L1)).toBe(true);
+    });
+    test("should return false if different location", () => {
+      expect(L0.sameLocation(new Line(PO, new Point(2, 2)))).toBe(false);
+    });
+    test("should throw an Error if not a Line", () => {
+      expect(L0.sameLocation.bind(undefined, {} as unknown as Line)).toThrow(
+        TypeError,
+      );
+    });
+  });
+  describe("Line.equal", () => {
+    const L0 = new Line(PO, P1, "L0");
+    const L1 = new Line(PO, P1, "L0");
+    test("should return true if same location and same name", () => {
+      expect(L0.equal(L1)).toBe(true);
+    });
+    test("should return false if different location", () => {
+      expect(L0.equal(new Line(PO, new Point(2, 2)))).toBe(false);
+    });
+    test("should return false if different name", () => {
+      expect(L0.equal(new Line(PO, P1, "L2"))).toBe(false);
+    });
+    test("should throw an Error if not a Line", () => {
+      expect(L0.equal.bind(undefined, {} as unknown as Line)).toThrow(
+        TypeError,
+      );
     });
   });
 });

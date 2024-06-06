@@ -1,4 +1,3 @@
-//import {expect, test, describe} from "jest";
 import Point, { coordinate2dArray } from "../src/Point";
 import Angle from "../src/Angle";
 import { EPSILON } from "../src";
@@ -12,6 +11,9 @@ describe("Point module", () => {
     });
     test("'constructor with default parameters should should have name = ''", () => {
       expect(P0.name).toBe("");
+    });
+    test("'constructor with parameters should have isValid = true'", () => {
+      expect(P0.isValid).toBe(true);
     });
     test("'constructor with parameters should have x = 1.0, y = 2.0, name = 'P1'", () => {
       const P1 = new Point(1.0, 2.0, "P1");

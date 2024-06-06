@@ -1,5 +1,6 @@
 import { iPoint } from "./Point.ts";
 import { LineInterface } from "./Line.ts";
+import { TriangleInterface } from "./Triangle.ts";
 
 export default class Converters {
   public static convertToPointArray(data: any): iPoint[] | undefined {
@@ -26,15 +27,37 @@ export default class Converters {
   }
 
   public static convertToLine(data: any): LineInterface {
+    if (data === undefined || data === null) {
+      return {
+        start: { x: 0, y: 0, name: undefined, isValid: false },
+        end: { x: 0, y: 0, name: undefined, isValid: false },
+        name: undefined,
+        isValid: false,
+      };
+    } else
+      return {
+        start: Converters.convertToPoint(data["start"]),
+        end: Converters.convertToPoint(data["end"]),
+        name: "name" in data ? data["name"] : undefined,
+        isValid: true,
+      };
+  }
+
+  static convertToTriangle(data: any): TriangleInterface {
     return data
       ? {
-          start: Converters.convertToPoint(data["start"]),
-          end: Converters.convertToPoint(data["end"]),
+          p1: Converters.convertToPoint(data["p1"]),
+          p2: Converters.convertToPoint(data["p2"]),
+          p3: Converters.convertToPoint(data["p3"]),
           name: "name" in data ? data["name"] : undefined,
+          isValid: true,
         }
       : {
-          start: { x: 0, y: 0, name: undefined, isValid: false },
-          end: { x: 0, y: 0, name: undefined, isValid: false },
+          p1: { x: 0, y: 0, name: undefined, isValid: false },
+          p2: { x: 0, y: 0, name: undefined, isValid: false },
+          p3: { x: 0, y: 0, name: undefined, isValid: false },
+          name: "name" in data ? data["name"] : undefined,
+          isValid: false,
         };
   }
 }

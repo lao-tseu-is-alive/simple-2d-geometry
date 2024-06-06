@@ -47,11 +47,13 @@ describe("Converter module", () => {
           start: { x: 0, y: 0, name: undefined, isValid: true },
           end: { x: 1, y: 1, name: undefined, isValid: true },
           name: undefined,
+          isValid: true,
         },
         {
           start: { x: 1, y: 1, name: undefined, isValid: true },
           end: { x: 2, y: 2, name: undefined, isValid: true },
           name: undefined,
+          isValid: true,
         },
       ]);
     });
@@ -61,6 +63,8 @@ describe("Converter module", () => {
       expect(Converters.convertToLine(undefined)).toEqual({
         start: { x: 0, y: 0, name: undefined, isValid: false },
         end: { x: 0, y: 0, name: undefined, isValid: false },
+        isValid: false,
+        name: undefined,
       });
     });
     it("should return a LineInterface if data is defined", () => {
@@ -73,6 +77,7 @@ describe("Converter module", () => {
         start: { x: 0, y: 0, name: undefined, isValid: true },
         end: { x: 1, y: 1, name: undefined, isValid: true },
         name: undefined,
+        isValid: true,
       });
     });
   });

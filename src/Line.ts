@@ -5,6 +5,7 @@ export interface LineInterface {
   start: iPoint;
   end: iPoint;
   name?: string;
+  isValid?: boolean;
 }
 
 export type coordinatesLineArray = [coordinate2dArray, coordinate2dArray];
@@ -122,12 +123,15 @@ export default class Line {
     }
   }
 
-  private static fromObject(data: any) {
-    const tempiLine: LineInterface = Converters.convertToLine(data);
+  static fromObject(data: Object) {
+    if (data === undefined || data === null) {
+      throw new TypeError("cannot create a Line from nothing");
+    }
+    const tempLine: LineInterface = Converters.convertToLine(data);
     return new Line(
-      Point.fromObject(tempiLine.start),
-      Point.fromObject(tempiLine.end),
-      tempiLine.name,
+      Point.fromObject(tempLine.start),
+      Point.fromObject(tempLine.end),
+      tempLine.name,
     );
   }
 
@@ -167,5 +171,44 @@ export default class Line {
 
   toJSON(): string {
     return `{"start":${this.start.toJSON()}, "end":${this.end.toJSON()}, "name":"${this.name}"}`;
+  }
+
+  /**
+   * sameLocation allows to compare if this Line is at the same location as otherLine
+   * @param {Line} otherLine
+   * @returns {boolean}
+   */
+  sameLocation(otherLine: Line): boolean {
+    if (otherLine instanceof Line) {
+      return (
+        this.start.sameLocation(otherLine.start) &&
+        this.end.sameLocation(otherLine.end)
+      );
+    } else {
+      throw new TypeError("A Line can only be compared to another Line");
+    }
+  }
+
+  /**
+   * equal allows to compare equality with otherLine, they should have the same values for start and end
+   * @param {Line} otherLine
+   * @returns {boolean}
+   */
+  equal(otherLine: Line): boolean {
+    if (otherLine instanceof Line) {
+      return this.sameLocation(otherLine) && this.name === otherLine.name;
+    } else {
+      throw new TypeError("A Line can only be compared to another Line");
+    }
+  }
+
+  /**
+   * rename allows to change the name attribute of the line
+   * @param {string} newName is the new name of the line
+   * @returns {Point} return this instance of the object (to allow function chaining)
+   */
+  rename(newName: string): this {
+    this.name = newName;
+    return this;
   }
 }

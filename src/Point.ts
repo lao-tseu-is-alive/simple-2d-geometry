@@ -138,6 +138,9 @@ export default class Point implements iPoint {
    * @param data
    */
   static fromObject(data: any): Point {
+    if (data === undefined || data === null) {
+      return new Point(0, 0);
+    }
     const tempPoint: iPoint = Converters.convertToPoint(data);
     return new Point(tempPoint.x, tempPoint.y, tempPoint.name);
   }
