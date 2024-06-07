@@ -1,14 +1,25 @@
 import Point, { coordinate2dArray, iPoint } from "./Point.ts";
 import Converters from "./Converters.ts";
+import { EPSILON } from "./Geometry.ts";
 
+/**
+ * TriangleInterface is an interface for a Triangle object
+ * @interface TriangleInterface
+ * @property {iPoint} pA first Point of the triangle
+ * @property {iPoint} pB second Point of the triangle
+ * @property {iPoint} pC third Point of the triangle
+ * @property {string} name optional name of this triangle
+ */
 export interface TriangleInterface {
-  p1: iPoint;
-  p2: iPoint;
-  p3: iPoint;
+  pA: iPoint;
+  pB: iPoint;
+  pC: iPoint;
   name?: string;
-  isValid?: boolean;
 }
 
+/**
+ * coordinatesTriangleArray is an array of 3 points with 2d coordinates
+ */
 export type coordinatesTriangleArray = [
   coordinate2dArray,
   coordinate2dArray,
@@ -17,77 +28,87 @@ export type coordinatesTriangleArray = [
 
 /**
  * Class representing  a triangle in 2 dimension cartesian space
+ * @class Triangle
+ * @implements {TriangleInterface}
+ * @property {Point} pA first Point of the triangle
+ * @property {Point} pB second Point of the triangle
+ * @property {Point} pC third Point of the triangle
+ * @property {string} optional name of this triangle
+ * @property {a} returns the length of side a opposite the angle A and pA of the triangle
+ * @property {b} returns the length of side b opposite the angle B and pB of the triangle
+ * @property {c} returns the length of side c opposite the angle C and pC of the triangle
+ * @example const T0 = new Triangle(new Point(0,0,'P0'), new Point(1,1,'P1'), new Point(1,0,'P2'), "T0");
  */
 export default class Triangle {
-  private _p1: Point = Point.fromArray([1, 0]); // default p1 point
-  private _p2: Point = Point.fromArray([0, 1]); // default p2 point
-  private _p3: Point = Point.fromArray([-1, 0]); // default p3 point
+  private _pA: Point = Point.fromArray([1, 0]); // default pA point
+  private _pB: Point = Point.fromArray([0, 1]); // default pB point
+  private _pC: Point = Point.fromArray([-1, 0]); // default pC point
   private _name: string | undefined = undefined;
 
-  get p1(): Point {
-    return this._p1;
+  get pA(): Point {
+    return this._pA;
   }
 
-  set p1(input: Point) {
+  set pA(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
-      if (value.sameLocation(this._p2)) {
+      if (value.sameLocation(this._pB)) {
         throw new RangeError(
-          `p1:'${value.dump()}' should be at different location from p2:'${this._p2.dump()}'`,
+          `pA:'${value.dump()}' should be at different location from pB:'${this._pB.dump()}'`,
         );
       }
-      if (value.sameLocation(this._p3)) {
+      if (value.sameLocation(this._pC)) {
         throw new RangeError(
-          `p1:'${value.dump()}' should be at different location from p3:'${this._p3.dump()}'`,
+          `pA:'${value.dump()}' should be at different location from pC:'${this._pC.dump()}'`,
         );
       }
-      this._p1 = value;
+      this._pA = value;
     } else {
       throw new TypeError("start should be a Point object");
     }
   }
 
-  get p2(): Point {
-    return this._p2;
+  get pB(): Point {
+    return this._pB;
   }
 
-  set p2(input: Point) {
+  set pB(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
-      if (value.sameLocation(this._p1)) {
+      if (value.sameLocation(this._pA)) {
         throw new RangeError(
-          `p2:'${value.dump()}' should be at different location from p1:'${this._p1.dump()}'`,
+          `pB:'${value.dump()}' should be at different location from pA:'${this._pA.dump()}'`,
         );
       }
-      if (value.sameLocation(this._p3)) {
+      if (value.sameLocation(this._pC)) {
         throw new RangeError(
-          `p2:'${value.dump()}' should be at different location from p3:'${this._p3.dump()}'`,
+          `pB:'${value.dump()}' should be at different location from pC:'${this._pC.dump()}'`,
         );
       }
-      this._p2 = value;
+      this._pB = value;
     } else {
-      throw new TypeError("p2 should be a Point object");
+      throw new TypeError("pB should be a Point object");
     }
   }
 
-  get p3(): Point {
-    return this._p3;
+  get pC(): Point {
+    return this._pC;
   }
 
-  set p3(input: Point) {
+  set pC(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
-      if (value.sameLocation(this._p2)) {
+      if (value.sameLocation(this._pB)) {
         throw new RangeError(
-          `p3:'${value.dump()}' should be at different location from p2:'${this._p2.dump()}'`,
+          `pC:'${value.dump()}' should be at different location from pB:'${this._pB.dump()}'`,
         );
       }
-      if (value.sameLocation(this._p1)) {
+      if (value.sameLocation(this._pA)) {
         throw new RangeError(
-          `p3:'${value.dump()}' should be at different location from p1:'${this._p1.dump()}'`,
+          `pC:'${value.dump()}' should be at different location from pA:'${this._pA.dump()}'`,
         );
       }
-      this._p3 = value;
+      this._pC = value;
     } else {
       throw new TypeError("start should be a Point object");
     }
@@ -105,27 +126,48 @@ export default class Triangle {
   }
 
   /**
+   * a returns the length of side a opposite the angle A and pA of the triangle
+   */
+  get a(): number {
+    return this.pB.distanceTo(this.pC);
+  }
+
+  /**
+   * b returns the length of side b opposite the angle B and pB of the triangle
+   */
+  get b(): number {
+    return this.pA.distanceTo(this.pC);
+  }
+
+  /**
+   * c returns the length of side c opposite the angle C and pC of the triangle
+   */
+  get c(): number {
+    return this.pA.distanceTo(this.pB);
+  }
+
+  /**
    * Creates a triangle
-   * @param {Point} p1 first Point of the triangle
-   * @param {Point} p2 second Point of the triangle
-   * @param {Point} p3 third Point of the triangle
+   * @param {Point} pA first Point of the triangle
+   * @param {Point} pB second Point of the triangle
+   * @param {Point} pC third Point of the triangle
    * @param {string | undefined} name optional name of this triangle
    */
-  constructor(p1: Point, p2: Point, p3: Point, name?: string) {
-    if (p1 instanceof Point && p2 instanceof Point && p3 instanceof Point) {
-      if (p1.sameLocation(p2)) {
+  constructor(pA: Point, pB: Point, pC: Point, name?: string) {
+    if (pA instanceof Point && pB instanceof Point && pC instanceof Point) {
+      if (pA.sameLocation(pB)) {
         throw new RangeError(
-          `p1:'${p1.dump()}' should be at different location from p2:'${p2.dump()}'`,
+          `pA:'${pA.dump()}' should be at different location from pB:'${pB.dump()}'`,
         );
       }
-      if (p1.sameLocation(p3)) {
+      if (pA.sameLocation(pC)) {
         throw new RangeError(
-          `p1:'${p1.dump()}' should be at different location from p3:'${p3.dump()}'`,
+          `pA:'${pA.dump()}' should be at different location from pC:'${pC.dump()}'`,
         );
       }
-      this.p1 = p1.clone();
-      this.p2 = p2.clone(); // make a copy of the Point object
-      this.p3 = p3.clone(); // make a copy of the Point object
+      this.pA = pA.clone();
+      this.pB = pB.clone(); // make a copy of the Point object
+      this.pC = pC.clone(); // make a copy of the Point object
       if (name !== undefined) this.name = name;
     } else {
       throw new TypeError(
@@ -142,9 +184,9 @@ export default class Triangle {
   static fromTriangle(otherTriangle: Triangle): Triangle {
     if (otherTriangle instanceof Triangle) {
       return new Triangle(
-        otherTriangle.p1,
-        otherTriangle.p2,
-        otherTriangle.p3,
+        otherTriangle.pA,
+        otherTriangle.pB,
+        otherTriangle.pC,
         otherTriangle.name,
       );
     } else {
@@ -157,7 +199,7 @@ export default class Triangle {
   /**
    * fromArray returns a new Triangle constructed with
    * @param {[number, number]} coordinatesTriangle is an array of 2 points with 2d coordinates : [[number, number], [number, number]]
-   * @returns {Triangle} a new Triangle at given coordinates p1:[x0,y0] and p2:[x1,y1]
+   * @returns {Triangle} a new Triangle at given coordinates pA:[x0,y0] and pB:[x1,y1]
    */
   static fromArray(coordinatesTriangle: coordinatesTriangleArray): Triangle {
     if (
@@ -178,12 +220,12 @@ export default class Triangle {
     }
   }
 
-  private static fromObject(data: any) {
+  static fromObject(data: any) {
     const tempTriangle: TriangleInterface = Converters.convertToTriangle(data);
     return new Triangle(
-      Point.fromObject(tempTriangle.p1),
-      Point.fromObject(tempTriangle.p2),
-      Point.fromObject(tempTriangle.p3),
+      Point.fromObject(tempTriangle.pA),
+      Point.fromObject(tempTriangle.pB),
+      Point.fromObject(tempTriangle.pC),
       tempTriangle.name,
     );
   }
@@ -200,6 +242,17 @@ export default class Triangle {
   }
 
   /**
+   * isValidTriangleSides returns true if the given sides of the triangle are valid
+   * @param {number} a length of side a opposite the angle A and pA of the triangle
+   * @param {number} b length of side b opposite the angle B and pB of the triangle
+   * @param {number} c length of side c opposite the angle C and pC of the triangle
+   * @returns {boolean} true if the sides of the triangle are valid
+   */
+  static isValidTriangleSides(a: number, b: number, c: number): boolean {
+    return a + b > c && a + c > b && b + c > a;
+  }
+
+  /**
    * clone  returns a new Triangle that is a copy of itself
    * @returns {Triangle} a new Triangle located at the same cartesian coordinates as this Triangle
    */
@@ -213,7 +266,7 @@ export default class Triangle {
     precision: number = 2,
     withName: boolean = true,
   ): string {
-    const tmpRes = `${this.p1.toString(separator, surroundingParenthesis, precision)}${separator}${this.p2.toString(separator, surroundingParenthesis, precision)}`;
+    const tmpRes = `${this.pA.toString(separator, surroundingParenthesis, precision)}${separator}${this.pB.toString(separator, surroundingParenthesis, precision)}`;
     if (surroundingParenthesis) {
       return withName ? `${this.name}:(${tmpRes})` : `(${tmpRes})`;
     } else {
@@ -222,7 +275,7 @@ export default class Triangle {
   }
 
   toJSON(): string {
-    return `{"p1":${this.p1.toJSON()}, "p2":${this.p2.toJSON()}, "name":"${this.name}"}`;
+    return `{"pA":${this.pA.toJSON()}, "pB":${this.pB.toJSON()}, "name":"${this.name}"}`;
   }
 
   /**
@@ -233,9 +286,9 @@ export default class Triangle {
   sameLocation(otherTriangle: Triangle): boolean {
     if (otherTriangle instanceof Triangle) {
       return (
-        this.p1.sameLocation(otherTriangle.p1) &&
-        this.p2.sameLocation(otherTriangle.p2) &&
-        this.p3.sameLocation(otherTriangle.p3)
+        this.pA.sameLocation(otherTriangle.pA) &&
+        this.pB.sameLocation(otherTriangle.pB) &&
+        this.pC.sameLocation(otherTriangle.pC)
       );
     } else {
       throw new TypeError(
@@ -245,7 +298,7 @@ export default class Triangle {
   }
 
   /**
-   * equal allows to compare equality with otherTriangle, they should have the same values for p1,p2 and p3
+   * equal allows to compare equality with otherTriangle, they should have the same values for pA,pB and pC
    * @param {Triangle} otherTriangle
    * @returns {boolean}
    */
@@ -277,10 +330,28 @@ export default class Triangle {
    */
   area(): number {
     return Math.abs(
-      (this.p1.x * (this.p2.y - this.p3.y) +
-        this.p2.x * (this.p3.y - this.p1.y) +
-        this.p3.x * (this.p1.y - this.p2.y)) /
+      (this.pA.x * (this.pB.y - this.pC.y) +
+        this.pB.x * (this.pC.y - this.pA.y) +
+        this.pC.x * (this.pA.y - this.pB.y)) /
         2,
+    );
+  }
+
+  /**
+   * perimeter returns the perimeter of the triangle
+   * @returns {number} the perimeter of the triangle
+   */
+  perimeter(): number {
+    return this.a + this.b + this.c;
+  }
+
+  /**
+   * isEquilateral returns true if the triangle is equilateral
+   */
+  isEquilateral(): boolean {
+    return (
+      Math.abs(this.a - this.b) <= EPSILON &&
+      Math.abs(this.b - this.c) <= EPSILON
     );
   }
 }

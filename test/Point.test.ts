@@ -140,6 +140,40 @@ describe("Point module", () => {
     });
   });
 
+  describe("Point.fromObject({x,y})", () => {
+    const P1 = Point.fromObject({ x: 1.0, y: 2.0 });
+    test("should give a Point(1,2) when given {x:1,y:2}", () => {
+      expect(P1.x).toBe(1.0);
+      expect(P1.y).toBe(2.0);
+    });
+    test("should throw an Error when parameter is not a valid Point", () => {
+      expect(
+        Point.fromObject.bind(undefined, {} as unknown as coordinate2dArray),
+      ).toThrow(TypeError);
+    });
+    test("should throw an Error when parameter is not a valid Point", () => {
+      expect(
+        Point.fromObject.bind(
+          undefined,
+          undefined as unknown as coordinate2dArray,
+        ),
+      ).toThrow(TypeError);
+    });
+  });
+  describe("Point.fromJSON()", () => {
+    const P1 = Point.fromJSON('{ "x": 1.0, "y": 2.0 }');
+    test("should give a Point(1,2) when given {x:1,y:2}", () => {
+      expect(P1.x).toBe(1.0);
+      expect(P1.y).toBe(2.0);
+    });
+    test("should throw an Error when parameter is not a valid Point", () => {
+      expect(Point.fromJSON.bind(undefined, "")).toThrow(TypeError);
+    });
+    test("should throw an Error when parameter is not a valid Point", () => {
+      expect(Point.fromJSON.bind(undefined, "2,4")).toThrow(TypeError);
+    });
+  });
+
   describe("Point.clone()", () => {
     const P1 = new Point(1.0, 2.0, "P1");
     const P2 = P1.clone();
@@ -346,6 +380,21 @@ describe("Point module", () => {
     const P1bis = new Point(1.0, 1.0 - EPSILON / 10, "P1");
     test("should return zero when two points are equal within EPSILON", () => {
       expect(P1.distanceTo(P1bis)).toEqual(0);
+    });
+  });
+
+  describe("Point.sameLocation()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P1bis = new Point(1.0, 1.0 - EPSILON / 10, "P1");
+    const P2 = new Point(4.0, 5.0, "P2");
+    test("should return true when two points are equal within EPSILON", () => {
+      expect(P1.sameLocation(P1bis)).toEqual(true);
+    });
+    test("should return false when two points are not equal", () => {
+      expect(P1.sameLocation(P2)).toEqual(false);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.sameLocation.bind(undefined, {} as Point)).toThrow(TypeError);
     });
   });
 

@@ -10,32 +10,35 @@ describe("Converter module", () => {
         { x: 1, y: 1 },
       ];
       expect(Converters.convertToPointArray(data)).toEqual([
-        { x: 0, y: 0, name: undefined, isValid: true },
-        { x: 1, y: 1, name: undefined, isValid: true },
+        { x: 0, y: 0, name: undefined },
+        { x: 1, y: 1, name: undefined },
       ]);
     });
   });
   describe("convertToPoint", () => {
-    it("should return a default iPoint if data is undefined", () => {
-      expect(Converters.convertToPoint(undefined)).toEqual({
-        x: 0,
-        y: 0,
-        name: undefined,
-        isValid: false,
-      });
+    it("should throw TypeError if data is undefined", () => {
+      expect(Converters.convertToPoint.bind(undefined, undefined)).toThrow(
+        TypeError,
+      );
+    });
+    it("should throw a Type Error if data Object does not contain mandatory properties", () => {
+      expect(
+        Converters.convertToPoint.bind(undefined, { whatever: 1 }),
+      ).toThrow(TypeError);
     });
     it("should return an iPoint if data is defined", () => {
       expect(Converters.convertToPoint({ x: 0, y: 0 })).toEqual({
         x: 0,
         y: 0,
         name: undefined,
-        isValid: true,
       });
     });
   });
   describe("convertToLineArray", () => {
-    it("should return undefined if data is not an array", () => {
-      expect(Converters.convertToLineArray({})).toBeUndefined();
+    it("should throw TypeError if data is not an array", () => {
+      expect(Converters.convertToLineArray.bind(undefined, undefined)).toThrow(
+        TypeError,
+      );
     });
     it("should return an array of LineInterface if data is an array", () => {
       const data = [
@@ -44,14 +47,14 @@ describe("Converter module", () => {
       ];
       expect(Converters.convertToLineArray(data)).toEqual([
         {
-          start: { x: 0, y: 0, name: undefined, isValid: true },
-          end: { x: 1, y: 1, name: undefined, isValid: true },
+          start: { x: 0, y: 0, name: undefined },
+          end: { x: 1, y: 1, name: undefined },
           name: undefined,
           isValid: true,
         },
         {
-          start: { x: 1, y: 1, name: undefined, isValid: true },
-          end: { x: 2, y: 2, name: undefined, isValid: true },
+          start: { x: 1, y: 1, name: undefined },
+          end: { x: 2, y: 2, name: undefined },
           name: undefined,
           isValid: true,
         },
@@ -59,13 +62,15 @@ describe("Converter module", () => {
     });
   });
   describe("convertToLine", () => {
-    it("should return a default LineInterface if data is undefined", () => {
-      expect(Converters.convertToLine(undefined)).toEqual({
-        start: { x: 0, y: 0, name: undefined, isValid: false },
-        end: { x: 0, y: 0, name: undefined, isValid: false },
-        isValid: false,
-        name: undefined,
-      });
+    it("should throw TypeError if data is undefined", () => {
+      expect(Converters.convertToLine.bind(undefined, undefined)).toThrow(
+        TypeError,
+      );
+    });
+    it("should throw a Type Error if data Object does not contain mandatory properties", () => {
+      expect(Converters.convertToLine.bind(undefined, { whatever: 1 })).toThrow(
+        TypeError,
+      );
     });
     it("should return a LineInterface if data is defined", () => {
       expect(
@@ -74,10 +79,36 @@ describe("Converter module", () => {
           end: { x: 1, y: 1 },
         }),
       ).toEqual({
-        start: { x: 0, y: 0, name: undefined, isValid: true },
-        end: { x: 1, y: 1, name: undefined, isValid: true },
+        start: { x: 0, y: 0, name: undefined },
+        end: { x: 1, y: 1, name: undefined },
         name: undefined,
         isValid: true,
+      });
+    });
+  });
+  describe("convertToTriangle", () => {
+    it("should throw a Type Error if data is undefined", () => {
+      expect(Converters.convertToTriangle.bind(undefined, undefined)).toThrow(
+        TypeError,
+      );
+    });
+    it("should throw a Type Error if data Object does not contain mandatory properties", () => {
+      expect(
+        Converters.convertToTriangle.bind(undefined, { whatever: 1 }),
+      ).toThrow(TypeError);
+    });
+    it("should return a TriangleInterface if data is correct", () => {
+      const data = {
+        pA: { x: -1, y: 2, name: "pA" },
+        pB: { x: 2, y: 3, name: "pB" },
+        pC: { x: 4, y: -3, name: "pC" },
+        name: "T1",
+      };
+      expect(Converters.convertToTriangle(data)).toEqual({
+        pA: { x: -1, y: 2, name: "pA" },
+        pB: { x: 2, y: 3, name: "pB" },
+        pC: { x: 4, y: -3, name: "pC" },
+        name: "T1",
       });
     });
   });

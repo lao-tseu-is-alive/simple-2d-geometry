@@ -1,10 +1,10 @@
 import Angle from "./Angle.ts";
 import {
   EPSILON,
-  PRECISION,
   getNumberOrFail,
-  roundNumber,
   isNumeric,
+  PRECISION,
+  roundNumber,
 } from "./Geometry.ts";
 import Converters from "./Converters.ts";
 
@@ -12,7 +12,6 @@ export interface iPoint {
   x: number;
   y: number;
   name?: string;
-  isValid?: boolean;
 }
 
 export type coordinate2dArray = [number, number];
@@ -139,7 +138,7 @@ export default class Point implements iPoint {
    */
   static fromObject(data: any): Point {
     if (data === undefined || data === null) {
-      return new Point(0, 0);
+      throw new TypeError("Point data is undefined or null");
     }
     const tempPoint: iPoint = Converters.convertToPoint(data);
     return new Point(tempPoint.x, tempPoint.y, tempPoint.name);
@@ -151,10 +150,12 @@ export default class Point implements iPoint {
    * @returns {Point} a new Point located at the same cartesian coordinates as the JSON string
    */
   static fromJSON(json: string): Point {
+    if (json.trim() === "") {
+      throw new TypeError("fromJSON needs a valid JSON string as parameter");
+    }
     try {
       const tmpObject = JSON.parse(json);
-      const tmpPoint = Point.fromObject(tmpObject);
-      return tmpPoint;
+      return Point.fromObject(tmpObject);
     } catch (e) {
       throw new TypeError("fromJSON needs a valid JSON string as parameter");
     }
@@ -391,7 +392,7 @@ export default class Point implements iPoint {
       if (distance <= EPSILON) {
         return 0;
       } else {
-        return distance;
+        return Math.abs(distance);
       }
     } else {
       throw new TypeError(

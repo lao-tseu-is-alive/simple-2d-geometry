@@ -7,17 +7,21 @@ describe("Triangle module", () => {
   const P1 = new Point(1, 1, "P1");
   const P2 = new Point(1, 0, "P1");
   const T0 = new Triangle(PO, P1, P2, "T0");
+  const point1 = new Point(-1, -Math.sqrt(3) / 3);
+  const point2 = new Point(1, -Math.sqrt(3) / 3);
+  const point3 = new Point(0, (2 * Math.sqrt(3)) / 3);
+  const triangleEquilateral = new Triangle(point1, point2, point3);
   describe("Triangle constructor", () => {
     test("constructor with parameters should store points", () => {
-      expect(T0.p1.equal(PO)).toBe(true);
-      expect(T0.p2.equal(P1)).toBe(true);
+      expect(T0.pA.equal(PO)).toBe(true);
+      expect(T0.pB.equal(P1)).toBe(true);
       expect(T0.name).toBe("T0");
       expect(T0 instanceof Triangle).toBe(true);
     });
     test("constructor with same points location should throw an Error", () => {
       expect(() => new Triangle(PO, PObis, P2)).toThrow(RangeError);
     });
-    test("constructor with p1 same points location as p3 should throw an Error", () => {
+    test("constructor with pA same points location as pC should throw an Error", () => {
       expect(() => new Triangle(PO, P2, PObis)).toThrow(RangeError);
     });
     test("constructor with invalid points should throw an Error", () => {
@@ -32,63 +36,63 @@ describe("Triangle module", () => {
     });
   });
   describe("Triangle setters", () => {
-    test("p1 setter should store a point", () => {
+    test("pA setter should store a point", () => {
       const P2 = new Point(2, 4, "P2");
-      T0.p1 = P2;
-      expect(T0.p1).toBe(P2);
+      T0.pA = P2;
+      expect(T0.pA).toBe(P2);
     });
-    test("p1 setter should throw an Error if same location as p2 ", () => {
+    test("pA setter should throw an Error if same location as pB ", () => {
       expect(() => {
-        T0.p1 = new Point(1, 1);
+        T0.pA = new Point(1, 1);
       }).toThrow(RangeError);
     });
-    test("p1 setter should throw an Error if same location as p3 ", () => {
+    test("pA setter should throw an Error if same location as pC ", () => {
       expect(() => {
-        T0.p1 = new Point(1, 0);
+        T0.pA = new Point(1, 0);
       }).toThrow(RangeError);
     });
-    test("p1 setter should throw an Error if not a Point ", () => {
+    test("pA setter should throw an Error if not a Point ", () => {
       expect(() => {
-        T0.p1 = {} as unknown as Point;
+        T0.pA = {} as unknown as Point;
       }).toThrow(TypeError);
     });
-    test("p2 setter should store a point", () => {
+    test("pB setter should store a point", () => {
       const P3 = new Point(0, 0, "P3");
-      T0.p2 = P3;
-      expect(T0.p2).toBe(P3);
+      T0.pB = P3;
+      expect(T0.pB).toBe(P3);
     });
-    test("p2 setter should throw an Error if same location as p1 ", () => {
+    test("pB setter should throw an Error if same location as pA ", () => {
       const T2 = new Triangle(PO, P1, P2, "T2");
       expect(() => {
-        T2.p2 = new Point(0, 0);
+        T2.pB = new Point(0, 0);
       }).toThrow(RangeError);
     });
-    test("p2 setter should throw an Error if same location as p3 ", () => {
+    test("pB setter should throw an Error if same location as pC ", () => {
       const T2 = new Triangle(PO, P1, P2, "T2");
       expect(() => {
-        T2.p2 = new Point(1, 0);
+        T2.pB = new Point(1, 0);
       }).toThrow(RangeError);
     });
-    test("p2 setter should throw an Error if not a Point ", () => {
+    test("pB setter should throw an Error if not a Point ", () => {
       expect(() => {
-        T0.p2 = {} as unknown as Point;
+        T0.pB = {} as unknown as Point;
       }).toThrow(TypeError);
     });
-    test("p3 setter should throw an Error if same location as p1 ", () => {
+    test("pC setter should throw an Error if same location as pA ", () => {
       const T2 = new Triangle(PO, P1, P2, "T2");
       expect(() => {
-        T2.p3 = new Point(0, 0);
+        T2.pC = new Point(0, 0);
       }).toThrow(RangeError);
     });
-    test("p3 setter should throw an Error if same location as p2 ", () => {
+    test("pC setter should throw an Error if same location as pB ", () => {
       const T2 = new Triangle(PO, P1, P2, "T2");
       expect(() => {
-        T2.p3 = new Point(1, 1);
+        T2.pC = new Point(1, 1);
       }).toThrow(RangeError);
     });
-    test("p3 setter should throw an Error if not a Point ", () => {
+    test("pC setter should throw an Error if not a Point ", () => {
       expect(() => {
-        T0.p3 = {} as unknown as Point;
+        T0.pC = {} as unknown as Point;
       }).toThrow(TypeError);
     });
     test("name setter should store a string", () => {
@@ -99,6 +103,15 @@ describe("Triangle module", () => {
       const T1 = new Triangle(PO, P1, P2);
       expect(T1.name).toBe("");
     });
+    test("a getter should return the length of side a", () => {
+      expect(triangleEquilateral.a).toBeCloseTo(2.0, 3);
+    });
+    test("b getter should return the length of side b", () => {
+      expect(triangleEquilateral.b).toBeCloseTo(2.0, 3);
+    });
+    test("c getter should return the length of side c", () => {
+      expect(triangleEquilateral.c).toBeCloseTo(2.0, 3);
+    });
   });
   describe("Triangle.fromTriangle(otherTriangle)", () => {
     const T0 = new Triangle(PO, P1, P2, "T0");
@@ -108,18 +121,18 @@ describe("Triangle module", () => {
         Triangle.fromTriangle.bind(undefined, [] as unknown as Triangle),
       ).toThrow(TypeError);
     });
-    test("should have identical p1, p2 and p3 points", () => {
-      expect(T2.p1.sameLocation(T0.p1)).toBe(true);
-      expect(T2.p2.sameLocation(T0.p2)).toBe(true);
-      expect(T2.p3.sameLocation(T0.p3)).toBe(true);
+    test("should have identical pA, pB and pC points", () => {
+      expect(T2.pA.sameLocation(T0.pA)).toBe(true);
+      expect(T2.pB.sameLocation(T0.pB)).toBe(true);
+      expect(T2.pC.sameLocation(T0.pC)).toBe(true);
     });
     test("should copy Points by value in the new Triangle", () => {
-      T2.p1.moveTo(1.0, 1.0);
-      expect(T2.p1.x).toBe(1.0);
-      expect(T2.p1.y).toBe(1.0);
-      expect(T2.p1.equal(T0.p1)).toBe(false);
-      expect(T0.p1.x).toBe(0);
-      expect(T0.p1.y).toBe(0);
+      T2.pA.moveTo(1.0, 1.0);
+      expect(T2.pA.x).toBe(1.0);
+      expect(T2.pA.y).toBe(1.0);
+      expect(T2.pA.equal(T0.pA)).toBe(false);
+      expect(T0.pA.x).toBe(0);
+      expect(T0.pA.y).toBe(0);
       expect(PO.x).toBe(0);
       expect(PO.y).toBe(0);
     });
@@ -131,10 +144,10 @@ describe("Triangle module", () => {
       [1, 0],
     ]);
     test("should create a Triangle from an array", () => {
-      expect(T0.p1.x).toBe(0);
-      expect(T0.p1.y).toBe(0);
-      expect(T0.p2.x).toBe(1);
-      expect(T0.p2.y).toBe(1);
+      expect(T0.pA.x).toBe(0);
+      expect(T0.pA.y).toBe(0);
+      expect(T0.pB.x).toBe(1);
+      expect(T0.pB.y).toBe(1);
       expect(T0.name).toBe("");
     });
     test("should throw an Error if array is not valid", () => {
@@ -146,18 +159,18 @@ describe("Triangle module", () => {
   });
   describe("Triangle.fromJSON", () => {
     const T0 = Triangle.fromJSON(
-      '{ "p1": {"x":0, "y":0}, "p2": {"x":1, "y":1}, "p3": {"x":1, "y":0}, "name": "T0" }',
+      '{ "pA": {"x":0, "y":0}, "pB": {"x":1, "y":1}, "pC": {"x":1, "y":0}, "name": "T0" }',
     );
     test("should create a Triangle from a JSON object", () => {
-      expect(T0.p1.x).toBe(0);
-      expect(T0.p1.y).toBe(0);
-      expect(T0.p2.x).toBe(1);
-      expect(T0.p2.y).toBe(1);
+      expect(T0.pA.x).toBe(0);
+      expect(T0.pA.y).toBe(0);
+      expect(T0.pB.x).toBe(1);
+      expect(T0.pB.y).toBe(1);
       expect(T0.name).toBe("T0");
     });
     test("should throw an Error if JSON object is not valid", () => {
       expect(
-        Triangle.fromJSON.bind(undefined, "{ p1-it-up: [0, 0], p2: [1, 1] }"),
+        Triangle.fromJSON.bind(undefined, "{ pA-it-up: [0, 0], pB: [1, 1] }"),
       ).toThrow(TypeError);
     });
   });
@@ -165,8 +178,8 @@ describe("Triangle module", () => {
     const T0 = new Triangle(PO, P1, P2, "T0");
     const json = T0.toJSON();
     test("should create a JSON object from a Triangle", () => {
-      expect(json).toContain('"p1":{"x":0,"y":0,"name":"PO"}');
-      expect(json).toContain('"p2":{"x":1,"y":1,"name":"P1"}');
+      expect(json).toContain('"pA":{"x":0,"y":0,"name":"PO"}');
+      expect(json).toContain('"pB":{"x":1,"y":1,"name":"P1"}');
       expect(json).toContain('"name":"T0"}');
     });
   });
@@ -189,9 +202,9 @@ describe("Triangle module", () => {
       expect(T1 === T0).toBe(false);
     });
     test("should have different references for points", () => {
-      expect(T1.p1 === T0.p1).toBe(false);
-      expect(T1.p2 === T0.p2).toBe(false);
-      expect(T1.p3 === T0.p3).toBe(false);
+      expect(T1.pA === T0.pA).toBe(false);
+      expect(T1.pB === T0.pB).toBe(false);
+      expect(T1.pC === T0.pC).toBe(false);
     });
   });
   describe("Triangle.sameLocation", () => {
@@ -241,6 +254,67 @@ describe("Triangle module", () => {
     const T0 = new Triangle(PO, P1, P2, "T0");
     test("should return the area of the triangle", () => {
       expect(T0.area()).toBe(0.5);
+    });
+    const PA = new Point(1, -2, "PA");
+    const PB = new Point(-3, 4, "PB");
+    const PC = new Point(2, 3, "PC");
+    const T1 = new Triangle(PA, PB, PC, "T1");
+    test("should return the correct area of the triangle", () => {
+      expect(T1.area()).toBe(13);
+    });
+    const T3 = Triangle.fromArray([
+      [3, 4],
+      [4, 7],
+      [6, -3],
+    ]);
+    test("should return the correct area of the triangle", () => {
+      expect(T3.area()).toBe(8);
+    });
+  });
+  describe("Triangle.perimeter", () => {
+    const T0 = new Triangle(PO, P1, P2, "T0");
+    test("should return the perimeter of the triangle", () => {
+      expect(T0.perimeter()).toBeCloseTo(3.414, 3);
+    });
+    const PA = new Point(1, -2, "PA");
+    const PB = new Point(-3, 4, "PB");
+    const PC = new Point(2, 3, "PC");
+    const T1 = new Triangle(PA, PB, PC, "T1");
+    test("should return the correct perimeter of the triangle", () => {
+      expect(T1.perimeter()).toBeCloseTo(17.409, 3);
+    });
+    const T3 = Triangle.fromArray([
+      [3, 4],
+      [4, 7],
+      [6, -3],
+    ]);
+    test("should return the correct perimeter of the triangle", () => {
+      expect(T3.perimeter()).toBeCloseTo(20.976, 3);
+    });
+  });
+  describe("Triangle.isEquilateral", () => {
+    const T0 = new Triangle(PO, P1, P2, "T0");
+    test("should return false if not an equilateral triangle", () => {
+      expect(T0.isEquilateral()).toBe(false);
+    });
+    const PA = new Point(1, -2, "PA");
+    const PB = new Point(-3, 4, "PB");
+    const PC = new Point(2, 3, "PC");
+    const T1 = new Triangle(PA, PB, PC, "T1");
+    test("should return false if not an equilateral triangle", () => {
+      expect(T1.isEquilateral()).toBe(false);
+    });
+    test("should return true if an equilateral triangle", () => {
+      expect(triangleEquilateral.isEquilateral()).toBe(true);
+    });
+  });
+  describe("Triangle.isValidTriangleSides", () => {
+    test("should return true if valid sides", () => {
+      expect(Triangle.isValidTriangleSides(3, 4, 5)).toBe(true);
+      expect(Triangle.isValidTriangleSides(2, 2, 2)).toBe(true);
+    });
+    test("should return false if invalid sides", () => {
+      expect(Triangle.isValidTriangleSides(1, 2, 3)).toBe(false);
     });
   });
 });

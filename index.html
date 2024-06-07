@@ -1,11 +1,24 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="utf-8"/>
   <link rel="icon" type="image/svg+xml" href="/vite.svg"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>2dGeom</title>
   <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+  <script type="module">
+    import { Point } from './dist/simple-2d-geometry.js';
+    const P1 = new Point(3, 4, 'P1');
+    const P2 = new Point(4, 7, 'P2');
+    const P3 = new Point(6, -3, 'P3');
+    console.log(P1.dump());
+    console.log(P2.dump());
+    console.log(P3.toString());
+    console.log(`c:${P1.distanceTo(P2)}`);
+    console.log(`b:${P1.distanceTo(P3)}`);
+    console.log(`a:${P2.distanceTo(P3)}`);
+    console.log(`perimeter P1-P2-P3:${P1.distanceTo(P2)+ P2.distanceTo(P3) + P3.distanceTo(P1)}`);
+  </script>
 </head>
 <body>
 <div class="container">
