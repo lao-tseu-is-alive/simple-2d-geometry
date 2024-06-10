@@ -160,6 +160,19 @@ export default class Point implements iPoint {
       throw new TypeError("fromJSON needs a valid JSON string as parameter");
     }
   }
+  /** determinant returns the determinant of the triangle p1,p2 and p3
+   * @returns {number} the determinant of the triangle
+   */
+  static determinant(p1: Point, p2: Point, p3: Point): number {
+    return p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y);
+  }
+
+  /** isCollinear returns true if the three points are collinear
+   * @returns {boolean} true if the three points are collinear
+   */
+  static isCollinear(p1: Point, p2: Point, p3: Point): boolean {
+    return Math.abs(Point.determinant(p1, p2, p3)) <= EPSILON;
+  }
 
   /**
    * clone  returns a new Point that is a copy of itself
@@ -434,7 +447,7 @@ export default class Point implements iPoint {
       if (this.sameLocation(otherPoint)) {
         throw new RangeError("slopeTo: points are at the same location");
       }
-      if (otherPoint.x - this.x === 0) {
+      if (Math.abs(otherPoint.x - this.x) <= EPSILON) {
         return Infinity;
       }
       return (otherPoint.y - this.y) / (otherPoint.x - this.x);

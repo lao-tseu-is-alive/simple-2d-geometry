@@ -24,6 +24,14 @@ describe("Triangle module", () => {
     test("constructor with pA same points location as pC should throw an Error", () => {
       expect(() => new Triangle(PO, P2, PObis)).toThrow(RangeError);
     });
+    test("constructor with pB same points location as pC should throw an Error", () => {
+      expect(() => new Triangle(P1, PO, PObis)).toThrow(RangeError);
+    });
+    test("constructor with colinear pA,pB and Pc throw an Error", () => {
+      expect(
+        () => new Triangle(new Point(0, 0), new Point(1, 1), new Point(2, 2)),
+      ).toThrow(RangeError);
+    });
     test("constructor with invalid points should throw an Error", () => {
       expect(
         () =>

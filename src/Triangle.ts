@@ -165,6 +165,16 @@ export default class Triangle {
           `pA:'${pA.dump()}' should be at different location from pC:'${pC.dump()}'`,
         );
       }
+      if (pB.sameLocation(pC)) {
+        throw new RangeError(
+          `pB:'${pB.dump()}' should be at different location from pC:'${pC.dump()}'`,
+        );
+      }
+      if (Point.isCollinear(pA, pB, pC)) {
+        throw new RangeError(
+          `pA:'${pA.dump()}', pB:'${pB.dump()}' and pC:'${pC.dump()}' should not be collinear`,
+        );
+      }
       this.pA = pA.clone();
       this.pB = pB.clone(); // make a copy of the Point object
       this.pC = pC.clone(); // make a copy of the Point object
@@ -324,18 +334,20 @@ export default class Triangle {
     return this;
   }
 
+  /** determinant returns the determinant of the triangle
+   * @returns {number} the determinant of the triangle
+   */
+  determinant(): number {
+    return Point.determinant(this.pA, this.pB, this.pC);
+  }
+
   /**
    * area returns the area of the triangle
    * derived from the shoelace formula : https://en.wikipedia.org/wiki/Shoelace_formula
    * @returns {number} the area of the triangle
    */
   area(): number {
-    return Math.abs(
-      (this.pA.x * (this.pB.y - this.pC.y) +
-        this.pB.x * (this.pC.y - this.pA.y) +
-        this.pC.x * (this.pA.y - this.pB.y)) /
-        2,
-    );
+    return Math.abs(this.determinant() / 2);
   }
 
   /**
@@ -352,7 +364,8 @@ export default class Triangle {
   isEquilateral(): boolean {
     return (
       Math.abs(this.a - this.b) <= EPSILON &&
-      Math.abs(this.b - this.c) <= EPSILON
+      Math.abs(this.b - this.c) <= EPSILON &&
+      Math.abs(this.c - this.a) <= EPSILON
     );
   }
 }
