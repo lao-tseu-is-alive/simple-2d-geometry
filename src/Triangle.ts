@@ -326,6 +326,7 @@ export default class Triangle {
 
   /**
    * area returns the area of the triangle
+   * derived from the shoelace formula : https://en.wikipedia.org/wiki/Shoelace_formula
    * @returns {number} the area of the triangle
    */
   area(): number {

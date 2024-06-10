@@ -1,5 +1,6 @@
 import Point, { coordinate2dArray, iPoint } from "./Point.ts";
 import Converters from "./Converters.ts";
+import Angle from "./Angle.ts";
 
 export interface LineInterface {
   start: iPoint;
@@ -12,6 +13,13 @@ export type coordinatesLineArray = [coordinate2dArray, coordinate2dArray];
 
 /**
  * Class representing  a line in 2 dimension cartesian space
+ * @class Line
+ * @property {Point} start Point of the line
+ * @property {Point} end Point of the Line
+ * @property {string} name optional name of this line
+ * @property {number} length of the line
+ * @property {number} angle of the line
+ * @property {number} slope of the line
  */
 export default class Line {
   private _start: Point = Point.fromArray([0, 0]); // default start point
@@ -61,6 +69,18 @@ export default class Line {
 
   set name(value: string) {
     this._name = value;
+  }
+
+  get length(): number {
+    return this.start.distanceTo(this.end);
+  }
+
+  get angle(): Angle {
+    return this.start.angleTo(this.end);
+  }
+
+  get slope(): number {
+    return this.start.slopeTo(this.end);
   }
 
   /**
@@ -138,8 +158,7 @@ export default class Line {
   static fromJSON(json: string): Line {
     try {
       const tmpObject = JSON.parse(json);
-      const tmpLine = Line.fromObject(tmpObject);
-      return tmpLine;
+      return Line.fromObject(tmpObject);
     } catch (e) {
       throw new TypeError(
         `Line:fromJSON got ${e}, needs a valid JSON string as parameter :${json}`,

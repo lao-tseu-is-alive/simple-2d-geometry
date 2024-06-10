@@ -431,4 +431,45 @@ describe("Point module", () => {
       expect(P1.name).toEqual("P2");
     });
   });
+  describe("Point.angleTo()", () => {
+    const P1 = new Point(0.0, 0.0, "P1");
+    const P2 = new Point(5.0, 5.0, "P2");
+    const P3 = new Point(0.0, 5.0, "P2");
+    test("should return the angle between two points", () => {
+      expect(P1.angleTo(P2).toDegrees()).toBeCloseTo(45);
+    });
+    test("should return the angle between two points", () => {
+      expect(P1.angleTo(P3).toDegrees()).toBeCloseTo(90);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.angleTo.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+    test("should throw an RangeError when the parameter is at same location", () => {
+      expect(P2.angleTo.bind(P2, new Point(5, 5))).toThrow(RangeError);
+    });
+  });
+  describe("Point.slopeTo()", () => {
+    const P1 = new Point(0.0, 0.0, "P1");
+    const P2 = new Point(5.0, 5.0, "P2");
+    const P3 = new Point(0.0, 5.0, "P2");
+    test("should return the slope between two points", () => {
+      expect(P1.slopeTo(P2)).toBeCloseTo(1);
+    });
+    test("should return the slope between two points", () => {
+      expect(P1.slopeTo(P3)).toBeCloseTo(Infinity);
+    });
+    test("should return the correct slope between two points", () => {
+      expect(new Point(-5, 10).slopeTo(new Point(-3, 4))).toBeCloseTo(-3);
+    });
+    test("should return the correct slope between two points", () => {
+      expect(new Point(-5, -26).slopeTo(new Point(-2, -8))).toBeCloseTo(6);
+    });
+
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.slopeTo.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+    test("should throw an RangeError when the parameter is at same location", () => {
+      expect(P1.slopeTo.bind(P1, P1)).toThrow(RangeError);
+    });
+  });
 });

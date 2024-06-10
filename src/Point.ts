@@ -402,6 +402,50 @@ export default class Point implements iPoint {
   }
 
   /**
+   * angleTo calculates the angle in radian from this point to otherPoint
+   * @param {Point} otherPoint
+   * @return {Angle} the angle in radian calculated between this Point and otherPoint
+   */
+  angleTo(otherPoint: Point): Angle {
+    if (otherPoint instanceof Point) {
+      if (this.sameLocation(otherPoint)) {
+        throw new RangeError("angleTo: points are at the same location");
+      }
+      return new Angle(
+        Math.atan2(otherPoint.y - this.y, otherPoint.x - this.x),
+        "radians",
+      );
+    } else {
+      throw new TypeError(
+        "Point.angleTo(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
+   * slopeTo calculates the slope between this point and otherPoint
+   * if the line between this Point and otherPoint is vertical the result is Infinity
+   * if the line is horizontal the result is 0
+   * @param {Point} otherPoint
+   * @return {Number} the slope calculated between this Point and otherPoint
+   */
+  slopeTo(otherPoint: Point): number {
+    if (otherPoint instanceof Point) {
+      if (this.sameLocation(otherPoint)) {
+        throw new RangeError("slopeTo: points are at the same location");
+      }
+      if (otherPoint.x - this.x === 0) {
+        return Infinity;
+      }
+      return (otherPoint.y - this.y) / (otherPoint.x - this.x);
+    } else {
+      throw new TypeError(
+        "Point.slopeTo(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
    * sameLocation allows to compare if this Point is at the same location as otherPoint
    * @param {Point} otherPoint
    * @returns {boolean}

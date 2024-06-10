@@ -22,7 +22,7 @@ describe("Line module", () => {
       ).toThrow(TypeError);
     });
   });
-  describe("Line setters", () => {
+  describe("Line setters & getters", () => {
     test("start setter should store a point", () => {
       const P2 = new Point(2, 4, "P2");
       L0.start = P2;
@@ -61,6 +61,45 @@ describe("Line module", () => {
     test("name getter should store an empty string if undefined", () => {
       const L1 = new Line(PO, P1);
       expect(L1.name).toBe("");
+    });
+    test("length getter should return the distance between start and end", () => {
+      const L0 = Line.fromArray([
+        [0, 0],
+        [1, 1],
+      ]);
+      expect(L0.length).toBeCloseTo(1.4142, 3);
+      expect(
+        Line.fromArray([
+          [0, 0],
+          [5, 0],
+        ]).length,
+      ).toBeCloseTo(5.0, 2);
+    });
+    test("angle getter should return the angle between start and end", () => {
+      const L0 = Line.fromArray([
+        [0, 0],
+        [1, 1],
+      ]);
+      expect(L0.angle.toDegrees()).toBeCloseTo(45.0, 1);
+      expect(
+        Line.fromArray([
+          [0, 0],
+          [5, 0],
+        ]).angle.toDegrees(),
+      ).toBeCloseTo(0.0, 1);
+    });
+    test("slope getter should return the slope between start and end", () => {
+      const L0 = Line.fromArray([
+        [0, 0],
+        [1, 1],
+      ]);
+      expect(L0.slope).toBeCloseTo(1.0, 1);
+      expect(
+        Line.fromArray([
+          [0, 0],
+          [5, 0],
+        ]).slope,
+      ).toBeCloseTo(0.0, 1);
     });
   });
   describe("Line.fromLine(otherLine)", () => {
