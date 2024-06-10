@@ -1,6 +1,7 @@
 import Point, { coordinate2dArray, iPoint } from "./Point.ts";
 import Converters from "./Converters.ts";
 import { EPSILON } from "./Geometry.ts";
+import Angle from "./Angle.ts";
 
 /**
  * TriangleInterface is an interface for a Triangle object
@@ -37,6 +38,9 @@ export type coordinatesTriangleArray = [
  * @property {a} returns the length of side a opposite the angle A and pA of the triangle
  * @property {b} returns the length of side b opposite the angle B and pB of the triangle
  * @property {c} returns the length of side c opposite the angle C and pC of the triangle
+ * @property {Angle} aA angle A at pA opposite of the side a of the triangle
+ * @property {Angle} aB angle B at pB opposite of the side b of the triangle
+ * @property {Angle} aC angle C at pC opposite of the side c of the triangle
  * @example const T0 = new Triangle(new Point(0,0,'P0'), new Point(1,1,'P1'), new Point(1,0,'P2'), "T0");
  */
 export default class Triangle {
@@ -144,6 +148,42 @@ export default class Triangle {
    */
   get c(): number {
     return this.pA.distanceTo(this.pB);
+  }
+
+  /**
+   * aA returns the angle A at pA opposite of the side a of the triangle
+   */
+  get aA(): Angle {
+    return new Angle(
+      Math.acos(
+        (this.b ** 2 + this.c ** 2 - this.a ** 2) / (2 * this.b * this.c),
+      ),
+      "radians",
+    );
+  }
+
+  /**
+   * aB returns the angle B at pB opposite of the side b of the triangle
+   */
+  get aB(): Angle {
+    return new Angle(
+      Math.acos(
+        (this.a ** 2 + this.c ** 2 - this.b ** 2) / (2 * this.a * this.c),
+      ),
+      "radians",
+    );
+  }
+
+  /**
+   * aC returns the angle C at pC opposite of the side c of the triangle
+   */
+  get aC(): Angle {
+    return new Angle(
+      Math.acos(
+        (this.a ** 2 + this.b ** 2 - this.c ** 2) / (2 * this.a * this.b),
+      ),
+      "radians",
+    );
   }
 
   /**

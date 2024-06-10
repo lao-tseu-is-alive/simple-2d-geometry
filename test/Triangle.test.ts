@@ -120,6 +120,15 @@ describe("Triangle module", () => {
     test("c getter should return the length of side c", () => {
       expect(triangleEquilateral.c).toBeCloseTo(2.0, 3);
     });
+    test("aA getter should return the correct angle A", () => {
+      expect(triangleEquilateral.aA.toDegrees()).toBeCloseTo(60, 3);
+    });
+    test("aB getter should return the correct angle B", () => {
+      expect(triangleEquilateral.aB.toDegrees()).toBeCloseTo(60, 3);
+    });
+    test("aC getter should return the correct angle C in radians", () => {
+      expect(triangleEquilateral.aC.toDegrees()).toBeCloseTo(60, 3);
+    });
   });
   describe("Triangle.fromTriangle(otherTriangle)", () => {
     const T0 = new Triangle(PO, P1, P2, "T0");
