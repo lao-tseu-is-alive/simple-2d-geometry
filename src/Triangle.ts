@@ -49,10 +49,18 @@ export default class Triangle {
   private _pC: Point = Point.fromArray([-1, 0]); // default pC point
   private _name: string | undefined = undefined;
 
+  /**
+   * get pA returns the first Point of the triangle
+   * @returns {Point} the first Point of the triangle
+   */
   get pA(): Point {
     return this._pA;
   }
 
+  /**
+   * set pA allows to change the first Point of the triangle
+   * @param {Point} input is the new first Point of the triangle
+   */
   set pA(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
@@ -72,10 +80,18 @@ export default class Triangle {
     }
   }
 
+  /**
+   * get pB returns the second Point of the triangle
+   * @returns {Point} the second Point of the triangle
+   */
   get pB(): Point {
     return this._pB;
   }
 
+  /**
+   * set pB allows to change the second Point of the triangle
+   * @param {Point} input is the new second Point of the triangle
+   */
   set pB(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
@@ -95,10 +111,18 @@ export default class Triangle {
     }
   }
 
+  /**
+   * get pC returns the third Point of the triangle
+   * @returns {Point} the third Point of the triangle
+   */
   get pC(): Point {
     return this._pC;
   }
 
+  /**
+   * set pC allows to change the third Point of the triangle
+   * @param {Point} input is the new third Point of the triangle
+   */
   set pC(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
@@ -118,6 +142,10 @@ export default class Triangle {
     }
   }
 
+  /**
+   * name returns the name attribute of the triangle
+   * @returns {string} the name of the triangle
+   */
   get name(): string {
     if (this._name === undefined) {
       return "";
@@ -125,12 +153,17 @@ export default class Triangle {
     return this._name;
   }
 
+  /**
+   * set name allows to change the name attribute of the triangle
+   * @param value is the new name of the triangle
+   */
   set name(value: string) {
     this._name = value;
   }
 
   /**
    * a returns the length of side a opposite the angle A and pA of the triangle
+   * @returns {number} the length of side a opposite the angle A and pA of the triangle
    */
   get a(): number {
     return this.pB.distanceTo(this.pC);
@@ -138,6 +171,7 @@ export default class Triangle {
 
   /**
    * b returns the length of side b opposite the angle B and pB of the triangle
+   * @returns {number} the length of side b opposite the angle B and pB of the triangle
    */
   get b(): number {
     return this.pA.distanceTo(this.pC);
@@ -145,6 +179,7 @@ export default class Triangle {
 
   /**
    * c returns the length of side c opposite the angle C and pC of the triangle
+   * @returns {number} the length of side c opposite the angle C and pC of the triangle
    */
   get c(): number {
     return this.pA.distanceTo(this.pB);
@@ -152,6 +187,7 @@ export default class Triangle {
 
   /**
    * aA returns the angle A at pA opposite of the side a of the triangle
+   * @returns {Angle} the angle A at pA opposite of the side a of the triangle
    */
   get aA(): Angle {
     return new Angle(
@@ -164,6 +200,7 @@ export default class Triangle {
 
   /**
    * aB returns the angle B at pB opposite of the side b of the triangle
+   * @returns {Angle} the angle B at pB opposite of the side b of the triangle
    */
   get aB(): Angle {
     return new Angle(
@@ -176,6 +213,7 @@ export default class Triangle {
 
   /**
    * aC returns the angle C at pC opposite of the side c of the triangle
+   * @returns {Angle} the angle C at pC opposite of the side c of the triangle
    */
   get aC(): Angle {
     return new Angle(
@@ -270,7 +308,12 @@ export default class Triangle {
     }
   }
 
-  static fromObject(data: any) {
+  /**
+   * fromObject returns a new Triangle constructed with
+   * @param {TriangleInterface} data is an object with pA, pB and pC as properties
+   * @returns {Triangle} a new Triangle at given coordinates pA:[x0,y0] and pB:[x1,y1]
+   */
+  static fromObject(data: any): Triangle {
     const tempTriangle: TriangleInterface = Converters.convertToTriangle(data);
     return new Triangle(
       Point.fromObject(tempTriangle.pA),
@@ -280,6 +323,11 @@ export default class Triangle {
     );
   }
 
+  /**
+   * fromJSON returns a new Triangle constructed with
+   * @param {string} json is a string representing this object with pA, pB and pC as properties in json format
+   * @returns {Triangle} a new Triangle at given coordinates pA:[x0,y0] and pB:[x1,y1]
+   */
   static fromJSON(json: string): Triangle {
     try {
       const tmpObject = JSON.parse(json);
@@ -310,6 +358,10 @@ export default class Triangle {
     return Triangle.fromTriangle(this);
   }
 
+  /**
+   * toString returns a string representing the triangle
+   * @returns {string} a string representing the triangle
+   */
   toString(
     separator: string = ",",
     surroundingParenthesis: boolean = true,
@@ -324,6 +376,10 @@ export default class Triangle {
     }
   }
 
+  /**
+   * toJSON returns a string representing the triangle properties in json format
+   * @returns {string} a string representing the triangle
+   */
   toJSON(): string {
     return `{"pA":${this.pA.toJSON()}, "pB":${this.pB.toJSON()}, "name":"${this.name}"}`;
   }
@@ -331,7 +387,7 @@ export default class Triangle {
   /**
    * sameLocation allows to compare if this Triangle is at the same location as otherTriangle
    * @param {Triangle} otherTriangle
-   * @returns {boolean}
+   * @returns {boolean} true if the 2 triangles are at the same location
    */
   sameLocation(otherTriangle: Triangle): boolean {
     if (otherTriangle instanceof Triangle) {

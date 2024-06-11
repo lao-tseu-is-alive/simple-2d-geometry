@@ -21,7 +21,6 @@ export type coordinate2dArray = [number, number];
  */
 export default class Point implements iPoint {
   private p: iPoint = { x: 0, y: 0, name: "" };
-  private _isValid: boolean = true;
 
   get x(): number {
     return this.p.x;
@@ -54,10 +53,6 @@ export default class Point implements iPoint {
 
   set name(value: string) {
     this.p.name = value;
-  }
-
-  get isValid(): boolean {
-    return this._isValid;
   }
 
   /**
@@ -262,6 +257,116 @@ export default class Point implements iPoint {
   }
 
   /**
+   * norm returns the Euclidean norm (magnitude) of the point
+   */
+  norm(): number {
+    return this.getDistanceFromOrigin();
+  }
+
+  /**
+   * normalize converts this point to a unit vector
+   * @returns {Point} return this instance of the object (to allow function chaining)
+   */
+  normalize(): Point {
+    const norm = this.norm();
+    return this.clone().divide(norm);
+  }
+
+  /**
+   * add will add the coordinates of the otherPoint to a copy of this Point
+   * @param {Point} otherPoint
+   * @returns {Point} return a new Point object with the sum of this Point and otherPoint
+   * @throws {TypeError} if otherPoint is not a Point
+   */
+  add(otherPoint: Point): Point {
+    if (otherPoint instanceof Point) {
+      return this.clone().moveRel(otherPoint.x, otherPoint.y);
+    } else {
+      throw new TypeError("Point.add(otherPoint) expects a Point as parameter");
+    }
+  }
+
+  /**
+   * subtract will subtract the coordinates of the otherPoint to a copy of this Point
+   * @param {Point} otherPoint
+   * @returns {Point} return a new Point object with the difference of this Point and otherPoint
+   * @throws {TypeError} if otherPoint is not a Point
+   */
+  subtract(otherPoint: Point): Point {
+    if (otherPoint instanceof Point) {
+      return this.clone().moveRel(-otherPoint.x, -otherPoint.y);
+    } else {
+      throw new TypeError(
+        "Point.subtract(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
+   * multiply will scale the coordinates of a copy of this Point by the factor c
+   * @param {number} c is the factor to multiply the coordinates of this Point
+   * @returns {Point} return a new Point object with the coordinates of this Point multiplied by c
+   * @throws {TypeError} if c is not a number
+   */
+  multiply(c: number): Point {
+    if (isNumeric(c)) {
+      const tmpPoint = this.clone();
+      tmpPoint.x *= c;
+      tmpPoint.y *= c;
+      return tmpPoint;
+    } else {
+      throw new TypeError("Point.multiply(c) expects a number as parameter");
+    }
+  }
+
+  /**
+   * divide will scale the coordinates of a copy of this Point by the factor 1/c
+   * @param {number} c is the factor to divide the coordinates of this Point
+   * @returns {Point} return a new Point object with the coordinates of this Point divided by c
+   * @throws {TypeError} if c is not a number
+   */
+  divide(c: number): Point {
+    if (isNumeric(c)) {
+      const tmpPoint = this.clone();
+      tmpPoint.x /= c;
+      tmpPoint.y /= c;
+      return tmpPoint;
+    } else {
+      throw new TypeError("Point.divide(c) expects a number as parameter");
+    }
+  }
+
+  /**
+   * dot will calculate the dot product of this Point with otherPoint
+   * @param {Point} otherPoint
+   * @returns {number} the dot product of this Point and otherPoint
+   * @throws {TypeError} if otherPoint is not a Point
+   */
+  dot(otherPoint: Point): number {
+    if (otherPoint instanceof Point) {
+      return this.x * otherPoint.x + this.y * otherPoint.y;
+    } else {
+      throw new TypeError("Point.dot(otherPoint) expects a Point as parameter");
+    }
+  }
+
+  /**
+   * cross will calculate the cross product of this Point with otherPoint
+   * @param {Point} otherPoint
+   * @returns {number} the cross product of this Point and otherPoint
+   * @throws {TypeError} if otherPoint is not a Point
+   */
+  cross(otherPoint: Point): number {
+    if (otherPoint instanceof Point) {
+      return this.x * otherPoint.y - this.y * otherPoint.x;
+    } else {
+      throw new TypeError(
+        "Point.cross(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
    * getAngleRad gives the angle in Radian from horizontal axis x with the vector from origin to this point
    */
   getAngleRad(): number {
@@ -398,10 +503,7 @@ export default class Point implements iPoint {
    */
   distanceTo(otherPoint: Point): number {
     if (otherPoint instanceof Point) {
-      let distance = Math.sqrt(
-        (this.x - otherPoint.x) * (this.x - otherPoint.x) +
-          (this.y - otherPoint.y) * (this.y - otherPoint.y),
-      );
+      let distance = this.subtract(otherPoint).norm();
       if (distance <= EPSILON) {
         return 0;
       } else {
@@ -410,6 +512,93 @@ export default class Point implements iPoint {
     } else {
       throw new TypeError(
         "Point.distanceTo(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
+   * distanceToSegment calculates the distance from this point to the line defined by points p and q
+   * @param {Point} p
+   * @param {Point} q
+   * @return {Number} the distance calculated between this Point and the line defined by p and q
+   * @throws {TypeError} if p or q are not Points
+   */
+  distanceToSegment(p: Point, q: Point): number {
+    if (p instanceof Point && q instanceof Point) {
+      return Math.abs(
+        p.subtract(q).cross(this.subtract(q)) / p.subtract(q).norm(),
+      );
+    } else {
+      throw new TypeError(
+        "Point.distanceToLine(p, q) expects p and q to be Points",
+      );
+    }
+  }
+
+  /**
+   * rotate will rotate a copy of this Point by theta radians around the origin
+   * @param {Angle} theta is the angle to rotate this Point
+   * @returns {Point} return a new Point object rotated by theta radians
+   * @throws {TypeError} if theta is not an Angle
+   */
+  rotate(theta: Angle): Point {
+    if (theta instanceof Angle) {
+      const cosTheta = Math.cos(theta.toRadians());
+      const sinTheta = Math.sin(theta.toRadians());
+      return new Point(
+        this.x * cosTheta - this.y * sinTheta,
+        this.x * sinTheta + this.y * cosTheta,
+      );
+    } else {
+      throw new TypeError("Point.rotate(theta) expects an Angle as parameter");
+    }
+  }
+
+  /**
+   * project will project this Point onto the line defined by points p and q
+   * @param {Point} p
+   * @param {Point} q
+   * @returns {Point} return a new Point object projected onto the line defined by p and q
+   * @throws {TypeError} if p or q are not Points
+   */
+  project(p: Point, q: Point): Point {
+    if (p instanceof Point && q instanceof Point) {
+      const pq = q.subtract(p);
+      const t = this.subtract(p).dot(pq) / pq.dot(pq);
+      return p.add(pq.multiply(t));
+    } else {
+      throw new TypeError("Point.project(p, q) expects p and q to be Points");
+    }
+  }
+
+  /**
+   * reflect will reflect this Point across the line defined by points p and q
+   * @param {Point} p
+   * @param {Point} q
+   * @returns {Point} return a new Point object reflected across the line defined by p and q
+   * @throws {TypeError} if p or q are not Points
+   */
+  reflect(p: Point, q: Point): Point {
+    if (p instanceof Point && q instanceof Point) {
+      const projection = this.project(p, q);
+      return this.add(projection.subtract(this).multiply(2));
+    } else {
+      throw new TypeError("Point.reflect(p, q) expects p and q to be Points");
+    }
+  }
+
+  /**
+   * midPoint will calculate the midpoint between this Point and otherPoint
+   * @param {Point} otherPoint
+   * @returns {Point} return a new Point object located at the midpoint between this Point and otherPoint
+   * @throws {TypeError} if otherPoint is not a Point
+   */
+  midPoint(otherPoint: Point): Point {
+    if (otherPoint instanceof Point) {
+      return this.clone().add(otherPoint).divide(2);
+    } else {
+      throw new TypeError(
+        "Point.midPoint(otherPoint) expects a Point as parameter",
       );
     }
   }
@@ -488,6 +677,130 @@ export default class Point implements iPoint {
       return this.sameLocation(otherPoint) && this.name === otherPoint.name;
     } else {
       throw new TypeError("A Point can only be compared to another Point");
+    }
+  }
+
+  /**
+   * lessThan allows to compare if this Point is less than otherPoint
+   * if x is different then the comparison is made on x else on y
+   * @param {Point} otherPoint
+   * @returns {boolean}
+   * @throws {TypeError} if otherPoint is not a Point
+   */
+  lessThan(otherPoint: Point): boolean {
+    if (otherPoint instanceof Point) {
+      return this.x !== otherPoint.x
+        ? this.x < otherPoint.x
+        : this.y < otherPoint.y;
+    } else {
+      throw new TypeError(
+        "Point.lessThan(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
+   * lessThanOrEqual allows to compare if this Point is less than or equal to otherPoint
+   * if x is different then the comparison is made on x else on y
+   * @param {Point} otherPoint
+   * @returns {boolean}
+   * @throws {TypeError} if otherPoint is not a Point
+   */
+  lessThanOrEqual(otherPoint: Point): boolean {
+    if (otherPoint instanceof Point) {
+      return this.x !== otherPoint.x
+        ? this.x < otherPoint.x
+        : this.y <= otherPoint.y;
+    } else {
+      throw new TypeError(
+        "Point.lessThanOrEqual(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
+   * greaterThan allows to compare if this Point is greater than otherPoint
+   * if x is different then the comparison is made on x else on y
+   * @param {Point} otherPoint
+   * @returns {boolean}
+   * @throws {TypeError} if otherPoint is not a Point
+   */
+  greaterThan(otherPoint: Point): boolean {
+    if (otherPoint instanceof Point) {
+      return this.x !== otherPoint.x
+        ? this.x > otherPoint.x
+        : this.y > otherPoint.y;
+    } else {
+      throw new TypeError(
+        "Point.greaterThan(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
+   * greaterThanOrEqual allows to compare if this Point is greater than or equal to otherPoint
+   * if x is different then the comparison is made on x else on y
+   * @param {Point} otherPoint
+   * @returns {boolean}
+   * @throws {TypeError} if otherPoint is not a Point
+   */
+  greaterThanOrEqual(otherPoint: Point): boolean {
+    if (otherPoint instanceof Point) {
+      return this.x !== otherPoint.x
+        ? this.x > otherPoint.x
+        : this.y >= otherPoint.y;
+    } else {
+      throw new TypeError(
+        "Point.greaterThanOrEqual(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
+   * isInsideCircle allows to check if this Point is inside the circle defined by the center and radius
+   * @param {Point} center is the center of the circle
+   * @param {number} radius is the radius of the circle
+   * @returns {boolean}
+   * @throws {TypeError} if center is not a Point or radius is not a number
+   * @throws {RangeError} if radius is negative
+   */
+  isInsideCircle(center: Point, radius: number): boolean {
+    if (center instanceof Point) {
+      if (isNumeric(radius)) {
+        if (radius < 0) {
+          throw new RangeError("isInsideCircle: radius should be positive");
+        }
+        return this.distanceTo(center) <= radius;
+      } else {
+        throw new TypeError(
+          "Point.isInsideCircle(center, radius) expects radius to be a number",
+        );
+      }
+    } else {
+      throw new TypeError(
+        "Point.isInsideCircle(center, radius) expects center to be a Point",
+      );
+    }
+  }
+
+  /**
+   * isInsideRectangle allows to check if this Point is inside the rectangle defined by the two corners p1 and p2
+   * @param {Point} p1 is the first corner of the rectangle
+   * @param {Point} p2 is the second corner of the rectangle
+   * @returns {boolean}
+   */
+  isInsideRectangle(p1: Point, p2: Point): boolean {
+    if (p1 instanceof Point && p2 instanceof Point) {
+      return (
+        this.x >= Math.min(p1.x, p2.x) &&
+        this.x <= Math.max(p1.x, p2.x) &&
+        this.y >= Math.min(p1.y, p2.y) &&
+        this.y <= Math.max(p1.y, p2.y)
+      );
+    } else {
+      throw new TypeError(
+        "Point.isInsideRectangle(p1, p2) expects p1 and p2 to be Points",
+      );
     }
   }
 

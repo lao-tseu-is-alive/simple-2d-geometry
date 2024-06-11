@@ -12,9 +12,6 @@ describe("Point module", () => {
     test("'constructor with default parameters should should have name = ''", () => {
       expect(P0.name).toBe("");
     });
-    test("'constructor with parameters should have isValid = true'", () => {
-      expect(P0.isValid).toBe(true);
-    });
     test("'constructor with parameters should have x = 1.0, y = 2.0, name = 'P1'", () => {
       const P1 = new Point(1.0, 2.0, "P1");
       expect(P1.x).toBe(1.0);
@@ -470,6 +467,290 @@ describe("Point module", () => {
     });
     test("should throw an RangeError when the parameter is at same location", () => {
       expect(P1.slopeTo.bind(P1, P1)).toThrow(RangeError);
+    });
+  });
+  describe("Point.add()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(5.0, 5.0, "P2");
+    test("should add two points", () => {
+      const P3 = P1.add(P2);
+      expect(P3.x).toEqual(6.0);
+      expect(P3.y).toEqual(6.0);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.add.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+    test("should return a clone of the point ", () => {
+      const P3 = P1.add(new Point(0, 0));
+      expect(P3).not.toBe(P1);
+    });
+  });
+  describe("Point.subtract()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(5.0, 5.0, "P2");
+    test("should subtract two points", () => {
+      const P3 = P1.subtract(P2);
+      expect(P3.x).toEqual(-4.0);
+      expect(P3.y).toEqual(-4.0);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.subtract.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+    test("should return a clone of the point ", () => {
+      const P3 = P1.subtract(new Point(0, 0));
+      expect(P3).not.toBe(P1);
+    });
+  });
+  describe("Point.multiply()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    test("should multiply a point by a scalar", () => {
+      const P3 = P1.multiply(5);
+      expect(P3.x).toEqual(5.0);
+      expect(P3.y).toEqual(5.0);
+    });
+    test("should throw an TypeError when the parameter is not a valid number", () => {
+      expect(P1.multiply.bind(undefined, {} as number)).toThrow(TypeError);
+    });
+    test("should return a clone of the point ", () => {
+      const P3 = P1.multiply(1);
+      expect(P3).not.toBe(P1);
+    });
+  });
+  describe("Point.divide()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    test("should divide a point by a scalar", () => {
+      const P3 = P1.divide(5);
+      expect(P3.x).toEqual(0.2);
+      expect(P3.y).toEqual(0.2);
+    });
+    test("should throw an TypeError when the parameter is not a valid number", () => {
+      expect(P1.divide.bind(undefined, {} as number)).toThrow(TypeError);
+    });
+    test("should return a clone of the point ", () => {
+      const P3 = P1.divide(1);
+      expect(P3).not.toBe(P1);
+    });
+  });
+  describe("Point.dot()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(5.0, 5.0, "P2");
+    test("should return the dot product of two points", () => {
+      expect(P1.dot(P2)).toEqual(10);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.dot.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+  });
+  describe("Point.cross()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(5.0, 5.0, "P2");
+    test("should return the cross product of two points", () => {
+      expect(P1.cross(P2)).toEqual(0);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.cross.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+  });
+  describe("Point.rotate()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    test("should rotate a point by an angle", () => {
+      const P3 = P1.rotate(new Angle(90, "degrees"));
+      expect(P3.x).toBeCloseTo(-1);
+      expect(P3.y).toBeCloseTo(1);
+    });
+    test("should throw an TypeError when the parameter is not a valid Angle", () => {
+      expect(P1.rotate.bind(undefined, {} as Angle)).toThrow(TypeError);
+    });
+    test("should return a clone of the point ", () => {
+      const P3 = P1.rotate(new Angle(0, "degrees"));
+      expect(P3).not.toBe(P1);
+    });
+  });
+  describe("Point.distanceToSegment()", () => {
+    const P0 = new Point(0.0, 0.0, "P0");
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(2.0, 3.0, "P2");
+    test("should return the distance from a point to a line", () => {
+      expect(P0.distanceToSegment(P1, P2)).toBeCloseTo(0.447214);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.distanceToSegment.bind(undefined, {} as Point, P2)).toThrow(
+        TypeError,
+      );
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.distanceToSegment.bind(undefined, P0, {} as Point)).toThrow(
+        TypeError,
+      );
+    });
+  });
+  describe("Point.project()", () => {
+    const P0 = new Point(0.0, 0.0, "P0");
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(2.0, 3.0, "P2");
+    test("should project a point on a line", () => {
+      const P3 = P0.project(P2, P1);
+      expect(P3.x).toBeCloseTo(0.4);
+      expect(P3.y).toBeCloseTo(-0.2);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.project.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+    test("should return a clone of the point ", () => {
+      const P3 = P1.project(P0, P2);
+      expect(P3).not.toBe(P1);
+    });
+  });
+  describe("Point.reflect()", () => {
+    const P0 = new Point(0.0, 0.0, "P0");
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(2.0, 3.0, "P2");
+    test("should reflect a point on a line", () => {
+      const P3 = P0.reflect(P2, P1);
+      expect(P3.x).toBeCloseTo(0.8);
+      expect(P3.y).toBeCloseTo(-0.4);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.reflect.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+    test("should return a clone of the point ", () => {
+      const P3 = P1.reflect(P0, P2);
+      expect(P3).not.toBe(P1);
+    });
+  });
+  describe("Point.midPoint()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(5.0, 5.0, "P2");
+    test("should return the midpoint of two points", () => {
+      const P3 = P1.midPoint(P2);
+      expect(P3.x).toEqual(3.0);
+      expect(P3.y).toEqual(3.0);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.midPoint.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+    test("should return a clone of the point ", () => {
+      const P3 = P1.midPoint(new Point(0, 0));
+      expect(P3).not.toBe(P1);
+    });
+  });
+  describe("Point.lessThan()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(5.0, 5.0, "P2");
+    test("should return true when the point is less than the other", () => {
+      expect(P1.lessThan(P2)).toEqual(true);
+    });
+    test("should return false when the point is greater than the other", () => {
+      expect(P2.lessThan(P1)).toEqual(false);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.lessThan.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+  });
+  describe("Point.greaterThan()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(1.0, 5.0, "P2");
+    test("should return false when the point is less than the other", () => {
+      expect(P1.greaterThan(P2)).toEqual(false);
+    });
+    test("should return true when the point is greater than the other", () => {
+      expect(P2.greaterThan(P1)).toEqual(true);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.greaterThan.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+  });
+  describe("Point.lessThanOrEqual()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(5.0, 5.0, "P2");
+    test("should return true when the point is less than the other", () => {
+      expect(P1.lessThanOrEqual(P2)).toEqual(true);
+    });
+    test("should return false when the point is greater than the other", () => {
+      expect(P2.lessThanOrEqual(P1)).toEqual(false);
+    });
+    test("should return true when the point is equal to the other", () => {
+      expect(P1.lessThanOrEqual(P1)).toEqual(true);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.lessThanOrEqual.bind(undefined, {} as Point)).toThrow(
+        TypeError,
+      );
+    });
+  });
+  describe("Point.greaterThanOrEqual()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(1.0, 5.0, "P2");
+    test("should return false when the point is less than the other", () => {
+      expect(P1.greaterThanOrEqual(P2)).toEqual(false);
+    });
+    test("should return true when the point is greater than the other", () => {
+      expect(P2.greaterThanOrEqual(P1)).toEqual(true);
+    });
+    test("should return true when the point is equal to the other", () => {
+      expect(P1.greaterThanOrEqual(P1)).toEqual(true);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.greaterThanOrEqual.bind(undefined, {} as Point)).toThrow(
+        TypeError,
+      );
+    });
+  });
+  describe("Point.isInsideCircle()", () => {
+    const P0 = new Point(0.0, 0.0, "P0");
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(2.0, 3.0, "P2");
+    test("should return true when the point is inside the circle", () => {
+      expect(P1.isInsideCircle(P0, 2)).toEqual(true);
+    });
+    test("should return false when the point is outside the circle", () => {
+      expect(P2.isInsideCircle(P0, 2)).toEqual(false);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.isInsideCircle.bind(undefined, {} as Point, 2)).toThrow(
+        TypeError,
+      );
+    });
+    test("should throw an TypeError when the radius is not a valid number", () => {
+      expect(P1.isInsideCircle.bind(P1, P0, {} as number)).toThrow(TypeError);
+    });
+    test("should throw an RangeError when the radius is negative", () => {
+      expect(P1.isInsideCircle.bind(P1, P0, -2)).toThrow(RangeError);
+    });
+  });
+  describe("Point.isInsideRectangle()", () => {
+    const P0 = new Point(0.0, 0.0, "P0");
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(2.0, 3.0, "P2");
+    test("should return true when the point is inside the rectangle", () => {
+      expect(P1.isInsideRectangle(P0, P2)).toEqual(true);
+    });
+    test("should return false when the point is outside the rectangle", () => {
+      expect(P2.isInsideRectangle(P0, P1)).toEqual(false);
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.isInsideRectangle.bind(undefined, {} as Point, P2)).toThrow(
+        TypeError,
+      );
+    });
+    test("should throw an TypeError when the parameter is not a valid Point", () => {
+      expect(P1.isInsideRectangle.bind(P1, P0, {} as Point)).toThrow(TypeError);
+    });
+  });
+  describe("Point.normalize()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(2.0, 3.0, "P2");
+    test("should normalize the point", () => {
+      const P3 = P1.normalize();
+      expect(P3.x).toBeCloseTo(0.707107);
+      expect(P3.y).toBeCloseTo(0.707107);
+      const P4 = P2.normalize();
+      expect(P4.x).toBeCloseTo(0.5547);
+      expect(P4.y).toBeCloseTo(0.8321);
+    });
+    test("should return a clone of the point ", () => {
+      const P3 = P1.normalize();
+      expect(P3).not.toBe(P1);
     });
   });
 });
