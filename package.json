@@ -5,7 +5,9 @@
   "version": "0.0.3",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "main": "./dist/2d-geometry.umd.cjs",
   "module": "./dist/2d-geometry.js",
