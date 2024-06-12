@@ -1,8 +1,8 @@
-import "./style/skeleton.css";
-import "./style/style.css";
+import "../src/style/skeleton.css";
+import "../src/style/style.css";
 
 // @ts-ignore
-import { setupDrawPetals } from "./drawPetals";
+import { setupDrawPetals } from "./drawPetals.tsx";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>    

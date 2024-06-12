@@ -1,5 +1,5 @@
-import Angle from "./Angle";
-import Point from "./Point.ts";
+import Angle from "../src/Angle";
+import Point from "../src/Point.ts";
 export function setupDrawPetals(element: HTMLDivElement) {
   function calcPetalsCoordinates(petalNumber: number, petalLength: number) {
     const svg = document.querySelector<SVGSVGElement>("svg")!;
