@@ -1,20 +1,26 @@
 {
-  "name": "simple-2d-geometry",
+  "name": "ts-simple-2d-geometry",
   "description": "A Simple 2D Geometry Library with Point and Line classes written with TypeScript",
+  "license": "GNU General Public License v3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry.git"
+  },
   "private": false,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
-  "main": "./dist/2d-geometry.umd.cjs",
-  "module": "./dist/2d-geometry.js",
+  "main": "./dist/ts-simple-2d-geometry.umd.cjs",
+  "module": "./dist/ts-simple-2d-geometry.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/2d-geometry.js",
-      "require": "./dist/2d-geometry.umd.cjs"
+      "import": "./dist/ts-simple-2d-geometry.js",
+      "require": "./dist/ts-simple-2d-geometry.umd.cjs"
     }
   },
   "scripts": {
