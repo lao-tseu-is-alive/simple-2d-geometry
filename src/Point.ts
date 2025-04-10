@@ -257,7 +257,7 @@ export default class Point implements iPoint {
   }
 
   /**
-   * norm returns the Euclidean norm (magnitude) of the point
+   * norm returns the Euclidean norm (magnitude or length from origin) of the point
    */
   norm(): number {
     return this.getDistanceFromOrigin();
@@ -269,6 +269,9 @@ export default class Point implements iPoint {
    */
   normalize(): Point {
     const norm = this.norm();
+    if (Math.abs(norm) <= EPSILON) {
+      return new Point(0, 0);
+    }
     return this.clone().divide(norm);
   }
 
@@ -536,9 +539,9 @@ export default class Point implements iPoint {
   }
 
   /**
-   * rotate will rotate a copy of this Point by theta radians around the origin
+   * rotate will rotate a copy of this Point by theta around the origin
    * @param {Angle} theta is the angle to rotate this Point
-   * @returns {Point} return a new Point object rotated by theta radians
+   * @returns {Point} return a new Point object rotated by theta
    * @throws {TypeError} if theta is not an Angle
    */
   rotate(theta: Angle): Point {
@@ -549,6 +552,24 @@ export default class Point implements iPoint {
         this.x * cosTheta - this.y * sinTheta,
         this.x * sinTheta + this.y * cosTheta,
       );
+    } else {
+      throw new TypeError("Point.rotate(theta) expects an Angle as parameter");
+    }
+  }
+
+  /**
+   * rotateAround will rotate a copy of this Point by theta around another center Point
+   * @param {Angle} theta is the angle to rotate this Point
+   * @param {Point} center is the Point to use as center of rotation
+   * @throws {TypeError} if theta is not an Angle
+   */
+  rotateAround(theta: Angle, center: Point): Point {
+    if (theta instanceof Angle) {
+      const cosTheta = Math.cos(theta.toRadians());
+      const sinTheta = Math.sin(theta.toRadians());
+      const translated = this.subtract(center);
+      const rotated = translated.rotate(theta);
+      return rotated.add(center);
     } else {
       throw new TypeError("Point.rotate(theta) expects an Angle as parameter");
     }
