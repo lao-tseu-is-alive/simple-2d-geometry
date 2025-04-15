@@ -673,13 +673,14 @@ export default class Point implements iPoint {
   /**
    * sameLocation allows to compare if this Point is at the same location as otherPoint
    * @param {Point} otherPoint
+   * @param {number} tolerance The maximum allowed difference for coordinates (default: Geometry.EPSILON)
    * @returns {boolean}
    */
-  sameLocation(otherPoint: Point): boolean {
+  sameLocation(otherPoint: Point, tolerance: number = EPSILON): boolean {
     if (otherPoint instanceof Point) {
       return (
-        Math.abs(this.x - otherPoint.x) <= EPSILON &&
-        Math.abs(this.y - otherPoint.y) <= EPSILON
+        Math.abs(this.x - otherPoint.x) <= tolerance &&
+        Math.abs(this.y - otherPoint.y) <= tolerance
       );
     } else {
       throw new TypeError("A Point can only be compared to another Point");
@@ -693,11 +694,15 @@ export default class Point implements iPoint {
    * So the Point Class equality should take this fact account to test near equality with EPSILON=0.0000000001
    *  feel free to adapt EPSILON value to your needs in utils.js
    * @param {Point} otherPoint
+   * @param {number} tolerance The maximum allowed difference for coordinates (default: Geometry.EPSILON)
    * @returns {boolean}
    */
-  equal(otherPoint: Point): boolean {
+  equal(otherPoint: Point, tolerance: number = EPSILON): boolean {
     if (otherPoint instanceof Point) {
-      return this.sameLocation(otherPoint) && this.name === otherPoint.name;
+      return (
+        this.sameLocation(otherPoint, tolerance) &&
+        this.name === otherPoint.name
+      );
     } else {
       throw new TypeError("A Point can only be compared to another Point");
     }
