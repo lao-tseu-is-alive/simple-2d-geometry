@@ -627,6 +627,29 @@ export default class Point implements iPoint {
   }
 
   /**
+   * perpendicular will return a new Point perpendicular to line from this point to otherPoint
+   * @param {Point} otherPoint
+   * @returns {Point} returns a new Point object located at a unit vector perpendicular to the midpoint of line from this point to otherPoint
+   */
+  perpendicular(otherPoint: Point): Point {
+    if (otherPoint instanceof Point) {
+      const angleLine = this.angleTo(otherPoint);
+      // get midpoint
+      const mid = this.midPoint(otherPoint);
+      // get a Polar point
+      return Point.fromPolar(
+        1,
+        angleLine.add(Math.PI / 2, "radians"),
+        mid.name,
+      );
+    } else {
+      throw new TypeError(
+        "Point.perpendicular(otherPoint) expects a Point as parameter",
+      );
+    }
+  }
+
+  /**
    * angleTo calculates the angle in radian from this point to otherPoint
    * @param {Point} otherPoint
    * @return {Angle} the angle in radian calculated between this Point and otherPoint

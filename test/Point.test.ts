@@ -754,3 +754,14 @@ describe("Point module", () => {
     });
   });
 });
+
+describe("Point.perpendicular()", () => {
+  const P0 = new Point(0.0, 0.0, "P0");
+  const P1 = new Point(2.0, 2.0, "P1");
+  const P2 = Point.fromPolar(1.0, new Angle(135, "degrees"), "P2");
+  test("should return a point perpendicular at midpoint", () => {
+    const P4 = P0.perpendicular(P1);
+    expect(P4.x).toBeCloseTo(P2.x);
+    expect(P4.y).toBeCloseTo(P2.y);
+  });
+});
