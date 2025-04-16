@@ -873,3 +873,11 @@ describe("Point.perpendicular()", () => {
     expect(P4.y).toBeCloseTo(P2.y);
   });
 });
+
+describe("Point.linearInterpolate()", () => {
+  const P0 = new Point(0.0, 0.0, "P0");
+  const P2 = new Point(2.0, 2.0, "P2");
+  const pointInterpolated = P0.linearInterpolate(P2, 0.5);
+  expect(pointInterpolated.x).toBeCloseTo(1.0);
+  expect(pointInterpolated.y).toBeCloseTo(1.0);
+});

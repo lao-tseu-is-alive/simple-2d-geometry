@@ -580,6 +580,18 @@ export default class Point implements iPoint {
   }
 
   /**
+   * linearInterpolate calculates the point that is linearly interpolates between this point and another point.
+   * @param target - The target point to interpolate towards.
+   * @param t - The interpolation factor (usually between 0.0 and 1.0).
+   * 0.0 returns this point, 1.0 returns the target point.
+   * Values outside [0, 1] will extrapolate.
+   * @returns A new Point representing the interpolated point.
+   */
+  public linearInterpolate(target: Point, t: number): Point {
+    return this.add(target.subtract(this).multiply(t)); // Equivalent
+  }
+
+  /**
    * project will project this Point onto the line defined by points p and q
    * @param {Point} p
    * @param {Point} q
@@ -634,6 +646,7 @@ export default class Point implements iPoint {
    * angleTo calculates the angle in radian from this point to other point
    * @param {Point} other
    * @return {Angle} the angle in radian calculated between this Point and other point
+   * @throws {RangeError} if points are at the same location
    */
   angleTo(other: Point): Angle {
     if (this.isSameLocation(other, EPSILON)) {
