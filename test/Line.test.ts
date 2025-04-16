@@ -8,8 +8,8 @@ describe("Line module", () => {
   const L0 = new Line(PO, P1, "L0");
   describe("Line constructor", () => {
     test("constructor with parameters should store points", () => {
-      expect(L0.start.equal(PO)).toBe(true);
-      expect(L0.end.equal(P1)).toBe(true);
+      expect(L0.start.isEqual(PO)).toBe(true);
+      expect(L0.end.isEqual(P1)).toBe(true);
       expect(L0.name).toBe("L0");
       expect(L0 instanceof Line).toBe(true);
     });
@@ -111,14 +111,14 @@ describe("Line module", () => {
       );
     });
     test("should have identical start and end points", () => {
-      expect(L2.start.sameLocation(L0.start)).toBe(true);
-      expect(L2.end.sameLocation(L0.end)).toBe(true);
+      expect(L2.start.isSameLocation(L0.start)).toBe(true);
+      expect(L2.end.isSameLocation(L0.end)).toBe(true);
     });
     test("should copy Points by value in the new Line", () => {
       L2.start.moveTo(1.0, 1.0);
       expect(L2.start.x).toBe(1.0);
       expect(L2.start.y).toBe(1.0);
-      expect(L2.start.equal(L0.start)).toBe(false);
+      expect(L2.start.isEqual(L0.start)).toBe(false);
       expect(L0.start.x).toBe(0);
       expect(L0.start.y).toBe(0);
       expect(PO.x).toBe(0);

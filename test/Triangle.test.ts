@@ -13,8 +13,8 @@ describe("Triangle module", () => {
   const triangleEquilateral = new Triangle(point1, point2, point3);
   describe("Triangle constructor", () => {
     test("constructor with parameters should store points", () => {
-      expect(T0.pA.equal(PO)).toBe(true);
-      expect(T0.pB.equal(P1)).toBe(true);
+      expect(T0.pA.isEqual(PO)).toBe(true);
+      expect(T0.pB.isEqual(P1)).toBe(true);
       expect(T0.name).toBe("T0");
       expect(T0 instanceof Triangle).toBe(true);
     });
@@ -139,15 +139,15 @@ describe("Triangle module", () => {
       ).toThrow(TypeError);
     });
     test("should have identical pA, pB and pC points", () => {
-      expect(T2.pA.sameLocation(T0.pA)).toBe(true);
-      expect(T2.pB.sameLocation(T0.pB)).toBe(true);
-      expect(T2.pC.sameLocation(T0.pC)).toBe(true);
+      expect(T2.pA.isSameLocation(T0.pA)).toBe(true);
+      expect(T2.pB.isSameLocation(T0.pB)).toBe(true);
+      expect(T2.pC.isSameLocation(T0.pC)).toBe(true);
     });
     test("should copy Points by value in the new Triangle", () => {
       T2.pA.moveTo(1.0, 1.0);
       expect(T2.pA.x).toBe(1.0);
       expect(T2.pA.y).toBe(1.0);
-      expect(T2.pA.equal(T0.pA)).toBe(false);
+      expect(T2.pA.isEqual(T0.pA)).toBe(false);
       expect(T0.pA.x).toBe(0);
       expect(T0.pA.y).toBe(0);
       expect(PO.x).toBe(0);

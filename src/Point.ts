@@ -627,24 +627,26 @@ export default class Point implements iPoint {
   }
 
   /**
-   * perpendicular will return a new Point perpendicular to line from this point to otherPoint
-   * @param {Point} otherPoint
-   * @returns {Point} returns a new Point object located at a unit vector perpendicular to the midpoint of line from this point to otherPoint
+   * perpendicular will return a new Point perpendicular to the baseline from this point to other Point,
+   * the point returned will be at a given length distance starting from other point
+   * @param {Point}  other is the support point to draw the baseline, where the perpendicular will begin
+   * @param {Number} length is the distance between pointA and the returned point
+   * @returns {Point} returns a new Point located at a length distance from the other point and perpendicular to line from this point to other
    */
-  perpendicular(otherPoint: Point): Point {
-    if (otherPoint instanceof Point) {
-      const angleLine = this.angleTo(otherPoint);
-      // get midpoint
-      const mid = this.midPoint(otherPoint);
-      // get a Polar point
-      return Point.fromPolar(
-        1,
+  perpendicular(other: Point, length: number): Point {
+    if (other instanceof Point) {
+      const angleLine = this.angleTo(other);
+      // get a Polar point at origin with
+      const polarPoint = Point.fromPolar(
+        length,
         angleLine.add(Math.PI / 2, "radians"),
-        mid.name,
+        other.name,
       );
+      // return the point
+      return polarPoint.moveTo(other.x, other.y);
     } else {
       throw new TypeError(
-        "Point.perpendicular(otherPoint) expects a Point as parameter",
+        "Point.perpendicular(pointA) expects a Point as parameter",
       );
     }
   }
@@ -656,7 +658,7 @@ export default class Point implements iPoint {
    */
   angleTo(otherPoint: Point): Angle {
     if (otherPoint instanceof Point) {
-      if (this.sameLocation(otherPoint)) {
+      if (this.isSameLocation(otherPoint)) {
         throw new RangeError("angleTo: points are at the same location");
       }
       return new Angle(
@@ -679,7 +681,7 @@ export default class Point implements iPoint {
    */
   slopeTo(otherPoint: Point): number {
     if (otherPoint instanceof Point) {
-      if (this.sameLocation(otherPoint)) {
+      if (this.isSameLocation(otherPoint)) {
         throw new RangeError("slopeTo: points are at the same location");
       }
       if (Math.abs(otherPoint.x - this.x) <= EPSILON) {
@@ -694,41 +696,57 @@ export default class Point implements iPoint {
   }
 
   /**
-   * sameLocation allows to compare if this Point is at the same location as otherPoint
-   * @param {Point} otherPoint
-   * @param {number} tolerance The maximum allowed difference for coordinates (default: Geometry.EPSILON)
-   * @returns {boolean}
+   * isPoint checks if given data is a valid Point
+   * @param {any} data
    */
-  sameLocation(otherPoint: Point, tolerance: number = EPSILON): boolean {
-    if (otherPoint instanceof Point) {
-      return (
-        Math.abs(this.x - otherPoint.x) <= tolerance &&
-        Math.abs(this.y - otherPoint.y) <= tolerance
-      );
-    } else {
-      throw new TypeError("A Point can only be compared to another Point");
+
+  /**
+   * Checks if this Point instance represents the same location as another Point,
+   * within a specified tolerance. This comparison is robust against floating-point inaccuracies.
+   *
+   * @param {Point | undefined | null} other The point to compare against.Accepts null or undefined gracefully.
+   * @param {number} tolerance The maximum allowed absolute difference for each coordinate.
+   * Must be non-negative. Defaults to EPSILON (a small constant for float comparison).
+   * @returns {boolean} True if the points are considered the same location within the tolerance, false otherwise.
+   * @throws {RangeError} If the provided tolerance is negative, as it's mathematically illogical for this comparison.
+   * @throws {TypeError} If other is provided but is not a valid Point instance (and strict type checking is desired).
+   * Alternatively, could return false instead of throwing for invalid types if preferred.
+   */
+  isSameLocation(
+    other: Point | undefined | null,
+    tolerance: number = EPSILON,
+  ): boolean {
+    // 1. Robustness: Validate tolerance input.
+    //    A negative tolerance doesn't make sense for checking proximity.
+    if (tolerance < 0) {
+      throw new RangeError("Tolerance cannot be negative.");
     }
+    // 2. Robustness: Handle null or undefined input gracefully.
+    //    If the other point doesn't exist, it's not at the same location.
+    if (other == null) {
+      // Using == checks for both null and undefined
+      return false;
+    }
+    // 4. Clarity & Logic: Calculate absolute differences for each coordinate.
+    const deltaX = Math.abs(this.x - other.x);
+    const deltaY = Math.abs(this.y - other.y);
+
+    // 5. Core Logic: Check if both differences are within the specified tolerance.
+    return deltaX <= tolerance && deltaY <= tolerance;
   }
 
   /**
-   * equal allows to compare equality with otherPoint, they should have the same values for x and y
+   * isEqual allows to compare equality with other, they should have the same values for x and y
    * Math.sqrt(2) * Math.sqrt(2) should give 2 but gives instead 2.0000000000000004
    * Math.sqrt(3) * Math.sqrt(3) should give 2 but gives instead 2.9999999999999996
    * So the Point Class equality should take this fact account to test near equality with EPSILON=0.0000000001
    *  feel free to adapt EPSILON value to your needs in utils.js
-   * @param {Point} otherPoint
+   * @param {Point} other
    * @param {number} tolerance The maximum allowed difference for coordinates (default: Geometry.EPSILON)
    * @returns {boolean}
    */
-  equal(otherPoint: Point, tolerance: number = EPSILON): boolean {
-    if (otherPoint instanceof Point) {
-      return (
-        this.sameLocation(otherPoint, tolerance) &&
-        this.name === otherPoint.name
-      );
-    } else {
-      throw new TypeError("A Point can only be compared to another Point");
-    }
+  isEqual(other: Point, tolerance: number = EPSILON): boolean {
+    return this.isSameLocation(other, tolerance) && this.name === other.name;
   }
 
   /**

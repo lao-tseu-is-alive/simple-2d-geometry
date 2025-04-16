@@ -64,12 +64,12 @@ export default class Triangle {
   set pA(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
-      if (value.sameLocation(this._pB)) {
+      if (value.isSameLocation(this._pB)) {
         throw new RangeError(
           `pA:'${value.dump()}' should be at different location from pB:'${this._pB.dump()}'`,
         );
       }
-      if (value.sameLocation(this._pC)) {
+      if (value.isSameLocation(this._pC)) {
         throw new RangeError(
           `pA:'${value.dump()}' should be at different location from pC:'${this._pC.dump()}'`,
         );
@@ -95,12 +95,12 @@ export default class Triangle {
   set pB(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
-      if (value.sameLocation(this._pA)) {
+      if (value.isSameLocation(this._pA)) {
         throw new RangeError(
           `pB:'${value.dump()}' should be at different location from pA:'${this._pA.dump()}'`,
         );
       }
-      if (value.sameLocation(this._pC)) {
+      if (value.isSameLocation(this._pC)) {
         throw new RangeError(
           `pB:'${value.dump()}' should be at different location from pC:'${this._pC.dump()}'`,
         );
@@ -126,12 +126,12 @@ export default class Triangle {
   set pC(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
-      if (value.sameLocation(this._pB)) {
+      if (value.isSameLocation(this._pB)) {
         throw new RangeError(
           `pC:'${value.dump()}' should be at different location from pB:'${this._pB.dump()}'`,
         );
       }
-      if (value.sameLocation(this._pA)) {
+      if (value.isSameLocation(this._pA)) {
         throw new RangeError(
           `pC:'${value.dump()}' should be at different location from pA:'${this._pA.dump()}'`,
         );
@@ -233,17 +233,17 @@ export default class Triangle {
    */
   constructor(pA: Point, pB: Point, pC: Point, name?: string) {
     if (pA instanceof Point && pB instanceof Point && pC instanceof Point) {
-      if (pA.sameLocation(pB)) {
+      if (pA.isSameLocation(pB)) {
         throw new RangeError(
           `pA:'${pA.dump()}' should be at different location from pB:'${pB.dump()}'`,
         );
       }
-      if (pA.sameLocation(pC)) {
+      if (pA.isSameLocation(pC)) {
         throw new RangeError(
           `pA:'${pA.dump()}' should be at different location from pC:'${pC.dump()}'`,
         );
       }
-      if (pB.sameLocation(pC)) {
+      if (pB.isSameLocation(pC)) {
         throw new RangeError(
           `pB:'${pB.dump()}' should be at different location from pC:'${pC.dump()}'`,
         );
@@ -392,9 +392,9 @@ export default class Triangle {
   sameLocation(otherTriangle: Triangle): boolean {
     if (otherTriangle instanceof Triangle) {
       return (
-        this.pA.sameLocation(otherTriangle.pA) &&
-        this.pB.sameLocation(otherTriangle.pB) &&
-        this.pC.sameLocation(otherTriangle.pC)
+        this.pA.isSameLocation(otherTriangle.pA) &&
+        this.pB.isSameLocation(otherTriangle.pB) &&
+        this.pC.isSameLocation(otherTriangle.pC)
       );
     } else {
       throw new TypeError(

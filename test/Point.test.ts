@@ -66,7 +66,7 @@ describe("Point module", () => {
       const P0 = Point.fromPolar(0, myAngle, "P0");
       expect(P0.x).toBe(0);
       expect(P0.y).toBe(0);
-      expect(P0.equal(new Point(0, 0, "P0"))).toEqual(true);
+      expect(P0.isEqual(new Point(0, 0, "P0"))).toEqual(true);
     });
     test("should give a Point(0,5) when radius=5 and theta=Pi/2 radians", () => {
       const P1 = Point.fromPolar(5, myAngle, "P0");
@@ -95,7 +95,7 @@ describe("Point module", () => {
       expect(Point.fromPoint.bind(undefined, {} as Point)).toThrow(TypeError);
     });
     test("should give a Point(0,0) when given new Point()", () => {
-      expect(P1.equal(P0)).toEqual(true);
+      expect(P1.isEqual(P0)).toEqual(true);
     });
     test("should copy x,y values in a new point without affecting original point", () => {
       P1.x = 5.3;
@@ -103,7 +103,7 @@ describe("Point module", () => {
       P1.name = "P1";
       expect(P0.x).toBe(0); // original point should not be affected
       expect(P0.y).toBe(0); // original point should not be affected
-      expect(P1.equal(P0)).toEqual(false);
+      expect(P1.isEqual(P0)).toEqual(false);
       expect(P1.x).toBe(5.3);
       expect(P1.y).toBe(2.1);
       expect(P1.name).toBe("P1");
@@ -385,13 +385,13 @@ describe("Point module", () => {
     const P1bis = new Point(1.0, 1.0 - EPSILON / 10, "P1");
     const P2 = new Point(4.0, 5.0, "P2");
     test("should return true when two points are equal within EPSILON", () => {
-      expect(P1.sameLocation(P1bis)).toEqual(true);
+      expect(P1.isSameLocation(P1bis)).toEqual(true);
     });
     test("should return false when two points are not equal", () => {
-      expect(P1.sameLocation(P2)).toEqual(false);
+      expect(P1.isSameLocation(P2)).toEqual(false);
     });
     test("should throw an TypeError when the parameter is not a valid Point", () => {
-      expect(P1.sameLocation.bind(undefined, {} as Point)).toThrow(TypeError);
+      expect(P1.isSameLocation.bind(undefined, {} as Point)).toThrow(TypeError);
     });
   });
 
@@ -401,23 +401,23 @@ describe("Point module", () => {
     const P3 = new Point(1.0, 1.0, "P3");
     const P4 = new Point(2.0, 1, "P3");
     test("should return true when two points are equal", () => {
-      expect(P1.equal(P1bis)).toEqual(true);
+      expect(P1.isEqual(P1bis)).toEqual(true);
     });
     test("should return false when two points are not equal", () => {
-      expect(P1.equal(P3)).toEqual(false);
+      expect(P1.isEqual(P3)).toEqual(false);
     });
     test("should return false when two points have different names", () => {
-      expect(P1.equal(P4)).toEqual(false);
+      expect(P1.isEqual(P4)).toEqual(false);
     });
     test("should return false when two points have the same name but different coordinates", () => {
-      expect(P3.equal(P4)).toEqual(false);
+      expect(P3.isEqual(P4)).toEqual(false);
     });
     const P3bis = new Point(1.0, 1.0 - EPSILON / 10, "P3");
     test("should return true when two points are equal within EPSILON", () => {
-      expect(P3.equal(P3bis)).toEqual(true);
+      expect(P3.isEqual(P3bis)).toEqual(true);
     });
     test("should throw an TypeError when the parameter is not a valid Point", () => {
-      expect(P1.equal.bind(undefined, {} as Point)).toThrow(TypeError);
+      expect(P1.isEqual.bind(undefined, {} as Point)).toThrow(TypeError);
     });
   });
 
@@ -758,9 +758,14 @@ describe("Point module", () => {
 describe("Point.perpendicular()", () => {
   const P0 = new Point(0.0, 0.0, "P0");
   const P1 = new Point(2.0, 2.0, "P1");
-  const P2 = Point.fromPolar(1.0, new Angle(135, "degrees"), "P2");
-  test("should return a point perpendicular at midpoint", () => {
-    const P4 = P0.perpendicular(P1);
+  const perpendicularLength = 5.0;
+  const P2 = Point.fromPolar(
+    perpendicularLength,
+    new Angle(135, "degrees"),
+    "P2",
+  ).moveTo(P1.x, P1.y);
+  test("should return a point perpendicular ", () => {
+    const P4 = P0.perpendicular(P1, perpendicularLength);
     expect(P4.x).toBeCloseTo(P2.x);
     expect(P4.y).toBeCloseTo(P2.y);
   });

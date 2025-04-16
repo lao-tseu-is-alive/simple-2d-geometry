@@ -33,7 +33,7 @@ export default class Line {
   set start(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
-      if (value.sameLocation(this._end)) {
+      if (value.isSameLocation(this._end)) {
         throw new RangeError(
           `start:'${value.dump()}' should be at different location from end:'${this._end.dump()}'`,
         );
@@ -51,7 +51,7 @@ export default class Line {
   set end(input: Point) {
     let value = input instanceof Point ? input : undefined;
     if (value !== undefined) {
-      if (value.sameLocation(this._start)) {
+      if (value.isSameLocation(this._start)) {
         throw new RangeError("end should be at different location from start");
       }
       this._end = value;
@@ -92,7 +92,7 @@ export default class Line {
   constructor(start: Point, end: Point, name?: string) {
     // console.log(`Line.ts:65 constructor with start:'${start.dump()}' and end:'${end.dump()}' and name:'${name}'`)
     if (start instanceof Point && end instanceof Point) {
-      if (start.sameLocation(end)) {
+      if (start.isSameLocation(end)) {
         throw new RangeError(
           `start:'${start.dump()}' should be at different location from end:'${end.dump()}'`,
         );
@@ -200,8 +200,8 @@ export default class Line {
   sameLocation(otherLine: Line): boolean {
     if (otherLine instanceof Line) {
       return (
-        this.start.sameLocation(otherLine.start) &&
-        this.end.sameLocation(otherLine.end)
+        this.start.isSameLocation(otherLine.start) &&
+        this.end.isSameLocation(otherLine.end)
       );
     } else {
       throw new TypeError("A Line can only be compared to another Line");
