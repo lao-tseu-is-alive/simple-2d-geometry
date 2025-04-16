@@ -736,12 +736,11 @@ export default class Point implements iPoint {
   }
 
   /**
-   * isEqual allows to compare equality with other, they should have the same values for x and y
+   * isEqual allows to compare equality with other, they should have the same values for x and y and name
    * Math.sqrt(2) * Math.sqrt(2) should give 2 but gives instead 2.0000000000000004
    * Math.sqrt(3) * Math.sqrt(3) should give 2 but gives instead 2.9999999999999996
-   * So the Point Class equality should take this fact account to test near equality with EPSILON=0.0000000001
-   *  feel free to adapt EPSILON value to your needs in utils.js
-   * @param {Point} other
+   * So the Point Class equality test should take this fact account to test near equality with tolerance
+   * @param {Point} other point to compare with this one
    * @param {number} tolerance The maximum allowed difference for coordinates (default: Geometry.EPSILON)
    * @returns {boolean}
    */
