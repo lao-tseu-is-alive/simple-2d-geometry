@@ -12,6 +12,38 @@ describe("Point module", () => {
     test("'constructor with default parameters should should have name = ''", () => {
       expect(P0.name).toBe("");
     });
+    test("constructor with parameters having x,y values like Infinity or NaN should throw a range error", () => {
+      // Test cases with invalid inputs
+      const invalidCoordinates = [
+        { x: Infinity, y: 0 },
+        { x: -Infinity, y: 0 },
+        { x: NaN, y: 0 },
+        { x: 0, y: Infinity },
+        { x: 0, y: -Infinity },
+        { x: 0, y: NaN },
+        { x: Infinity, y: Infinity },
+        { x: NaN, y: NaN },
+      ];
+
+      // Loop through invalid cases and assert that RangeError is thrown
+      invalidCoordinates.forEach((coords) => {
+        // Use expect().toThrow() to check for the specific error type
+        // The code that should throw is wrapped in a function () => {...}
+        expect(() => {
+          new Point(coords.x, coords.y);
+        }).toThrow(RangeError);
+
+        // Optionally, you can also check the error message
+        expect(() => {
+          new Point(coords.x, coords.y);
+        }).toThrow("Expected coordinates to be finite numbers");
+      });
+    });
+    test("constructor with valid coordinates x,y should not throw range error", () => {
+      expect(() => {
+        new Point(1, 2);
+      }).not.toThrow(); // Ensure no error is thrown for valid inputs
+    });
     test("'constructor with parameters should have x = 1.0, y = 2.0, name = 'P1'", () => {
       const P1 = new Point(1.0, 2.0, "P1");
       expect(P1.x).toBe(1.0);
@@ -87,35 +119,6 @@ describe("Point module", () => {
     });
   });
 
-  describe("Point.fromPoint(otherPoint)", () => {
-    let P0 = Point.fromPoint(new Point());
-    const P1 = Point.fromPoint(P0);
-
-    test("should throw an Error when parameter is not a valid Point", () => {
-      expect(Point.fromPoint.bind(undefined, {} as Point)).toThrow(TypeError);
-    });
-    test("should give a Point(0,0) when given new Point()", () => {
-      expect(P1.isEqual(P0)).toEqual(true);
-    });
-    test("should copy x,y values in a new point without affecting original point", () => {
-      P1.x = 5.3;
-      P1.y = 2.1;
-      P1.name = "P1";
-      expect(P0.x).toBe(0); // original point should not be affected
-      expect(P0.y).toBe(0); // original point should not be affected
-      expect(P1.isEqual(P0)).toEqual(false);
-      expect(P1.x).toBe(5.3);
-      expect(P1.y).toBe(2.1);
-      expect(P1.name).toBe("P1");
-    });
-    test("should still exist when original point is set to null", () => {
-      Object.bind(P0, null);
-      expect(P1.x).toBe(5.3);
-      expect(P1.y).toBe(2.1);
-      expect(P1.name).toBe("P1");
-    });
-  });
-
   describe("Point.fromArray([x,y])", () => {
     const P1 = Point.fromArray([1.0, 2.0]);
     test("should give a Point(1,2) when given [1,2]", () => {
@@ -182,6 +185,29 @@ describe("Point module", () => {
     test("should give a new Point object", () => {
       expect(P2).not.toBe(P1);
     });
+    let P0 = new Point();
+    const P0Clone = P0.clone();
+    test("should give a Point(0,0) when given new Point()", () => {
+      expect(P0Clone.isEqual(P0)).toEqual(true);
+    });
+    test("should copy x,y values in a new point without affecting original point", () => {
+      P0Clone.x = 5.3;
+      P0Clone.y = 2.1;
+      P0Clone.name = "P0Clone";
+      P0.name = "P0";
+      expect(P0.x).toBe(0); // original point should not be affected
+      expect(P0.y).toBe(0); // original point should not be affected
+      expect(P0Clone.isEqual(P0)).toEqual(false);
+      expect(P0Clone.x).toBe(5.3);
+      expect(P0Clone.y).toBe(2.1);
+      expect(P0Clone.name).toBe("P0Clone");
+    });
+    test("should still exist when original point is set to null", () => {
+      Object.bind(P0, null);
+      expect(P0Clone.x).toBe(5.3);
+      expect(P0Clone.y).toBe(2.1);
+      expect(P0Clone.name).toBe("P0Clone");
+    });
   });
 
   describe("Point.dump()", () => {
@@ -236,6 +262,17 @@ describe("Point module", () => {
     test("should return zero when the point is at origin", () => {
       const P2 = new Point(0.0, 0.0, "P2");
       expect(P2.getDistanceFromOrigin()).toEqual(0.0);
+    });
+  });
+
+  describe("Point.magnitude()", () => {
+    const P1 = new Point(3.0, 4.0, "P1");
+    test("should return the distance from the origin", () => {
+      expect(P1.magnitude()).toEqual(5.0);
+    });
+    test("should return zero when the point is at origin", () => {
+      const P2 = new Point(0.0, 0.0, "P2");
+      expect(P2.magnitude()).toEqual(0.0);
     });
   });
 
@@ -380,7 +417,19 @@ describe("Point module", () => {
     });
   });
 
-  describe("Point.sameLocation()", () => {
+  describe("Point.distanceSquaredTo()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(4.0, 5.0, "P2");
+    test("should return the squared distance between two points", () => {
+      expect(P1.distanceSquaredTo(P2)).toEqual(25.0);
+    });
+    const P1bis = new Point(1.0, 1.0 - EPSILON / 10, "P1");
+    test("should return zero when two points are equal within EPSILON", () => {
+      expect(P1.distanceSquaredTo(P1bis)).toEqual(0);
+    });
+  });
+
+  describe("Point.isSameLocation()", () => {
     const P1 = new Point(1.0, 1.0, "P1");
     const P1bis = new Point(1.0, 1.0 - EPSILON / 10, "P1");
     const P2 = new Point(4.0, 5.0, "P2");
@@ -392,6 +441,12 @@ describe("Point module", () => {
     });
     test("should throw an TypeError when the parameter is not a valid Point", () => {
       expect(P1.isSameLocation.bind(undefined, {} as Point)).toThrow(TypeError);
+    });
+    test("should throw an RangeError when the tolerance is negative", () => {
+      expect(P1.isSameLocation.bind(undefined, P2, -1)).toThrow(RangeError);
+    });
+    test("should return false if other Point parameter is null", () => {
+      expect(P1.isSameLocation(null)).toEqual(false);
     });
   });
 
@@ -508,6 +563,14 @@ describe("Point module", () => {
       expect(P3.x).toEqual(5.0);
       expect(P3.y).toEqual(5.0);
     });
+    test("a parameter c value like Infinity or NaN should throw a type error", () => {
+      // Test cases with invalid inputs
+      const invalidValues = [Infinity, -Infinity, NaN];
+      // Loop through invalid cases and assert that RangeError is thrown
+      invalidValues.forEach((v) => {
+        expect(P1.multiply.bind(undefined, v as number)).toThrow(TypeError);
+      });
+    });
     test("should throw an TypeError when the parameter is not a valid number", () => {
       expect(P1.multiply.bind(undefined, {} as number)).toThrow(TypeError);
     });
@@ -526,6 +589,18 @@ describe("Point module", () => {
     test("should throw an TypeError when the parameter is not a valid number", () => {
       expect(P1.divide.bind(undefined, {} as number)).toThrow(TypeError);
     });
+    test("a parameter c value like Infinity or NaN should throw a type error", () => {
+      // Test cases with invalid inputs
+      const invalidValues = [Infinity, -Infinity, NaN];
+      // Loop through invalid cases and assert that RangeError is thrown
+      invalidValues.forEach((v) => {
+        expect(P1.divide.bind(undefined, v as number)).toThrow(TypeError);
+      });
+    });
+    test("should throw an RangeError when the parameter is zero", () => {
+      expect(P1.divide.bind(undefined, 0)).toThrow(RangeError);
+    });
+
     test("should return a clone of the point ", () => {
       const P3 = P1.divide(1);
       expect(P3).not.toBe(P1);
@@ -566,6 +641,28 @@ describe("Point module", () => {
       expect(P3).not.toBe(P1);
     });
   });
+  describe("Point.rotateAround()", () => {
+    const P1 = new Point(1.0, 1.0, "P1");
+    const P2 = new Point(2.0, 2.0, "P2");
+    test("should rotate a point by an angle at given center", () => {
+      const P3 = P2.rotateAround(new Angle(90, "degrees"), P1);
+      expect(P3.x).toBeCloseTo(0);
+      expect(P3.y).toBeCloseTo(2);
+    });
+    test("should rotate a point by an angle at origin if center is (0,0)", () => {
+      const P3 = P1.rotateAround(
+        new Angle(90, "degrees"),
+        Point.ORIGIN.clone(),
+      );
+      expect(P3.x).toBeCloseTo(-1);
+      expect(P3.y).toBeCloseTo(1);
+    });
+
+    test("should throw an TypeError when the parameter is not a valid Angle", () => {
+      expect(P1.rotateAround.bind(undefined, {} as Angle)).toThrow(TypeError);
+    });
+  });
+
   describe("Point.distanceToSegment()", () => {
     const P0 = new Point(0.0, 0.0, "P0");
     const P1 = new Point(1.0, 1.0, "P1");
@@ -734,7 +831,7 @@ describe("Point module", () => {
       );
     });
     test("should throw an TypeError when the parameter is not a valid Point", () => {
-      expect(P1.isInsideRectangle.bind(P1, P0, {} as Point)).toThrow(TypeError);
+      expect(P1.isInsideRectangle.bind(P1, {} as Point)).toThrow(TypeError);
     });
   });
   describe("Point.normalize()", () => {
@@ -747,6 +844,12 @@ describe("Point module", () => {
       const P4 = P2.normalize();
       expect(P4.x).toBeCloseTo(0.5547);
       expect(P4.y).toBeCloseTo(0.8321);
+    });
+    test("should return the origin (0,0) if the magnitude is zero (or very close to it).", () => {
+      const P3 = new Point(0.0, 0.0, "P3");
+      const P4 = P3.normalize();
+      expect(P4.x).toBeCloseTo(0.0);
+      expect(P4.y).toBeCloseTo(0.0);
     });
     test("should return a clone of the point ", () => {
       const P3 = P1.normalize();
