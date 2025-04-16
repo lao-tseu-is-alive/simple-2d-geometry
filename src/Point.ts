@@ -255,7 +255,7 @@ export default class Point implements iPoint {
    * getDistanceFromOrigin returns the length of the vector from origin to this point
    */
   getDistanceFromOrigin(): number {
-    return Math.sqrt(this.p.x * this.p.x + this.p.y * this.p.y);
+    return Math.hypot(this.p.x, this.p.y);
   }
 
   /**
