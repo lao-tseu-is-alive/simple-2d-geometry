@@ -17,19 +17,18 @@ This projects code is licensed under the terms of the [GNU GPL-3.0 license](http
 
 ### to run the library in an example page:  
 ```bash
-npm run dev
+bun install
 ```
 
 #### this will start a local server and open the example page in your default browser
 here is an excerpt of the code in drawPetal.tsx that creates a 6 petals flower using the Point class from the library.
 ```typescript
-    ...
     const myAngle = new Angle(angle, 'degrees')
     let radius =  petalLength * (2 + 2 * Math.cos(petalNumber * myAngle.toRadians()))
     let TempPoint = Point.fromPolar(radius, myAngle, `P-${angle}`)
     // and move the point so it's centered
     TempPoint.moveRel(offsetX,offsetY)
-    ...
 ```
 
 ![alt text](https://raw.githubusercontent.com/lao-tseu-is-alive/simple-2d-geometry/main/images/simple-2d-geometry_example_polar_equation_flower.png "Using the Point class to create a nice 6 petal's flowers from a polar equation")
+This project was created using `bun init` in bun v1.3.11. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

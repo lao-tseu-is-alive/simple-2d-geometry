@@ -10,13 +10,14 @@ export const DIGITIZE_PRECISION = 2; // cm is enough for screen digitizing
  * @return {number}
  */
 export function roundNumber(
-  num: number,
-  precision: number = PRECISION,
+    num: number,
+    precision: number = PRECISION,
 ): number {
-  let pair = (num + "e").split("e");
-  let value = Math.round(Number(pair[0] + "e" + (+pair[1] + precision)));
-  pair = (value + "e").split("e");
-  return Number(pair[0] + "e" + (+pair[1] - precision));
+  const [base1, exp1 = "0"] = `${num}e`.split("e");
+  const value = Math.round(Number(`${base1}e${Number(exp1) + precision}`));
+
+  const [base2, exp2 = "0"] = `${value}e`.split("e");
+  return Number(`${base2}e${Number(exp2) - precision}`);
 }
 
 export const fixDec = (n: number) =>

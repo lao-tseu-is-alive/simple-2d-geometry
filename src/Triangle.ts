@@ -1,4 +1,4 @@
-import Point, { coordinate2dArray, iPoint } from "./Point.ts";
+import Point, {type coordinate2dArray, type iPoint } from "./Point.ts";
 import Converters from "./Converters.ts";
 import { EPSILON } from "./Geometry.ts";
 import Angle from "./Angle.ts";

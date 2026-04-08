@@ -1,20 +1,13 @@
 {
   "name": "ts-simple-2d-geometry",
+  "version": "0.1.0",
   "description": "A Simple 2D Geometry Library with Point and Line classes written with TypeScript",
-  "license": "GNU General Public License v3.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry.git"
-  },
   "private": false,
-  "version": "0.0.11",
   "type": "module",
   "files": [
-    "dist",
+    "/dist",
     "README.md",
-    "LICENSE",
-    "package.json",
-    "tsconfig.json"
+    "LICENSE"
   ],
   "main": "./dist/ts-simple-2d-geometry.umd.cjs",
   "module": "./dist/ts-simple-2d-geometry.js",
@@ -27,22 +20,34 @@
     }
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "format": "prettier --write .",
-    "test": "jest --coverage",
-    "test-watch": "jest --watch"
+    "build": "bun run build.ts",
+    "build2": "bun build src/index.ts --production --outfile=out.js",
+    "docs": "bun x typedoc --options typedoc.json",
+    "lint": "eslint src --ext .ts",
+    "prepublishOnly": "bun run build && bun run docs",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "html",
+    "dom",
+    "utils",
+    "typescript"
+  ],
+  "author": "CGil<lao.tseu.is.alive@gmail.com>",
+  "license": "GNU General Public License v3.0",
+  "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry/issues",
+  "homepage": "https://github.com/lao-tseu-is-alive/simple-2d-geometry#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry.git"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "globals": "^15.0.0",
-    "jest": "^29.7.0",
-    "prettier": "^3.2.5",
-    "ts-jest": "^29.1.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.5",
-    "vite": "^5.2.0",
-    "vite-plugin-dts": "^3.9.0"
+    "@types/bun": "latest",
+    "typedoc": "^0.28.18"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.2"
   }
 }

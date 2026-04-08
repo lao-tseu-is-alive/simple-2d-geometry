@@ -1,6 +1,6 @@
-import { iPoint } from "./Point.ts";
-import { LineInterface } from "./Line.ts";
-import { TriangleInterface } from "./Triangle.ts";
+import type {iPoint} from "./Point.ts";
+import type {LineInterface} from "./Line.ts";
+import type {TriangleInterface} from "./Triangle.ts";
 
 export default class Converters {
   public static convertToPointArray(data: any): iPoint[] | undefined {

@@ -1,4 +1,4 @@
-import Point, { coordinate2dArray, iPoint } from "./Point.ts";
+import Point, {type coordinate2dArray, type iPoint} from "./Point.ts";
 
 export interface CircleInterface {
   center: iPoint;
@@ -82,9 +82,8 @@ export default class Circle {
    * @param {number[]} inputArray array of 3 numbers [x,y,radius]
    * @param {string | undefined} name optional name of this circle
    */
-  static fromArray(inputArray: number[], name?: string): Circle {
-    let value = inputArray instanceof Array ? inputArray : undefined;
-    if (value === undefined) {
+  static fromArray(inputArray: [number,number,number], name?: string): Circle {
+    if (inputArray === undefined) {
       throw new TypeError(
         "Circle should be created from an array of 3 numbers",
       );

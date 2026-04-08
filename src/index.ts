@@ -1,4 +1,4 @@
-import Angle, { AngleType } from "./Angle.ts";
+import Angle, {type AngleType } from "./Angle.ts";
 import {
   EPSILON,
   PRECISION,
@@ -8,7 +8,7 @@ import {
   fixDec,
 } from "./Geometry.ts";
 import Line from "./Line.ts";
-import Point, { iPoint } from "./Point.ts";
+import Point, {type iPoint } from "./Point.ts";
 import Triangle from "./Triangle.ts";
 import { APP, VERSION, BUILD_DATE } from "./version.ts";
 
