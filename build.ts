@@ -5,7 +5,6 @@ import {name, version} from "./package.json";
 // Reusing package.json name and converting from kebab-case to camelCase.
 const rawName = name.split('/').pop()!;
 const fileName = rawName.replace(/-([a-z0-9])/g, (_match, letter) => {
-  // TypeScript sait que 'letter' est une string si le match a eu lieu
   return letter ? letter.toUpperCase() : "";
 });
 console.log(`🐰 🏗️  Building ${fileName} v${version}...`);

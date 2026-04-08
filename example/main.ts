@@ -1,6 +1,3 @@
-import "../src/style/skeleton.css";
-import "../src/style/style.css";
-
 // @ts-ignore
 import { setupDrawPetals } from "./drawPetals.tsx";
 
