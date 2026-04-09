@@ -21,16 +21,16 @@ export function roundNumber(
 }
 
 export const fixDec = (n: number) =>
-  parseFloat(Number(n).toFixed(DIGITIZE_PRECISION));
+  Number.parseFloat(Number(n).toFixed(DIGITIZE_PRECISION));
 
 export function getNumberOrFail(input: string): number {
-  const value = parseFloat(input);
-  if (isNaN(value)) {
+  const value = Number.parseFloat(input);
+  if (Number.isNaN(value)) {
     throw new Error(`Invalid number format for input: '${input}'`);
   }
   return value;
 }
 
 export function isNumeric(n: any): boolean {
-  return !isNaN(parseFloat(n)) && isFinite(n);
+  return !Number.isNaN(Number.parseFloat(n)) && isFinite(n);
 }

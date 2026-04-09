@@ -30,8 +30,8 @@ export function setupDrawPetals(element: HTMLDivElement) {
     petalLengthInput: HTMLInputElement,
     petalNumberInput: HTMLInputElement,
   ) => {
-    const petalLength = parseFloat(petalLengthInput.value);
-    const petalNumber = parseInt(petalNumberInput.value);
+    const petalLength = Number.parseFloat(petalLengthInput.value);
+    const petalNumber = Number.parseInt(petalNumberInput.value);
     let coordinatesString = calcPetalsCoordinates(petalNumber, petalLength);
     const msg = document.querySelector<HTMLParagraphElement>("#petal-msg")!;
     msg.innerHTML = `Here is a nice petal's flower. <br>  Using this polar equation :<br>
