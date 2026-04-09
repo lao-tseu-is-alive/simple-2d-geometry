@@ -22,6 +22,10 @@ jobs:
         # --frozen-lockfile est crucial pour la résilience de ta CI
         run: bun install --frozen-lockfile
 
+      - name: Build
+        # needed for version.ts creation
+        run: bun run build
+
       - name: Run tests
         # On active la couverture pour alimenter Codecov
         run: bun test --coverage
