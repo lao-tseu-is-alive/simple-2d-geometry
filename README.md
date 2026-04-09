@@ -1,6 +1,6 @@
 # simple-2d-geometry
 
-[![CI-Unit-Tests](https://github.com/lao-tseu-is-alive/simple-2d-geometry/actions/workflows/npm-test.yml/badge.svg)](https://github.com/lao-tseu-is-alive/simple-2d-geometry/actions/workflows/npm-test.yml)
+[![CI-Unit-Tests](https://github.com/lao-tseu-is-alive/simple-2d-geometry/actions/workflows/ci-unit-test.yml/badge.svg)](https://github.com/lao-tseu-is-alive/simple-2d-geometry/actions/workflows/ci-unit-test.yml)
 [![codecov](https://codecov.io/gh/lao-tseu-is-alive/simple-2d-geometry/branch/main/graph/badge.svg)](https://codecov.io/gh/lao-tseu-is-alive/simple-2d-geometry)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
