@@ -25,7 +25,7 @@
     "dev": "bun example/index.html ",
     "docs": "bun x typedoc --options typedoc.json",
     "lint": "eslint src --ext .ts",
-    "prepublishOnly": "bun run build && bun run docs",
+    "prepublishOnly": "bun run build",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "format": "prettier --write ."
