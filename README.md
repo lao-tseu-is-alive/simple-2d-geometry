@@ -10,7 +10,12 @@
 
 
 
-A Simple 2D Geometry Library with Point and Line classes written with TypeScript
+A Simple 2D Geometry Library with Point, Line and Circle classes written with TypeScript
+
+
+* [Documentation](https://lao-tseu-is-alive.github.io/simple-2d-geometry/)
+* [Examples](https://github.com/lao-tseu-is-alive/simple-2d-geometry/tree/main/example)
+
 
 This projects code is licensed under the terms of the [GNU GPL-3.0 license](https://www.gnu.org/licenses/quick-guide-gplv3.html).
 
