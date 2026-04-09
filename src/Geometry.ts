@@ -32,5 +32,5 @@ export function getNumberOrFail(input: string): number {
 }
 
 export function isNumeric(n: any): boolean {
-  return !Number.isNaN(Number.parseFloat(n)) && isFinite(n);
+  return !Number.isNaN(Number.parseFloat(n)) && Number.isFinite(n);
 }
