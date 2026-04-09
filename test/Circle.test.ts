@@ -1,5 +1,6 @@
 import Circle from "../src/Circle";
 import Point from "../src/Point";
+import {describe, test, expect, beforeEach} from "bun:test";
 
 describe("Circle", () => {
   let circle: Circle;
@@ -89,14 +90,14 @@ describe("Circle", () => {
       expect(newCircle.radius).toEqual(radius);
       expect(newCircle.name).toEqual("");
     });
-    test("fromArray should throw a TypeError if center is not an array", () => {
+    test("fromArray should throw a RangeError if center is not an array", () => {
       expect(() => {
-        Circle.fromArray({} as number[], name);
-      }).toThrow(TypeError);
+        Circle.fromArray({} as  [number, number, number], name);
+      }).toThrow(RangeError);
     });
     test("fromArray should throw a RangeError if center array length is not 3", () => {
       expect(() => {
-        Circle.fromArray([1, 2], name);
+        Circle.fromArray([1, 2] as any, name);
       }).toThrow(RangeError);
     });
   });
