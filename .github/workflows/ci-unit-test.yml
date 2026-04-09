@@ -28,11 +28,16 @@ jobs:
 
       - name: Run tests
         # On active la couverture pour alimenter Codecov
-        run: bun test --coverage --coverage-reporter=lcov
+        run: bun test --coverage --coverage-reporter=lcov --coverage-dir=./coverage --coverage-skip-test-files
+
+      - name: Verify coverage file (Pragmatic Debug)
+        # check file before upload
+        run: ls -l ./coverage/lcov.info
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          # Bun génère un fichier lcov.info dans le dossier ./coverage par défaut
           file: ./coverage/lcov.info
+          directory: ./coverage/
+          fail_ci_if_error: true
