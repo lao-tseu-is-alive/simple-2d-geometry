@@ -1,5 +1,6 @@
+import {describe, test, expect} from "bun:test";
 import { Point } from "../src";
-import Triangle, { coordinatesTriangleArray } from "../src/Triangle";
+import Triangle, {type coordinatesTriangleArray } from "../src/Triangle";
 
 describe("Triangle module", () => {
   const PO = new Point(0, 0, "PO");

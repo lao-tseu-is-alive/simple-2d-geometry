@@ -1,6 +1,6 @@
+import {describe, test, expect, beforeEach} from "bun:test";
 import Circle from "../src/Circle";
 import Point from "../src/Point";
-import {describe, test, expect, beforeEach} from "bun:test";
 
 describe("Circle", () => {
   let circle: Circle;

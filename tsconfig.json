@@ -16,6 +16,7 @@
     "emitDeclarationOnly": true,
     "declaration": true,      /* Generates corresponding '.d.ts' file. */
     // Bundler mode
+    "types": ["bun"],
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
