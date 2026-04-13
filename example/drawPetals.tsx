@@ -1,8 +1,12 @@
 import Angle from "../src/Angle";
 import Point from "../src/Point.ts";
+
+/**
+ * Polar equation flower demo — using Point.fromPolar() and Angle math
+ */
 export function setupDrawPetals(element: HTMLDivElement) {
   function calcPetalsCoordinates(petalNumber: number, petalLength: number) {
-    const svg = document.querySelector<SVGSVGElement>("svg")!;
+    const svg = document.querySelector<SVGSVGElement>("#flower-svg")!;
     const svgWidth = svg.clientWidth;
     const svgHeight = svg.clientHeight;
     const svgCenterX = svgWidth / 2;
@@ -49,7 +53,7 @@ export function setupDrawPetals(element: HTMLDivElement) {
   <input type="number" id="petals-length" min="50" max="60" value="45" placeholder="length of petals ">
   <p id="petal-msg" class="read-the-docs"></p>
   <div id="svgcontainer" class="svg-container">
-    <svg height="500" width="500" >
+    <svg id="flower-svg" height="500" width="500" >
       <line id='xaxis' x1="250" y1="0" x2="250" y2="500" class="svgaxis"/>
       <line id='yaxis' x1="0" y1="250" x2="500" y2="250" class="svgaxis"/>
       <polyline id='my-polyline' points="0,0 " class="svg-flower-petal"/>
