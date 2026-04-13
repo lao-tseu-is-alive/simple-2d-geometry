@@ -7,6 +7,8 @@ import {
   roundNumber,
 } from "./Geometry.ts";
 import Converters from "./Converters.ts";
+import type { GeometryDriver, Extent } from "./Driver.ts";
+import type { RenderDriver, RenderOptions } from "./RenderDriver.ts";
 
 export interface iPoint {
   x: number;
@@ -19,7 +21,7 @@ export type coordinate2dArray = [number, number];
 /**
  * Class representing  a point in 2 dimension cartesian space
  */
-export default class Point implements iPoint {
+export default class Point implements iPoint, GeometryDriver {
   private p: iPoint = { x: 0, y: 0, name: "" };
 
   /**
@@ -133,7 +135,7 @@ export default class Point implements iPoint {
    * fromObject returns a new Point constructed with an object that contains x and y properties
    * @param data
    */
-  static fromObject(data: any): Point {
+  static fromObject(data: Record<string, unknown>): Point {
     if (data === undefined || data === null) {
       throw new TypeError("Point data is undefined or null");
     }
@@ -810,5 +812,35 @@ export default class Point implements iPoint {
   rename(newName: string): this {
     this.name = newName;
     return this;
+  }
+
+  // ── GeometryDriver implementation ──────────────────────────────
+
+  /**
+   * A point has no area.
+   */
+  getArea(): number {
+    return 0;
+  }
+
+  /**
+   * A point has no perimeter.
+   */
+  getPerimeter(): number {
+    return 0;
+  }
+
+  /**
+   * Returns a degenerate bounding box (a single point).
+   */
+  getExtent(): Extent {
+    return [this.x, this.y, this.x, this.y];
+  }
+
+  /**
+   * Visitor double-dispatch: delegates to renderer.renderPoint.
+   */
+  accept<T>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
+    return renderer.renderPoint(this, options, invertY);
   }
 }

@@ -1,4 +1,6 @@
 import Point, {type coordinate2dArray, type iPoint} from "./Point.ts";
+import type { GeometryDriver, Extent } from "./Driver.ts";
+import type { RenderDriver, RenderOptions } from "./RenderDriver.ts";
 
 export interface CircleInterface {
   center: iPoint;
@@ -9,7 +11,7 @@ export interface CircleInterface {
 /**
  * Class representing  a circle in 2 dimension cartesian space
  */
-export default class Circle {
+export default class Circle implements GeometryDriver {
   private _center: Point = Point.fromArray([0, 0]); // default center point
   private _radius: number = 1.0; // default radius
   private _name: string | undefined = undefined;
@@ -106,5 +108,40 @@ export default class Circle {
    */
   area(): number {
     return Math.PI * this.radius * this.radius;
+  }
+
+  // ── GeometryDriver implementation ──────────────────────────────
+
+  /**
+   * Returns the area of the circle (delegates to area()).
+   */
+  getArea(): number {
+    return this.area();
+  }
+
+  /**
+   * Returns the circumference of the circle.
+   */
+  getPerimeter(): number {
+    return 2 * Math.PI * this.radius;
+  }
+
+  /**
+   * Returns the axis-aligned bounding box of the circle.
+   */
+  getExtent(): Extent {
+    return [
+      this.center.x - this.radius,
+      this.center.y - this.radius,
+      this.center.x + this.radius,
+      this.center.y + this.radius,
+    ];
+  }
+
+  /**
+   * Visitor double-dispatch: delegates to renderer.renderCircle.
+   */
+  accept<T>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
+    return renderer.renderCircle(this, options, invertY);
   }
 }

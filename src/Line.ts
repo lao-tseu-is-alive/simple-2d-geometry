@@ -1,6 +1,8 @@
 import Point, {type coordinate2dArray, type iPoint} from "./Point.ts";
 import Converters from "./Converters.ts";
 import Angle from "./Angle.ts";
+import type { GeometryDriver, Extent } from "./Driver.ts";
+import type { RenderDriver, RenderOptions } from "./RenderDriver.ts";
 
 export interface LineInterface {
     start: iPoint;
@@ -21,7 +23,7 @@ export type coordinatesLineArray = [coordinate2dArray, coordinate2dArray];
  * @property {number} angle of the line
  * @property {number} slope of the line
  */
-export default class Line {
+export default class Line implements GeometryDriver {
     private _start: Point = Point.fromArray([0, 0]); // default start point
     private _end: Point = Point.fromArray([1, 1]); // default end point
     private _name: string | undefined = undefined;
@@ -138,14 +140,14 @@ export default class Line {
         );
     }
 
-    static fromObject(data: Object) {
+    static fromObject(data: Record<string, unknown>) {
         if (data === undefined || data === null) {
             throw new TypeError("cannot create a Line from nothing");
         }
         const tempLine: LineInterface = Converters.convertToLine(data);
         return new Line(
-            Point.fromObject(tempLine.start),
-            Point.fromObject(tempLine.end),
+            new Point(tempLine.start.x, tempLine.start.y, tempLine.start.name),
+            new Point(tempLine.end.x, tempLine.end.y, tempLine.end.name),
             tempLine.name,
         );
     }
@@ -224,5 +226,40 @@ export default class Line {
     rename(newName: string): this {
         this.name = newName;
         return this;
+    }
+
+    // ── GeometryDriver implementation ──────────────────────────────
+
+    /**
+     * A line segment has no area.
+     */
+    getArea(): number {
+        return 0;
+    }
+
+    /**
+     * Returns the length of the line segment.
+     */
+    getPerimeter(): number {
+        return this.length;
+    }
+
+    /**
+     * Returns the axis-aligned bounding box of the line segment.
+     */
+    getExtent(): Extent {
+        return [
+            Math.min(this.start.x, this.end.x),
+            Math.min(this.start.y, this.end.y),
+            Math.max(this.start.x, this.end.x),
+            Math.max(this.start.y, this.end.y),
+        ];
+    }
+
+    /**
+     * Visitor double-dispatch: delegates to renderer.renderLine.
+     */
+    accept<T>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
+        return renderer.renderLine(this, options, invertY);
     }
 }

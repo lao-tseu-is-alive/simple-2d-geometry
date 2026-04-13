@@ -3,44 +3,44 @@ import type {LineInterface} from "./Line.ts";
 import type {TriangleInterface} from "./Triangle.ts";
 
 export default class Converters {
-  public static convertToPointArray(data: any): iPoint[] | undefined {
+  public static convertToPointArray(data: unknown): iPoint[] | undefined {
     return Array.isArray(data)
-      ? data.map((item) => Converters.convertToPoint(item))
+      ? data.map((item: unknown) => Converters.convertToPoint(item as Record<string, unknown>))
       : undefined;
   }
 
-  public static convertToPoint(data: any): iPoint {
+  public static convertToPoint(data: Record<string, unknown>): iPoint {
     if (data === undefined || data === null) {
       throw new TypeError("Point data is undefined or null");
     }
     if ("x" in data && "y" in data) {
       return {
-        x: data["x"],
-        y: data["y"],
-        name: "name" in data ? data["name"] : undefined,
+        x: data["x"] as number,
+        y: data["y"] as number,
+        name: "name" in data ? data["name"] as string : undefined,
       };
     } else {
       throw new TypeError("Point data is not valid");
     }
   }
 
-  public static convertToLineArray(data: any): LineInterface[] | undefined {
+  public static convertToLineArray(data: unknown): LineInterface[] | undefined {
     if (Array.isArray(data)) {
-      return data.map((item) => Converters.convertToLine(item));
+      return data.map((item: unknown) => Converters.convertToLine(item as Record<string, unknown>));
     } else {
       throw new TypeError("data is not an array");
     }
   }
 
-  public static convertToLine(data: any): LineInterface {
+  public static convertToLine(data: Record<string, unknown>): LineInterface {
     if (data === undefined || data === null) {
       throw new TypeError("Line data is undefined or null");
     }
     if ("start" in data && "end" in data) {
       return {
-        start: Converters.convertToPoint(data["start"]),
-        end: Converters.convertToPoint(data["end"]),
-        name: "name" in data ? data["name"] : undefined,
+        start: Converters.convertToPoint(data["start"] as Record<string, unknown>),
+        end: Converters.convertToPoint(data["end"] as Record<string, unknown>),
+        name: "name" in data ? data["name"] as string : undefined,
         isValid: true,
       };
     } else {
@@ -48,7 +48,7 @@ export default class Converters {
     }
   }
 
-  static convertToTriangle(data: any): TriangleInterface {
+  static convertToTriangle(data: Record<string, unknown>): TriangleInterface {
     if (data === undefined || data === null) {
       throw new TypeError("Triangle data is undefined or null");
     }
@@ -61,10 +61,10 @@ export default class Converters {
       data["pC"] !== undefined
     ) {
       return {
-        pA: Converters.convertToPoint(data["pA"]),
-        pB: Converters.convertToPoint(data["pB"]),
-        pC: Converters.convertToPoint(data["pC"]),
-        name: "name" in data ? data["name"] : undefined,
+        pA: Converters.convertToPoint(data["pA"] as Record<string, unknown>),
+        pB: Converters.convertToPoint(data["pB"] as Record<string, unknown>),
+        pC: Converters.convertToPoint(data["pC"] as Record<string, unknown>),
+        name: "name" in data ? data["name"] as string : undefined,
       };
     }
     throw new TypeError("Triangle data is not valid");

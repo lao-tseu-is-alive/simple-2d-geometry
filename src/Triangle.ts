@@ -2,6 +2,8 @@ import Point, {type coordinate2dArray, type iPoint} from "./Point.ts";
 import Converters from "./Converters.ts";
 import {EPSILON} from "./Geometry.ts";
 import Angle from "./Angle.ts";
+import type { GeometryDriver, Extent } from "./Driver.ts";
+import type { RenderDriver, RenderOptions } from "./RenderDriver.ts";
 
 /**
  * TriangleInterface is an interface for a Triangle object
@@ -43,7 +45,7 @@ export type coordinatesTriangleArray = [
  * @property {Angle} aC angle C at pC opposite of the side c of the triangle
  * @example const T0 = new Triangle(new Point(0,0,'P0'), new Point(1,1,'P1'), new Point(1,0,'P2'), "T0");
  */
-export default class Triangle {
+export default class Triangle implements GeometryDriver {
     private _pA: Point = Point.fromArray([1, 0]); // default pA point
     private _pB: Point = Point.fromArray([0, 1]); // default pB point
     private _pC: Point = Point.fromArray([-1, 0]); // default pC point
@@ -307,12 +309,12 @@ export default class Triangle {
      * @param {TriangleInterface} data is an object with pA, pB and pC as properties
      * @returns {Triangle} a new Triangle at given coordinates pA:[x0,y0] and pB:[x1,y1]
      */
-    static fromObject(data: any): Triangle {
+    static fromObject(data: Record<string, unknown>): Triangle {
         const tempTriangle: TriangleInterface = Converters.convertToTriangle(data);
         return new Triangle(
-            Point.fromObject(tempTriangle.pA),
-            Point.fromObject(tempTriangle.pB),
-            Point.fromObject(tempTriangle.pC),
+            new Point(tempTriangle.pA.x, tempTriangle.pA.y, tempTriangle.pA.name),
+            new Point(tempTriangle.pB.x, tempTriangle.pB.y, tempTriangle.pB.name),
+            new Point(tempTriangle.pC.x, tempTriangle.pC.y, tempTriangle.pC.name),
             tempTriangle.name,
         );
     }
@@ -457,5 +459,40 @@ export default class Triangle {
             Math.abs(this.b - this.c) <= EPSILON &&
             Math.abs(this.c - this.a) <= EPSILON
         );
+    }
+
+    // ── GeometryDriver implementation ──────────────────────────────
+
+    /**
+     * Returns the area of the triangle (delegates to area()).
+     */
+    getArea(): number {
+        return this.area();
+    }
+
+    /**
+     * Returns the perimeter of the triangle (delegates to perimeter()).
+     */
+    getPerimeter(): number {
+        return this.perimeter();
+    }
+
+    /**
+     * Returns the axis-aligned bounding box of the triangle.
+     */
+    getExtent(): Extent {
+        return [
+            Math.min(this.pA.x, this.pB.x, this.pC.x),
+            Math.min(this.pA.y, this.pB.y, this.pC.y),
+            Math.max(this.pA.x, this.pB.x, this.pC.x),
+            Math.max(this.pA.y, this.pB.y, this.pC.y),
+        ];
+    }
+
+    /**
+     * Visitor double-dispatch: delegates to renderer.renderTriangle.
+     */
+    accept<T>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
+        return renderer.renderTriangle(this, options, invertY);
     }
 }
