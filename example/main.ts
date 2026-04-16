@@ -2,6 +2,7 @@
 import { setupDrawPetals } from "./drawPetals.tsx";
 // @ts-ignore
 import { setupDriverDemo } from "./driverDemo.tsx";
+import {APP, BUILD_DATE, VERSION} from "../src";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>    
@@ -25,3 +26,4 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
 setupDriverDemo(document.querySelector("#driver-demo")!);
 setupDrawPetals(document.querySelector("#flower-div")!);
+console.log(`loaded ${APP} v${VERSION}, ${BUILD_DATE}`)
