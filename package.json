@@ -1,18 +1,22 @@
 {
   "name": "ts-simple-2d-geometry",
-  "version": "0.2.1",
-  "description": "A Simple 2D Geometry Library with Point and Line classes written with TypeScript",
-  "private": false,
-  "type": "module",
-  "files": [
-    "/dist",
-    "package.json",
-    "README.md",
-    "LICENSE"
-  ],
+  "version": "0.2.2",
+  "author": "CGil<lao.tseu.is.alive@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry.git"
+  },
   "main": "./dist/tsSimple2dGeometry.cjs.js",
   "module": "./dist/tsSimple2dGeometry.esm.js",
-  "types": "./dist/tsSimple2dGeometry.d.ts",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "lit": "^3.3.2",
+    "typedoc": "^0.28.18"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.2",
+    "lit": "^3.0.0"
+  },
   "exports": {
     ".": {
       "import": "./dist/tsSimple2dGeometry.esm.js",
@@ -20,6 +24,22 @@
       "types": "./dist/tsSimple2dGeometry.d.ts"
     }
   },
+  "description": "A Simple 2D Geometry Library with Point and Line classes written with TypeScript",
+  "files": [
+    "/dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "homepage": "https://github.com/lao-tseu-is-alive/simple-2d-geometry#readme",
+  "keywords": [
+    "html",
+    "dom",
+    "utils",
+    "typescript"
+  ],
+  "license": "GNU General Public License v3.0",
+  "private": false,
   "scripts": {
     "build": "bun run build.ts",
     "build2": "bun build src/index.ts --production --outfile=out.js",
@@ -31,25 +51,7 @@
     "test:watch": "bun test --watch",
     "format": "prettier --write ."
   },
-  "keywords": [
-    "html",
-    "dom",
-    "utils",
-    "typescript"
-  ],
-  "author": "CGil<lao.tseu.is.alive@gmail.com>",
-  "license": "GNU General Public License v3.0",
-  "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry/issues",
-  "homepage": "https://github.com/lao-tseu-is-alive/simple-2d-geometry#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry.git"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "typedoc": "^0.28.18"
-  },
-  "peerDependencies": {
-    "typescript": "^6.0.2"
-  }
+  "type": "module",
+  "types": "./dist/tsSimple2dGeometry.d.ts",
+  "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry/issues"
 }

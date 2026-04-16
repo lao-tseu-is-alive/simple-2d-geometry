@@ -13,18 +13,11 @@ const outputDir = "./dist";
 console.log(`🐰 🧹 Cleanup of old ${outputDir} content...`);
 await $`rm -rf ${outputDir}`;
 
-/*const now = new Date()
-const content = `export const APP = "${fileName}";\n
-export const VERSION = "${version}";\n
-export const BUILD_DATE = "${now.toISOString()}";
-`;
-await write("src/version.ts", content);*/
-
-
 const sharedConfig = {
   entrypoints: ["./src/index.ts"],
   outdir: outputDir,
   minify: true,
+  external: ["lit"],
   sourcemap: "external" as const,
 };
 

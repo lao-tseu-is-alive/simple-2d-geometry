@@ -15,6 +15,7 @@ import {APP, VERSION, BUILD_DATE} from "./version.ts";
 import type {GeometryDriver, Extent} from "./Driver.ts";
 import type {RenderDriver, RenderOptions, ComposeOptions} from "./RenderDriver.ts";
 import SVGRenderDriver from "./SVGRenderDriver.ts";
+import LitRenderDriver from "./LitRenderDriver.ts"
 import Feature, {type FeatureOptions} from "./Feature.ts";
 import DrawingBoard, {type DrawingBoardOptions} from "./DrawingBoard.ts";
 
@@ -34,6 +35,7 @@ export {
     fixDec,
     VERSION,
     SVGRenderDriver,
+    LitRenderDriver,
     Feature,
     DrawingBoard,
 };
