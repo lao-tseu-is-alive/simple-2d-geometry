@@ -1,6 +1,6 @@
 {
   "name": "ts-simple-2d-geometry",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A Simple 2D Geometry Library with Point and Line classes written with TypeScript",
   "private": false,
   "type": "module",
