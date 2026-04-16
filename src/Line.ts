@@ -259,7 +259,7 @@ export default class Line implements GeometryDriver {
     /**
      * Visitor double-dispatch: delegates to renderer.renderLine.
      */
-    accept<T>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
+    accept<T = string>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
         return renderer.renderLine(this, options, invertY);
     }
 }

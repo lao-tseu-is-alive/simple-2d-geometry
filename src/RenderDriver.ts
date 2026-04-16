@@ -41,7 +41,7 @@ export interface ComposeOptions {
  * Each geometry type has a dedicated render method to preserve
  * full type information without instanceof checks or switches.
  */
-export interface RenderDriver<TOutput> {
+export interface RenderDriver<TOutput = string> {
   renderPoint(point: Point, options: RenderOptions, invertY: boolean): TOutput;
   renderLine(line: Line, options: RenderOptions, invertY: boolean): TOutput;
   renderCircle(circle: Circle, options: RenderOptions, invertY: boolean): TOutput;

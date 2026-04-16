@@ -127,7 +127,7 @@ export default class Feature<G extends GeometryDriver> {
    * Builds RenderOptions from this feature's visual state and
    * delegates rendering to the geometry via double dispatch.
    */
-  render<T>(renderer: RenderDriver<T>, invertY: boolean): T {
+  render<T = string>(renderer: RenderDriver<T>, invertY: boolean): T {
     const options: RenderOptions = {
       stroke: this._options.stroke,
       strokeWidth: this._options.strokeWidth,

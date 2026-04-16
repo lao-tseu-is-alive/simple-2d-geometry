@@ -24,5 +24,5 @@ export interface GeometryDriver {
    * Each geometry implementation calls renderer.renderXxx(this, ...) so the
    * renderer receives the concrete type without instanceof checks.
    */
-  accept<T>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T;
+  accept<T = string>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T;
 }

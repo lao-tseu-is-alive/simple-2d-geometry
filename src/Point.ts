@@ -840,7 +840,7 @@ export default class Point implements iPoint, GeometryDriver {
   /**
    * Visitor double-dispatch: delegates to renderer.renderPoint.
    */
-  accept<T>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
+  accept<T = string>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
     return renderer.renderPoint(this, options, invertY);
   }
 }

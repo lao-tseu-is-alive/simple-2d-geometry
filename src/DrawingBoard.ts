@@ -27,7 +27,7 @@ const DEFAULT_BOARD_OPTIONS: DrawingBoardOptions = {
  *
  * Generic over TOutput: `string` for SVG, `void` for Canvas2D, etc.
  */
-export default class DrawingBoard<TOutput> {
+export default class DrawingBoard<TOutput = string> {
   private readonly _renderer: RenderDriver<TOutput>;
   private readonly _options: DrawingBoardOptions;
   private readonly _features: Feature<GeometryDriver>[] = [];

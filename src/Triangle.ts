@@ -492,7 +492,7 @@ export default class Triangle implements GeometryDriver {
     /**
      * Visitor double-dispatch: delegates to renderer.renderTriangle.
      */
-    accept<T>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
+    accept<T = string>(renderer: RenderDriver<T>, options: RenderOptions, invertY: boolean): T {
         return renderer.renderTriangle(this, options, invertY);
     }
 }
