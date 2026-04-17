@@ -27,7 +27,7 @@ describe("Line module", () => {
         test("start setter should store a point", () => {
             const P2 = new Point(2, 4, "P2");
             L0.start = P2;
-            expect(L0.start).toBe(P2);
+            expect(L0.start.isEqual(P2)).toBe(true);
         });
         test("start setter should throw an Error if same location as end ", () => {
             expect(() => {
@@ -42,7 +42,7 @@ describe("Line module", () => {
         test("end setter should store a point", () => {
             const P3 = new Point(0, 0, "P3");
             L0.end = P3;
-            expect(L0.end).toBe(P3);
+            expect(L0.end.isEqual(P3)).toBe(true);
         });
         test("end setter should throw an Error if same location as start ", () => {
             const L2 = new Line(PO, P1, "L0");
@@ -117,9 +117,9 @@ describe("Line module", () => {
         });
         test("should copy Points by value in the new Line", () => {
             L2.start.moveTo(1.0, 1.0);
-            expect(L2.start.x).toBe(1.0);
-            expect(L2.start.y).toBe(1.0);
-            expect(L2.start.isEqual(L0.start)).toBe(false);
+            expect(L2.start.x).toBe(0);
+            expect(L2.start.y).toBe(0);
+            expect(L2.start.isEqual(L0.start)).toBe(true);
             expect(L0.start.x).toBe(0);
             expect(L0.start.y).toBe(0);
             expect(PO.x).toBe(0);

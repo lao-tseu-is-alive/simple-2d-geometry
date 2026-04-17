@@ -304,7 +304,7 @@ export default class Point implements iPoint, GeometryDriver {
    * @returns {Point} return a new Point object with the sum of this Point and other
    */
   add(other: Point): Point {
-    return this.clone().moveRel(other.x, other.y);
+    return new Point(this.x + other.x, this.y + other.y)
   }
 
   /**
@@ -313,7 +313,7 @@ export default class Point implements iPoint, GeometryDriver {
    * @returns {Point} return a new Point object with the difference of this Point and other Point
    */
   subtract(other: Point): Point {
-    return this.clone().moveRel(-other.x, -other.y);
+    return new Point(this.x - other.x, this.y - other.y)
   }
 
   /**

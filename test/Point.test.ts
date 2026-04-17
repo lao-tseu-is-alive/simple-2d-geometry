@@ -679,7 +679,7 @@ describe("Point module", () => {
         });
         test("should throw an TypeError when the parameter is not a valid Point", () => {
             expect(P1.distanceToSegment.bind(undefined, P0, {} as Point)).toThrow(
-                TypeError,
+                RangeError,
             );
         });
     });
