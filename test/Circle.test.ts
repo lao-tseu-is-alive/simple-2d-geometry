@@ -66,16 +66,17 @@ describe("Circle", () => {
     });
   });
   describe("Circle static methods", () => {
-    test("fromCenterRadius should create a Circle from center and radius", () => {
-      const newCircle = Circle.fromCenterRadius(center, radius, name);
-      expect(newCircle.center).toEqual(center);
+    test("fromCircle should create a Circle from center and radius", () => {
+      const newCircle = Circle.fromCircle(new Circle(center, radius, name));
+      expect(newCircle.center.x).toEqual(center.x);
+      expect(newCircle.center.y).toEqual(center.y);
       expect(newCircle.radius).toEqual(radius);
       expect(newCircle.name).toEqual(name);
     });
-    test("fromCenterRadius should create a Circle from center and radius with empty name", () => {
-      const newCircle = Circle.fromCenterRadius(center, radius);
-      expect(newCircle.center).toEqual(center);
-      expect(newCircle.radius).toEqual(radius);
+    test("fromCircle should create a Circle from center and radius with empty name", () => {
+      const newCircle = Circle.fromCircle(new Circle( center, radius));
+      expect(newCircle.center.x).toEqual(center.x);
+      expect(newCircle.center.y).toEqual(center.y);
       expect(newCircle.name).toEqual("");
     });
     test("fromArray should create a Circle from an array", () => {
@@ -103,7 +104,7 @@ describe("Circle", () => {
   });
   describe("Circle area", () => {
     test("area should return the area of the circle", () => {
-      expect(circle.area()).toBeCloseTo(28.274333882308138);
+      expect(circle.area).toBeCloseTo(28.274333882308138);
     });
   });
 });

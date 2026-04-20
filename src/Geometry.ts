@@ -34,3 +34,12 @@ export function getNumberOrFail(input: string): number {
 export function isNumeric(n: any): boolean {
   return !Number.isNaN(Number.parseFloat(n)) && Number.isFinite(n);
 }
+
+/**
+ * Guard will throw a TypeError if logical is not met
+ */
+export const Guard = {
+    throwIf: (condition: boolean, message: string): void => {
+        if (condition) throw new TypeError(message);
+    }
+};

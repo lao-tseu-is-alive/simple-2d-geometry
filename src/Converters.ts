@@ -1,6 +1,7 @@
 import type {iPoint} from "./Point.ts";
 import type {LineInterface} from "./Line.ts";
 import type {TriangleInterface} from "./Triangle.ts";
+import type {CircleInterface} from "./Circle.ts";
 
 export default class Converters {
   public static convertToPointArray(data: unknown): iPoint[] | undefined {
@@ -45,6 +46,21 @@ export default class Converters {
       };
     } else {
       throw new TypeError("Line data is not valid");
+    }
+  }
+
+  public static convertToCircle(data: Record<string, unknown>): CircleInterface {
+    if (data === undefined || data === null) {
+      throw new TypeError("Circle data is undefined or null");
+    }
+    if ("center" in data && "radius" in data) {
+      return {
+        center: Converters.convertToPoint(data["center"] as Record<string, unknown>),
+        radius: data["radius"] as number,
+        name: "name" in data ? data["name"] as string : undefined,
+      };
+    } else {
+      throw new TypeError("Circle data is not valid");
     }
   }
 

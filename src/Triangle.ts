@@ -1,9 +1,10 @@
-import Point, {type coordinate2dArray, type iPoint} from "./Point.ts";
+import Point, {assertIsPoint, type coordinate2dArray, type iPoint} from "./Point.ts";
 import Converters from "./Converters.ts";
-import {EPSILON} from "./Geometry.ts";
+import {EPSILON, Guard} from "./Geometry.ts";
 import Angle from "./Angle.ts";
-import type { GeometryDriver, Extent } from "./Driver.ts";
-import type { RenderDriver, RenderOptions } from "./RenderDriver.ts";
+import type {GeometryDriver, Extent} from "./Driver.ts";
+import type {RenderDriver, RenderOptions} from "./RenderDriver.ts";
+import Line from "./Line.ts";
 
 /**
  * TriangleInterface is an interface for a Triangle object
@@ -28,6 +29,11 @@ export type coordinatesTriangleArray = [
     coordinate2dArray,
     coordinate2dArray,
 ];
+
+export function assertIsTriangle(val: any, msg: string = ""): asserts val is Triangle {
+    Guard.throwIf(!(val instanceof Triangle), `${msg} expected a Triangle instance.`);
+}
+
 
 /**
  * Class representing  a triangle in 2 dimension cartesian space
@@ -64,9 +70,7 @@ export default class Triangle implements GeometryDriver {
      * @param {Point} input is the new first Point of the triangle
      */
     set pA(input: Point) {
-        if (!(input as unknown)) {
-            throw new TypeError("pA should be a Point object");
-        }
+        assertIsPoint(input, "Triangle pA")
         if (input.isSameLocation(this._pB)) {
             throw new RangeError(
                 `pA:'${input.dump()}' should be at different location from pB:'${this._pB.dump()}'`,
@@ -93,9 +97,7 @@ export default class Triangle implements GeometryDriver {
      * @param {Point} input is the new second Point of the triangle
      */
     set pB(input: Point) {
-        if (!(input as unknown)) {
-            throw new TypeError("pB should be a Point object");
-        }
+        assertIsPoint(input, "Triangle pB")
         if (input.isSameLocation(this._pA)) {
             throw new RangeError(
                 `pB:'${input.dump()}' should be at different location from pA:'${this._pB.dump()}'`,
@@ -122,9 +124,7 @@ export default class Triangle implements GeometryDriver {
      * @param {Point} input is the new third Point of the triangle
      */
     set pC(input: Point) {
-        if (!(input as unknown)) {
-            throw new TypeError("pC should be a Point object");
-        }
+        assertIsPoint(input, "Triangle pC")
         if (input.isSameLocation(this._pA)) {
             throw new RangeError(
                 `pC:'${input.dump()}' should be at different location from pA:'${this._pB.dump()}'`,
@@ -228,67 +228,60 @@ export default class Triangle implements GeometryDriver {
      * @param {string | undefined} name optional name of this triangle
      */
     constructor(pA: Point, pB: Point, pC: Point, name?: string) {
-        if (pA instanceof Point && pB instanceof Point && pC instanceof Point) {
-            if (pA.isSameLocation(pB)) {
-                throw new RangeError(
-                    `pA:'${pA.dump()}' should be at different location from pB:'${pB.dump()}'`,
-                );
-            }
-            if (pA.isSameLocation(pC)) {
-                throw new RangeError(
-                    `pA:'${pA.dump()}' should be at different location from pC:'${pC.dump()}'`,
-                );
-            }
-            if (pB.isSameLocation(pC)) {
-                throw new RangeError(
-                    `pB:'${pB.dump()}' should be at different location from pC:'${pC.dump()}'`,
-                );
-            }
-            if (Point.isCollinear(pA, pB, pC)) {
-                throw new RangeError(
-                    `pA:'${pA.dump()}', pB:'${pB.dump()}' and pC:'${pC.dump()}' should not be collinear`,
-                );
-            }
-            this.pA = pA.clone();
-            this.pB = pB.clone(); // make a copy of the Point object
-            this.pC = pC.clone(); // make a copy of the Point object
-            if (name !== undefined) this.name = name;
-        } else {
-            throw new TypeError(
-                "Triangle constructor needs 3 Point objects as parameters",
+        assertIsPoint(pA, "Triangle pA")
+        assertIsPoint(pB, "Triangle pB")
+        assertIsPoint(pC, "Triangle pC")
+
+        if (pA.isSameLocation(pB)) {
+            throw new RangeError(
+                `pA:'${pA.dump()}' should be at different location from pB:'${pB.dump()}'`,
             );
         }
+        if (pA.isSameLocation(pC)) {
+            throw new RangeError(
+                `pA:'${pA.dump()}' should be at different location from pC:'${pC.dump()}'`,
+            );
+        }
+        if (pB.isSameLocation(pC)) {
+            throw new RangeError(
+                `pB:'${pB.dump()}' should be at different location from pC:'${pC.dump()}'`,
+            );
+        }
+        if (Point.isCollinear(pA, pB, pC)) {
+            throw new RangeError(
+                `pA:'${pA.dump()}', pB:'${pB.dump()}' and pC:'${pC.dump()}' should not be collinear`,
+            );
+        }
+        this.pA = pA.clone();
+        this.pB = pB.clone(); // make a copy of the Point object
+        this.pC = pC.clone(); // make a copy of the Point object
+        if (name !== undefined) this.name = name;
     }
 
     /**
-     * fromTriangle returns a new Triangle that is a copy (clone) of the otherTriangle passed has parameter
-     * @param {Triangle} otherTriangle is the Triangle you want to copy
-     * @returns {Triangle} a new Triangle located at the same cartesian coordinates as otherTriangle
+     * fromTriangle returns a new Triangle that is a copy (clone) of the other passed has parameter
+     * @param {Triangle} other is the Triangle you want to copy
+     * @returns {Triangle} a new Triangle located at the same cartesian coordinates as other
      */
-    static fromTriangle(otherTriangle: Triangle): Triangle {
-        if (otherTriangle instanceof Triangle) {
-            return new Triangle(
-                otherTriangle.pA,
-                otherTriangle.pB,
-                otherTriangle.pC,
-                otherTriangle.name,
-            );
-        } else {
-            throw new TypeError(
-                "fromTriangle needs parameter otherTriangle of type Triangle",
-            );
-        }
+    static fromTriangle(other: Triangle): Triangle {
+        assertIsTriangle(other, "Triangle fromTriangle other")
+        return new Triangle(
+            other.pA,
+            other.pB,
+            other.pC,
+            other.name,
+        );
     }
 
     /**
      * fromArray returns a new Triangle constructed with
-     * @param {[number, number]} coordinatesTriangle is an array of 2 points with 2d coordinates : [[number, number], [number, number]]
+     * @param {[number, number]} coordinatesTriangle is an array of 2 points with 2d coordinates: [[number, number], [number, number]]
      * @returns {Triangle} a new Triangle at given coordinates pA:[x0,y0] and pB:[x1,y1]
      */
     static fromArray(coordinatesTriangle: coordinatesTriangleArray): Triangle {
         if (
             typeof coordinatesTriangle !== "undefined" &&
-            coordinatesTriangle instanceof Array &&
+            coordinatesTriangle as unknown instanceof Array &&
             coordinatesTriangle.length === 3 &&
             typeof coordinatesTriangle[0][0] === "number"
         ) {
@@ -381,39 +374,29 @@ export default class Triangle implements GeometryDriver {
     }
 
     /**
-     * sameLocation allows to compare if this Triangle is at the same location as otherTriangle
-     * @param {Triangle} otherTriangle
+     * sameLocation allows to compare if this Triangle is at the same location as other
+     * @param {Triangle} other
      * @returns {boolean} true if the 2 triangles are at the same location
      */
-    sameLocation(otherTriangle: Triangle): boolean {
-        if (otherTriangle instanceof Triangle) {
-            return (
-                this.pA.isSameLocation(otherTriangle.pA) &&
-                this.pB.isSameLocation(otherTriangle.pB) &&
-                this.pC.isSameLocation(otherTriangle.pC)
-            );
-        } else {
-            throw new TypeError(
-                "A Triangle can only be compared to another Triangle",
-            );
-        }
+    sameLocation(other: Triangle): boolean {
+        assertIsTriangle(other, "Triangle sameLocation other")
+        return (
+            this.pA.isSameLocation(other.pA) &&
+            this.pB.isSameLocation(other.pB) &&
+            this.pC.isSameLocation(other.pC)
+        );
     }
 
     /**
-     * equal allows to compare equality with otherTriangle, they should have the same values for pA,pB and pC
-     * @param {Triangle} otherTriangle
+     * equal allows to compare equality with other, they should have the same values for pA,pB and pC
+     * @param {Triangle} other
      * @returns {boolean}
      */
-    equal(otherTriangle: Triangle): boolean {
-        if (otherTriangle instanceof Triangle) {
-            return (
-                this.sameLocation(otherTriangle) && this.name === otherTriangle.name
-            );
-        } else {
-            throw new TypeError(
-                "A Triangle can only be compared to another Triangle",
-            );
-        }
+    equal(other: Triangle): boolean {
+        assertIsTriangle(other, "Triangle equal other")
+        return (
+            this.sameLocation(other) && this.name === other.name
+        );
     }
 
     /**

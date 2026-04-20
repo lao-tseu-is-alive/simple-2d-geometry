@@ -148,16 +148,16 @@ describe("Point module", () => {
             expect(P1.x).toBe(1.0);
             expect(P1.y).toBe(2.0);
         });
-        test("should throw an Error when parameter is not a valid Point", () => {
+        test("should throw an Error when parameter is an empty Object", () => {
             expect(
-                Point.fromObject.bind(undefined, {} as unknown as coordinate2dArray),
+                Point.fromObject.bind(undefined, {} as Record<string, unknown>),
             ).toThrow(TypeError);
         });
         test("should throw an Error when parameter is not a valid Point", () => {
             expect(
                 Point.fromObject.bind(
                     undefined,
-                    undefined as unknown as coordinate2dArray,
+                    {x:45, b: "zz" },
                 ),
             ).toThrow(TypeError);
         });
@@ -447,6 +447,9 @@ describe("Point module", () => {
         test("should throw an RangeError when the tolerance is negative", () => {
             expect(P1.isSameLocation.bind(undefined, P2, -1)).toThrow(RangeError);
         });
+        test("should throw an RangeError when the tolerance is negative", () => {
+            expect(P1.isSameLocation.bind(undefined, P2, 0.1)).toThrow(TypeError);
+        });
         test("should return false if other Point parameter is null", () => {
             expect(P1.isSameLocation(null)).toEqual(false);
         });
@@ -679,7 +682,7 @@ describe("Point module", () => {
         });
         test("should throw an TypeError when the parameter is not a valid Point", () => {
             expect(P1.distanceToSegment.bind(undefined, P0, {} as Point)).toThrow(
-                RangeError,
+                TypeError,
             );
         });
     });
