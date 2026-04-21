@@ -251,6 +251,9 @@ describe("Point module", () => {
         test("should return a correct string representation", () => {
             expect(P1.toString()).toEqual(`(${1.0},${2.0})`);
         });
+        test("should return a correct string representation", () => {
+            expect(new Point(1.468,3.0044).toString(" ",true,1)).toEqual(`(${1.5} ${3.0})`);
+        });
         test("should return a string  without parenthesis when surroundingParenthesis is false", () => {
             expect(P1.toString(",", false)).toEqual(`${1.0},${2.0}`);
         });

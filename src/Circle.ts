@@ -267,7 +267,7 @@ export default class Circle implements GeometryDriver {
 
     toObject(): CircleInterface {
         return {
-            center: this.center,
+            center: JSON.parse(this.center.toJSON()),
             radius: this.radius,
             ...(this.name !== undefined ? {name: this.name} : {}),
         };

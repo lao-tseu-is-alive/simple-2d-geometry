@@ -231,7 +231,7 @@ export default class Point implements iPoint, GeometryDriver {
     }
 
     /**
-     * toEWKT returns an Postgis Extended Well-known text (EWKT) representation of this class instance
+     * toEWKT returns a Postgis Extended Well-known text (EWKT) representation of this class instance
      * https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT
      * @param {number} srid is the Spatial reference systems identifier EPSG code default is 2056 for Switzerland MN03
      * @returns {string}

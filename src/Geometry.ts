@@ -3,7 +3,7 @@ export const EPSILON = Number(`1e-${PRECISION}`); // 1e-9 or 0.000000001
 export const DIGITIZE_PRECISION = 2; // cm is enough for screen digitizing
 
 /**
- * Rounds number  to a given decimal precision
+ * Rounds number to a given decimal precision
  *
  * @param {(number|string)} num
  * @param {number} precision display precision
