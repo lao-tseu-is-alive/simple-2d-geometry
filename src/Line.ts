@@ -229,7 +229,7 @@ export default class Line implements GeometryDriver {
     }
 
     /**
-     * clone  returns a new Line that is a copy of itself
+     * clone returns a new Line that is a copy of itself
      * @returns {Line} a new Line located at the same cartesian coordinates as this Line
      */
     clone(): Line {

@@ -1,6 +1,6 @@
 {
   "name": "ts-simple-2d-geometry",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "author": "CGil<lao.tseu.is.alive@gmail.com>",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
   "devDependencies": {
     "@types/bun": "latest",
     "lit": "^3.3.2",
-    "typedoc": "^0.28.18"
+    "typedoc": "^0.28.19"
   },
   "peerDependencies": {
     "typescript": "^6.0.2",
@@ -48,6 +48,7 @@
     "lint": "eslint src --ext .ts",
     "prepublishOnly": "bun run build",
     "test": "bun test",
+    "test:coverage": "bun test --coverage",
     "test:watch": "bun test --watch",
     "format": "prettier --write ."
   },

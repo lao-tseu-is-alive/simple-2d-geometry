@@ -2,7 +2,7 @@ import Point, {assertIsPoint, type coordinate2dArray, type iPoint} from "./Point
 import type {GeometryDriver, Extent} from "./Driver.ts";
 import type {RenderDriver, RenderOptions} from "./RenderDriver.ts";
 import Converters from "./Converters.ts";
-import {Guard} from "./Geometry.ts";
+import {EPSILON, Guard} from "./Geometry.ts";
 import type Angle from "./Angle.ts";
 
 export interface CircleInterface {
@@ -11,7 +11,7 @@ export interface CircleInterface {
     name?: string;
 }
 
-export function assertIsCircle(val: any, msg:string=""): asserts val is Circle {
+export function assertIsCircle(val: any, msg: string = ""): asserts val is Circle {
     Guard.throwIf(!(val instanceof Circle), `${msg} expected a Circle instance.`);
 }
 
@@ -21,7 +21,7 @@ export function assertIsCircle(val: any, msg:string=""): asserts val is Circle {
 export default class Circle implements GeometryDriver {
     private _center: Point = Point.fromArray([0, 0]); // default center point
     private _radius: number = 1.0; // default radius
-    private _name: string | undefined = undefined;
+    private _name: string = "";
 
     get center(): Point {
         return this._center;
@@ -46,9 +46,6 @@ export default class Circle implements GeometryDriver {
     }
 
     get name(): string {
-        if (this._name === undefined) {
-            return "";
-        }
         return this._name;
     }
 
@@ -94,7 +91,7 @@ export default class Circle implements GeometryDriver {
      */
     static fromCircle(other: Circle): Circle {
         assertIsCircle(other, "fromCircle other")
-            return new Circle(other.center.clone(), other.radius, other.name);
+        return new Circle(other.center.clone(), other.radius, other.name);
     }
 
     /**
@@ -121,9 +118,9 @@ export default class Circle implements GeometryDriver {
         }
     }
 
-    static fromObject(data: Record<string, unknown>) {
+    static fromObject(data: Record<string, unknown>): Circle {
         if (data === undefined || data === null) {
-            throw new TypeError("cannot create a Line from nothing");
+            throw new TypeError("cannot create a Circle from nothing");
         }
         const tempCircle: CircleInterface = Converters.convertToCircle(data);
         return new Circle(
@@ -142,6 +139,108 @@ export default class Circle implements GeometryDriver {
                 `Circle:fromJSON got ${e}, needs a valid JSON string as parameter :${json}`,
             );
         }
+    }
+
+    /**
+     * Creates a circle from its center and one point lying on the circle.
+     * @param {Point} center center of the circle
+     * @param {Point} pointOnCircle any point on the circumference
+     * @param {string | undefined} name optional name of this circle
+     * @returns {Circle}
+     */
+    static fromCenterAndPoint(center: Point, pointOnCircle: Point, name?: string): Circle {
+        assertIsPoint(center, "Circle fromCenterAndPoint center");
+        assertIsPoint(pointOnCircle, "Circle fromCenterAndPoint pointOnCircle");
+
+        const dx = pointOnCircle.x - center.x;
+        const dy = pointOnCircle.y - center.y;
+        const radius = Math.sqrt(dx * dx + dy * dy);
+
+        if (radius <= 0) {
+            throw new RangeError("Circle radius should be a positive number");
+        }
+
+        return new Circle(center.clone(), radius, name);
+    }
+
+    /**
+     * Creates a circle from the two end points of a diameter.
+     * @param {Point} start first end point of the diameter
+     * @param {Point} end second end point of the diameter
+     * @param {string | undefined} name optional name of this circle
+     * @returns {Circle}
+     */
+    static fromDiameter(start: Point, end: Point, name?: string): Circle {
+        assertIsPoint(start, "fromDiameter start");
+        assertIsPoint(end, "fromDiameter end");
+
+        if (start.isSameLocation(end)) {
+            throw new RangeError("Cannot create a circle from a zero-length diameter");
+        }
+
+        const center = new Point(
+            (start.x + end.x) / 2,
+            (start.y + end.y) / 2,
+        );
+
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const radius = Math.sqrt(dx * dx + dy * dy) / 2;
+
+        return new Circle(center, radius, name);
+    }
+
+    /**
+     * Creates the unique circle passing through three non-collinear points.
+     * @param {Point} a first point on the circle
+     * @param {Point} b second point on the circle
+     * @param {Point} c third point on the circle
+     * @param {string | undefined} name optional name of this circle
+     * @returns {Circle}
+     */
+    static from3Points(a: Point, b: Point, c: Point, name?: string): Circle {
+        assertIsPoint(a, "from3Points a");
+        assertIsPoint(b, "from3Points b");
+        assertIsPoint(c, "from3Points c");
+
+        // Reject duplicate points
+        if (a.isSameLocation(b) || a.isSameLocation(c) || b.isSameLocation(c)) {
+            throw new RangeError("Cannot create a circle from duplicate points");
+        }
+
+        // Determinant for circumcenter formula
+        const d = 2 * (
+            a.x * (b.y - c.y) +
+            b.x * (c.y - a.y) +
+            c.x * (a.y - b.y)
+        );
+
+        if (Math.abs(d) < EPSILON) {
+            throw new RangeError("Cannot create a circle from 3 aligned points");
+        }
+
+        const ax2ay2 = a.x * a.x + a.y * a.y;
+        const bx2by2 = b.x * b.x + b.y * b.y;
+        const cx2cy2 = c.x * c.x + c.y * c.y;
+
+        const ux = (
+            ax2ay2 * (b.y - c.y) +
+            bx2by2 * (c.y - a.y) +
+            cx2cy2 * (a.y - b.y)
+        ) / d;
+
+        const uy = (
+            ax2ay2 * (c.x - b.x) +
+            bx2by2 * (a.x - c.x) +
+            cx2cy2 * (b.x - a.x)
+        ) / d;
+
+        const center = new Point(ux, uy);
+        const dx = a.x - ux;
+        const dy = a.y - uy;
+        const radius = Math.sqrt(dx * dx + dy * dy);
+
+        return new Circle(center, radius, name);
     }
 
     /**
@@ -166,29 +265,31 @@ export default class Circle implements GeometryDriver {
         }
     }
 
+    toObject(): CircleInterface {
+        return {
+            center: this.center,
+            radius: this.radius,
+            ...(this.name !== undefined ? {name: this.name} : {}),
+        };
+    }
+
     toJSON(): string {
-        if (this.name.length > 0) {
-            return `{"start":${this.center.toJSON()}, "radius":${this.radius}, "name":"${this.name}"}`;
-        }
-        return `{"start":${this.center.toJSON()}, "radius":${this.radius}"}`;
+        return JSON.stringify(this.toObject());
     }
 
     /**
-     * sameLocation allows to compare if this Circle segment is at exact  same location as other
+     * sameLocation: allows comparing if this Circle is at the exact same location as other with same radius
      * @param {Circle} other
-     * @returns {boolean}
+     * @returns {boolean} true if both Circles are at the same center and have the same radius
      */
     sameLocation(other: Circle): boolean {
         assertIsCircle(other, "Circle sameLocation other")
-        return (
-            this.center.isSameLocation(other.center) &&
-            this.radius == other.radius
-        );
+        return (this.center.isSameLocation(other.center) && (Math.abs(this.radius - other.radius) < EPSILON));
     }
 
     /**
      * equal allows comparing equality with other, they should have the same values
-     * for start and end and the same names if you just want to check the geom use
+     * for center and radius and the same names if you just want to check the geom use
      * sameLocation(other) instead
      * @param {Circle} other
      * @returns {boolean}
@@ -202,7 +303,9 @@ export default class Circle implements GeometryDriver {
     // --- Spatial Queries ---
     // ──────────────────────────────────────────────────────────────────────────────
     /**
-     * Checks if a specific other is inside or on the boundary of the circle.
+     * containsPoint: checks if other Point lies inside or on the boundary of the circle.
+     * @param {Circle} other
+     * @returns {boolean}
      */
     containsPoint(other: Point): boolean {
         assertIsPoint(other, "Circle containsPoint other")
@@ -243,20 +346,20 @@ export default class Circle implements GeometryDriver {
     translate(other: Point): Circle {
         assertIsPoint(other, "Circle translate other")
         const newCenter = this.center.add(other);
-        if (this.name.length < 0) {
-            return new Circle(newCenter, this.radius)
-        }
         return new Circle(newCenter, this.radius, this.name)
     }
 
     /**
      * rotate will rotate a copy of this Circle by theta around the origin (0,0)
-     * in the case of a circle rotation at 0,0 does nothing so it's just returning a copy of itself
+     * in the case of a circle at 0,0 rotation does nothing so it's just returning a copy of itself
      * @param {Angle} theta is the angle to rotate this Circle
      * @returns {Circle} return a clone of this Circle
      */
     rotate(theta: Angle): Circle {
-        return this.clone()
+        if (this.center.isOrigin()) {
+            return this.clone()
+        }
+        return new Circle(this.center.rotate(theta), this.radius, this.name)
     }
 
     /**
@@ -268,13 +371,13 @@ export default class Circle implements GeometryDriver {
         assertIsPoint(center, "Circle rotateAround center")
         // if given center is origin no need translate
         if (center.isOrigin()) {
-            return this.rotate(theta);
+            return this.clone();
         }
         // Translate points so center is the origin
         const centerTranslated = this.center.subtract(center);
         const centerRotated = centerTranslated.rotate(theta);
         // Translate point back
-        return new Circle(centerRotated.add(center), this.radius);
+        return new Circle(centerRotated.add(center), this.radius, this.name);
     }
 
 
