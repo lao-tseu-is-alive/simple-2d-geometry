@@ -181,10 +181,10 @@ describe("Circle", () => {
         })
 
         test("toObject should return a valid circle object ", () => {
-            expect(circle.toObject()).toEqual({center: {x: 1, y: 2, name: ""}, radius: 3, name: "circle"});
+            expect(circle.toObject()).toEqual({center: {x: 1, y: 2}, radius: 3, name: "circle"});
         })
         test("toJSON should return a valid circle JSON ", () => {
-            expect(circle.toJSON()).toEqual(JSON.stringify({center: {x: 1, y: 2, name: ""}, radius: 3, name: "circle"}));
+            expect(circle.toJSON()).toEqual(JSON.stringify({center: {x: 1, y: 2}, radius: 3, name: "circle"}));
         })
     })
 

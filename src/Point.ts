@@ -262,7 +262,10 @@ export default class Point implements iPoint, GeometryDriver {
      * @returns {string}
      */
     toJSON(): string {
-        return `{"x":${this.x},"y":${this.y},"name":"${this.name}"}`;
+        if (this.name.length > 0) {
+            return `{"x":${this.x},"y":${this.y},"name":"${this.name}"}`;
+        }
+        return `{"x":${this.x},"y":${this.y}}`;
     }
 
     /**

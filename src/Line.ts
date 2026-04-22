@@ -50,7 +50,8 @@ export default class Line implements GeometryDriver {
         }
         this._start = input;
         this._direction = this.end.subtract(this.start)
-        this._lenSq = this.end.distanceSquaredTo(this.start)
+        // Calculate lenSq directly to avoid Point.distanceSquaredTo's Epsilon snapping
+        this._lenSq = this._direction.x * this._direction.x + this._direction.y * this._direction.y;
     }
 
     get end(): Point {
@@ -64,7 +65,7 @@ export default class Line implements GeometryDriver {
         }
         this._end = input;
         this._direction = this.end.subtract(this.start)
-        this._lenSq = this.end.distanceSquaredTo(this.start)
+        this._lenSq = this._direction.x * this._direction.x + this._direction.y * this._direction.y;
     }
 
     get name(): string {
@@ -117,10 +118,10 @@ export default class Line implements GeometryDriver {
     /**
      * yIntercept calculates `b` of the line in the form `y = mx + b`.
      * it corresponds to the y value where the line crosses at x=0
-     *  Returns `null` for vertical lines, which do not have a defined y-intercept in slope-intercept form.
+     *  Returns NaN for vertical lines, which do not have a defined y-intercept in slope-intercept form.
      */
-    get yIntercept(): number | null {
-        if (this.slope === null) return null;
+    get yIntercept(): number {
+        if (this.isVertical) return NaN;
         return this.p1.y - this.slope * this.p1.x;
     }
 
@@ -138,12 +139,13 @@ export default class Line implements GeometryDriver {
                 `start:'${start.dump()}' should be at different location from end:'${end.dump()}'`,
             );
         }
-        this.start = start.clone();
-        this.end = end.clone(); // make a copy of the Point object
+        // Bypass setters to avoid validation collisions with default values
+        this._start = start.clone();
+        this._end = end.clone();
         if (name !== undefined) this.name = name;
         // calculate the direction vector
         this._direction = this.end.subtract(this.start)
-        this._lenSq = this.end.distanceSquaredTo(this.start)
+        this._lenSq = this._direction.x * this._direction.x + this._direction.y * this._direction.y;
     }
 
     // ──────────────────────────────────────────────────────────────────────────────
