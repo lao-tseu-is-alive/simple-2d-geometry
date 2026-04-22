@@ -18,10 +18,10 @@ describe("Point module", () => {
             // Test cases with invalid inputs
             const invalidCoordinates = [
                 {x: Number.POSITIVE_INFINITY, y: 0},
-                {x:  Number.NEGATIVE_INFINITY, y: 0},
+                {x: Number.NEGATIVE_INFINITY, y: 0},
                 {x: Number.NaN, y: 0},
                 {x: 0, y: Number.POSITIVE_INFINITY},
-                {x: 0, y:  Number.NEGATIVE_INFINITY},
+                {x: 0, y: Number.NEGATIVE_INFINITY},
                 {x: 0, y: Number.NaN},
                 {x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY},
                 {x: Number.NaN, y: Number.NaN},
@@ -157,7 +157,7 @@ describe("Point module", () => {
             expect(
                 Point.fromObject.bind(
                     undefined,
-                    {x:45, b: "zz" },
+                    {x: 45, b: "zz"},
                 ),
             ).toThrow(TypeError);
         });
@@ -252,7 +252,7 @@ describe("Point module", () => {
             expect(P1.toString()).toEqual(`(${1.0},${2.0})`);
         });
         test("should return a correct string representation", () => {
-            expect(new Point(1.468,3.0044).toString(" ",true,1)).toEqual(`(${1.5} ${3.0})`);
+            expect(new Point(1.468, 3.0044).toString(" ", true, 1)).toEqual(`(${1.5} ${3.0})`);
         });
         test("should return a string  without parenthesis when surroundingParenthesis is false", () => {
             expect(P1.toString(",", false)).toEqual(`${1.0},${2.0}`);
@@ -573,7 +573,7 @@ describe("Point module", () => {
         });
         test("a parameter c value like Number.POSITIVE_INFINITY or Number.NaN should throw a type error", () => {
             // Test cases with invalid inputs
-            const invalidValues = [ Number.POSITIVE_INFINITY,  Number.NEGATIVE_INFINITY, Number.NaN];
+            const invalidValues = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NaN];
             // Loop through invalid cases and assert that RangeError is thrown
             invalidValues.forEach((v) => {
                 expect(P1.multiply.bind(undefined, v as number)).toThrow(TypeError);
@@ -599,7 +599,7 @@ describe("Point module", () => {
         });
         test("a parameter c value like Infinity or Number.NaN should throw a type error", () => {
             // Test cases with invalid inputs
-            const invalidValues = [ Number.POSITIVE_INFINITY,  Number.NEGATIVE_INFINITY, Number.NaN];
+            const invalidValues = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NaN];
             // Loop through invalid cases and assert that RangeError is thrown
             invalidValues.forEach((v) => {
                 expect(P1.divide.bind(undefined, v as number)).toThrow(TypeError);
@@ -671,12 +671,31 @@ describe("Point module", () => {
         });
     });
 
-    describe("Point.distanceToSegment()", () => {
+    describe("Point.distanceToInfiniteLine()", () => {
         const P0 = new Point(0.0, 0.0, "P0");
         const P1 = new Point(1.0, 1.0, "P1");
         const P2 = new Point(2.0, 3.0, "P2");
         test("should return the distance from a point to a line", () => {
-            expect(P0.distanceToSegment(P1, P2)).toBeCloseTo(0.447214);
+            expect(P0.distanceToInfiniteLine(P1, P2)).toBeCloseTo(0.447214);
+        });
+        test("should throw an TypeError when the parameter is not a valid Point", () => {
+            expect(P1.distanceToInfiniteLine.bind(undefined, {} as Point, P2)).toThrow(
+                TypeError,
+            );
+        });
+        test("should throw an TypeError when the parameter is not a valid Point", () => {
+            expect(P1.distanceToInfiniteLine.bind(undefined, P0, {} as Point)).toThrow(
+                TypeError,
+            );
+        });
+    });
+
+    describe("Point.distanceToSegment()", () => {
+        const P0 = new Point(2.0, 0.0, "P0");
+        const P1 = new Point(0.0, 1.0, "P1");
+        const P2 = new Point(4.0, 1.0, "P2");
+        test("should return the distance from a point to a line", () => {
+            expect(P0.distanceToSegment(P1, P2)).toBeCloseTo(1.0);
         });
         test("should throw an TypeError when the parameter is not a valid Point", () => {
             expect(P1.distanceToSegment.bind(undefined, {} as Point, P2)).toThrow(
@@ -689,6 +708,7 @@ describe("Point module", () => {
             );
         });
     });
+
     describe("Point.project()", () => {
         const P0 = new Point(0.0, 0.0, "P0");
         const P1 = new Point(1.0, 1.0, "P1");
@@ -881,6 +901,17 @@ describe("Point.perpendicular()", () => {
         expect(P4.y).toBeCloseTo(P2.y);
     });
 });
+
+describe("Point.sideOfLine()", () => {
+    test("sideOfLine determines spatial orientation", () => {
+        const p1 = new Point(0, 0);
+        const p2 = new Point(10, 0);
+
+        expect(new Point(5, 5).sideOfLine(p1, p2)).toBeGreaterThan(0); // Left
+        expect(new Point(5, -5).sideOfLine(p1, p2)).toBeLessThan(0);    // Right
+        expect(new Point(15, 0).sideOfLine(p1, p2)).toBe(0);            // Collinear
+    });
+})
 
 describe("Point.linearInterpolate()", () => {
     const P0 = new Point(0.0, 0.0, "P0");

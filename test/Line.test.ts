@@ -156,7 +156,8 @@ describe("Line module", () => {
         });
         test("should throw an Error if object is undefined or null", () => {
             expect(
-                Line.fromObject.bind(undefined, undefined as unknown as Object),
+                Line.fromObject.bind(undefined, undefined as unknown),
+                //Line.fromObject(undefined as unknown as Object)
             ).toThrow(TypeError);
         });
     });
@@ -243,4 +244,28 @@ describe("Line module", () => {
             );
         });
     });
+    describe("Line.isParallelTo", () => {
+        test("isParallelTo resists epsilon-scaling bugs with micro-vectors", () => {
+            // Two perpendicular, very small segments
+            const l1 = new Line(new Point(0, 0), new Point(1e-6, 0));
+            const l2 = new Line(new Point(0, 0), new Point(0, 1e-6));
+
+            expect(l1.isParallelTo(l2)).toBe(false);
+        });
+    })
+    describe("Line.getSegmentIntersectionWith", () => {
+        test("getSegmentIntersectionWith honors bounds", () => {
+            const l1 = new Line(new Point(0, 0), new Point(10, 0));
+
+            // Intersects in the middle
+            const l2 = new Line(new Point(5, -5), new Point(5, 5));
+            expect(l1.getSegmentIntersectionWith(l2)?.x).toBeCloseTo(5);
+            expect(l1.getSegmentIntersectionWith(l2)?.y).toBeCloseTo(0);
+
+            // Intersects the infinite line, but not the bounded segment
+            const l3 = new Line(new Point(15, -5), new Point(15, 5));
+            expect(l1.getSegmentIntersectionWith(l3)).toBeNull();
+        });
+    })
+
 });

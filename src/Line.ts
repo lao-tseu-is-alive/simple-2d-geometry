@@ -325,7 +325,10 @@ export default class Line implements GeometryDriver {
     /** Checks if another line is parallel (directions are collinear) */
     isParallelTo(other: Line): boolean {
         assertIsLine(other, "Line isParallelTo other")
-        return Math.abs(this._direction.x * other.direction.y - this._direction.y * other.direction.x) < EPSILON;
+        const crossSq = Math.pow(this._direction.x * other.direction.y - this._direction.y * other.direction.x, 2);
+        const lenSq = this._lenSq * other._lenSq;
+        // robust Scale-invariant comparison
+        return (crossSq / lenSq) < (EPSILON * EPSILON);
     }
 
     /** Checks if another line is perpendicular */
@@ -353,6 +356,52 @@ export default class Line implements GeometryDriver {
         if (Math.abs(det) < EPSILON) return null; // Parallel fallback
 
         return new Point((B2 * C1 - B1 * C2) / det, (A1 * C2 - A2 * C1) / det);
+    }
+
+    /**
+     * getSegmentIntersectionWith returns the intersection point of two finite line segments.
+     * Returns null if they do not intersect, or if they are parallel/collinear.
+     */
+    getSegmentIntersectionWith(other: Line): Point | null {
+        assertIsLine(other, "Line getSegmentIntersectionWith other");
+
+        const p = this.start;
+        const r = this._direction;
+        const q = other.start;
+        const s = other._direction;
+
+        const rCrossS = r.cross(s);
+        const qMinusP = q.subtract(p);
+
+        if (Math.abs(rCrossS) < EPSILON) {
+            // Lines are parallel or collinear
+            return null;
+        }
+
+        const t = qMinusP.cross(s) / rCrossS;
+        const u = qMinusP.cross(r) / rCrossS;
+
+        if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+            return p.add(r.multiply(t));
+        }
+
+        return null;
+    }
+
+    /** * isPointOnSegment checks if a point lies strictly on this bounded segment.
+     */
+    isPointOnSegment(point: Point): boolean {
+        assertIsPoint(point, "Line isPointOnSegment point");
+        // Must be collinear
+        if (point.distanceToSegment(this.start, this.end) > EPSILON) return false;
+
+        // Must lie within the bounding box of the segment
+        const minX = Math.min(this.start.x, this.end.x) - EPSILON;
+        const maxX = Math.max(this.start.x, this.end.x) + EPSILON;
+        const minY = Math.min(this.start.y, this.end.y) - EPSILON;
+        const maxY = Math.max(this.start.y, this.end.y) + EPSILON;
+
+        return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
     }
 
     /** Orthogonally projects a other onto this line

@@ -172,10 +172,17 @@ export default class Point implements iPoint, GeometryDriver {
     }
 
     /** isCollinear returns true if the three points are collinear
+     * Fixed to handle scale-invariant epsilon by normalizing.
      * @returns {boolean} true if the three points are collinear
      */
     static isCollinear(p1: Point, p2: Point, p3: Point): boolean {
-        return Math.abs(Point.determinant(p1, p2, p3)) <= EPSILON;
+        const v1 = p2.subtract(p1);
+        const v2 = p3.subtract(p1);
+        // Compare normalized cross product against EPSILON to avoid scale-based false positives
+        const lenSq = v1.magnitudeSquared() * v2.magnitudeSquared();
+        if (lenSq === 0) return true; // Points overlap
+        const cross = v1.cross(v2);
+        return (cross * cross) / lenSq <= (EPSILON * EPSILON);
     }
 
     /**
@@ -548,18 +555,42 @@ export default class Point implements iPoint, GeometryDriver {
     }
 
     /**
-     * distanceToSegment calculates the distance from this point to the line defined by points p and q
+     * distanceToInfiniteLine calculates the distance from this point to the line defined by points p and q
      * @param {Point} p
      * @param {Point} q
      * @return {Number} the distance calculated between this Point and the line defined by p and q
      * @throws {TypeError} if p or q are not Points
      */
-    distanceToSegment(p: Point, q: Point): number {
-        assertIsPoint(p, "distanceToSegment p")
-        assertIsPoint(q, "distanceToSegment q")
+    distanceToInfiniteLine(p: Point, q: Point): number {
+        assertIsPoint(p, "distanceToInfiniteLine p")
+        assertIsPoint(q, "distanceToInfiniteLine q")
         return Math.abs(
             p.subtract(q).cross(this.subtract(q)) / p.subtract(q).norm(),
         );
+    }
+
+    /**
+     * distanceToSegment calculates the shortest distance from this point to the finite segment p-q
+     * @param {Point} p Start of the segment
+     * @param {Point} q End of the segment
+     * @return {Number} the shortest distance
+     */
+    distanceToSegment(p: Point, q: Point): number {
+        assertIsPoint(p, "distanceToSegment p")
+        assertIsPoint(q, "distanceToSegment q")
+
+        const pq = q.subtract(p);
+        const l2 = pq.magnitudeSquared();
+
+        // If segment is a single point, return distance to that point
+        if (l2 === 0) return this.distanceTo(p);
+
+        // Calculate the projection parameter t and clamp to [0, 1] for the finite segment
+        const t = Math.max(0, Math.min(1, this.subtract(p).dot(pq) / l2));
+
+        // Projection falls on the segment
+        const projection = p.add(pq.multiply(t));
+        return this.distanceTo(projection);
     }
 
     /**
@@ -676,6 +707,16 @@ export default class Point implements iPoint, GeometryDriver {
             throw new RangeError("angleTo: points are at the same location");
         }
         return new Angle(Math.atan2(other.y - this.y, other.x - this.x), "radians");
+    }
+
+    /**
+     * sideOfLine determines which side of a directed line (p1->p2) this point lies on.
+     * @returns > 0 if Left, < 0 if Right, 0 if collinear
+     */
+    sideOfLine(p1: Point, p2: Point): number {
+        const cross = p2.subtract(p1).cross(this.subtract(p1));
+        if (Math.abs(cross) < EPSILON) return 0;
+        return cross;
     }
 
     /**
