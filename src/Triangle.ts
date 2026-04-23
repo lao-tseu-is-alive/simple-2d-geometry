@@ -370,7 +370,7 @@ export default class Triangle implements GeometryDriver {
      * @returns {string} a string representing the triangle
      */
     toJSON(): string {
-        return `{"pA":${this.pA.toJSON()}, "pB":${this.pB.toJSON()}, "name":"${this.name}"}`;
+        return `{"pA":${this.pA.toJSON()}, "pB":${this.pB.toJSON()}, "pC":${this.pC.toJSON()}, "name":"${this.name}"}`;
     }
 
     /**
