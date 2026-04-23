@@ -2,6 +2,7 @@ import type Point from "./Point.ts";
 import type Line from "./Line.ts";
 import type Circle from "./Circle.ts";
 import type Triangle from "./Triangle.ts";
+import type Polygon from "./Polygon.ts";
 import type { Extent } from "./Driver.ts";
 
 /**
@@ -46,6 +47,7 @@ export interface RenderDriver<TOutput = string> {
   renderLine(line: Line, options: RenderOptions, invertY: boolean): TOutput;
   renderCircle(circle: Circle, options: RenderOptions, invertY: boolean): TOutput;
   renderTriangle(triangle: Triangle, options: RenderOptions, invertY: boolean): TOutput;
+  renderPolygon(polygon: Polygon, options: RenderOptions, invertY: boolean): TOutput;
 
   /**
    * Compose individual rendered elements into a final output frame.

@@ -2,6 +2,7 @@ import type {iPoint} from "./Point.ts";
 import type {LineInterface} from "./Line.ts";
 import type {TriangleInterface} from "./Triangle.ts";
 import type {CircleInterface} from "./Circle.ts";
+import type {PolygonInterface} from "./Polygon.ts";
 
 export default class Converters {
   public static convertToPointArray(data: unknown): iPoint[] | undefined {
@@ -84,5 +85,22 @@ export default class Converters {
       };
     }
     throw new TypeError("Triangle data is not valid");
+  }
+
+  static convertToPolygon(data: Record<string, unknown>): PolygonInterface {
+    if (data === undefined || data === null) {
+      throw new TypeError("Polygon data is undefined or null");
+    }
+    if ("points" in data && data["points"] !== undefined) {
+      const pointsData = data["points"] as unknown[];
+      if (!Array.isArray(pointsData) || pointsData.length < 3) {
+        throw new TypeError("Polygon data needs at least 3 points");
+      }
+      return {
+        points: pointsData.map((p) => Converters.convertToPoint(p as Record<string, unknown>)),
+        name: "name" in data ? data["name"] as string : undefined,
+      };
+    }
+    throw new TypeError("Polygon data is not valid");
   }
 }

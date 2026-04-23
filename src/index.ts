@@ -15,6 +15,7 @@ import Feature, {type FeatureOptions} from "./Feature.ts";
 import Line, {type LineInterface, type coordinatesLineArray} from "./Line.ts";
 import LitRenderDriver from "./LitRenderDriver.ts"
 import Point, {type iPoint, type coordinate2dArray} from "./Point.ts";
+import Polygon, {type PolygonInterface, type coordinatesPolygonArray} from "./Polygon.ts";
 import type {RenderDriver, RenderOptions, ComposeOptions} from "./RenderDriver.ts";
 import SVGRenderDriver from "./SVGRenderDriver.ts";
 import Triangle, {type TriangleInterface, type coordinatesTriangleArray} from "./Triangle.ts";
@@ -28,6 +29,7 @@ export {
     Point,
     Line,
     Triangle,
+    Polygon,
     Circle,
     EPSILON,
     PRECISION,
@@ -45,6 +47,7 @@ export type {
     AngleType, iPoint, coordinate2dArray,
     TriangleInterface, coordinatesTriangleArray, CircleInterface,
     LineInterface, coordinatesLineArray,
+    PolygonInterface, coordinatesPolygonArray,
     GeometryDriver, Extent, BoundingBox,
     RenderDriver, RenderOptions, ComposeOptions,
     FeatureOptions, DrawingBoardOptions,

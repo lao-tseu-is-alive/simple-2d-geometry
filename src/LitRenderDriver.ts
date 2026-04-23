@@ -3,6 +3,7 @@ import type Point from "./Point.ts";
 import type Line from "./Line.ts";
 import type Circle from "./Circle.ts";
 import type Triangle from "./Triangle.ts";
+import type Polygon from "./Polygon.ts";
 import type { RenderDriver, RenderOptions, ComposeOptions } from "./RenderDriver.ts";
 
 
@@ -54,6 +55,13 @@ export default class LitRenderDriver implements RenderDriver<TemplateResult> {
 
     renderTriangle(triangle: Triangle, options: RenderOptions, invertY: boolean): TemplateResult {
         const points = [triangle.pA, triangle.pB, triangle.pC]
+            .map(p => `${p.x},${this.resolveY(p.y, invertY)}`)
+            .join(" ");
+        return svg`<polygon points="${points}" style=${this.getStyle(options)}/>`;
+    }
+
+    renderPolygon(polygon: Polygon, options: RenderOptions, invertY: boolean): TemplateResult {
+        const points = polygon.points
             .map(p => `${p.x},${this.resolveY(p.y, invertY)}`)
             .join(" ");
         return svg`<polygon points="${points}" style=${this.getStyle(options)}/>`;

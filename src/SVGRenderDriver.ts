@@ -2,6 +2,7 @@ import type Point from "./Point.ts";
 import type Line from "./Line.ts";
 import type Circle from "./Circle.ts";
 import type Triangle from "./Triangle.ts";
+import type Polygon from "./Polygon.ts";
 import type { Extent } from "./Driver.ts";
 import type { RenderDriver, RenderOptions, ComposeOptions } from "./RenderDriver.ts";
 
@@ -47,6 +48,13 @@ export default class SVGRenderDriver implements RenderDriver<string> {
 
   renderTriangle(triangle: Triangle, options: RenderOptions, invertY: boolean): string {
     const points = [triangle.pA, triangle.pB, triangle.pC]
+      .map(p => `${p.x},${resolveY(p.y, invertY)}`)
+      .join(" ");
+    return `<polygon points="${points}" ${svgAttributes(options)}/>`;
+  }
+
+  renderPolygon(polygon: Polygon, options: RenderOptions, invertY: boolean): string {
+    const points = polygon.points
       .map(p => `${p.x},${resolveY(p.y, invertY)}`)
       .join(" ");
     return `<polygon points="${points}" ${svgAttributes(options)}/>`;
