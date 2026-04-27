@@ -4,7 +4,6 @@ import Angle from "./Angle.ts";
 import type {GeometryDriver, Extent} from "./Driver.ts";
 import type {RenderDriver, RenderOptions} from "./RenderDriver.ts";
 import {EPSILON, Guard} from "./Geometry.ts";
-import Circle from "./Circle.ts";
 
 export interface LineInterface {
     start: iPoint;
@@ -167,7 +166,6 @@ export default class Line implements GeometryDriver {
      * @returns {Line} a new Line at given coordinates start:[x0,y0] and end:[x1,y1]
      */
     static fromArray(coordinatesLine: coordinatesLineArray): Line {
-        // Guard Clause : JS Runtime safety validation
         if (
             coordinatesLine === undefined ||
             !Array.isArray(coordinatesLine) ||
@@ -184,7 +182,7 @@ export default class Line implements GeometryDriver {
     }
 
     /**
-     * fromTwoPointsCoordinates returns a new Line constructed with
+     * fromTwoPointsCoordinates: returns a new Line constructed with 2 (x,y) coordinates
      * @param {number} x1 is the x coordinate of start point
      * @param {number} y1 is the y coordinate of start point
      * @param {number} x2 is the x coordinate of end point
@@ -196,7 +194,7 @@ export default class Line implements GeometryDriver {
     }
 
     /**
-     * fromSlopeAndPoint
+     * fromSlopeAndPoint: returns a new Line constructed with slope and a Point of passage
      * @param {number} m is the slope of the line
      * @param {Point} p is the Point where the line should pass
      */
@@ -233,7 +231,7 @@ export default class Line implements GeometryDriver {
     }
 
     /**
-     * clone returns a new Line that is a copy of itself
+     * clone: returns a new Line that is a copy of itself
      * @returns {Line} a new Line located at the same cartesian coordinates as this Line
      */
     clone(): Line {
@@ -258,6 +256,35 @@ export default class Line implements GeometryDriver {
         if (this.isVertical) return `Line: x = ${this.p1.x.toFixed(4)}`;
         if (this.isHorizontal) return `Line: y = ${this.p1.y.toFixed(4)}`;
         return `Line: y = ${this.slope!.toFixed(4)}x + ${this.yIntercept!.toFixed(4)}`;
+    }
+
+    /**
+     * toWKT: give an OGC Well-known text (WKT) representation of this class instance
+     * https://en.wikipedia.org/wiki/Well-known_text
+     * @returns {string} WKT representation of this line geometry
+     */
+    toWKT (): string {
+        return `LINESTRING(${this._start.x} ${this._start.y}, ${this._end.x} ${this._end.y})`
+    }
+
+    /**
+     * toEWKT: give a Postgis Extended Well-known text (EWKT) representation of this class instance
+     * https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT
+     * @param {number} srid is the Spatial reference systems identifier EPSG code, default is 2056 for Switzerland MN95
+     * @returns {string} WKT representation of this line geometry
+     */
+    toEWKT (srid = 2056) {
+        return `SRID=${srid};${this.toWKT()}`
+    }
+
+    // TO implement toEWKB maybe we can use lib: https://github.com/cschwarz/wkx
+
+    /**
+     * toGeoJSON: give a GeoJSON (http://geojson.org/) representation of this class instance geometry
+     * @returns {string}
+     */
+    toGeoJSON () {
+        return `{"type":"LineString","coordinates":[[${this._start.x},${this._start.y}],[${this._end.x},${this._end.y}]]}`
     }
 
     toJSON(): string {
@@ -422,9 +449,10 @@ export default class Line implements GeometryDriver {
     /**
      * containsPoint checks if a given point lies on this infinite line (within EPSILON tolerance).
      * @param point The point to test
+     * @param tolerance
      * @returns {boolean} true if the point lies on the infinite line defined by this Line
      */
-    containsPoint(point: Point): boolean {
+    containsPoint(point: Point, tolerance: number = EPSILON): boolean {
         assertIsPoint(point, "Line containsPoint point");
 
         // Fast path: if the point is one of the endpoints, it's obviously on the line
@@ -433,10 +461,10 @@ export default class Line implements GeometryDriver {
         }
 
         // Main test: distance from point to the infinite line must be (almost) zero
-        return this.getDistanceTo(point) < EPSILON;
+        return this.getDistanceTo(point) < tolerance;
     }
 
-    /** Orthogonally projects a other onto this line
+    /** Orthogonally projects an other onto this line
      * Drops a perpendicular from other to line. Essential for snapping, Voronoi, etc.
      * */
     projectPointToLine(other: Point): Point {
@@ -445,7 +473,7 @@ export default class Line implements GeometryDriver {
         return new Point(this.p1.x + t * this._direction.x, this.p1.y + t * this._direction.y);
     }
 
-    /** Reflects a other across this line */
+    /** Reflects an other across this line */
     reflectPointAcrossLine(other: Point): Point {
         assertIsPoint(other, "Line reflectPointAcrossLine other")
         const proj = this.projectPointToLine(other);

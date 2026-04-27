@@ -244,6 +244,108 @@ export default class Circle implements GeometryDriver {
     }
 
     /**
+     * Creates a Circle from a WKT CIRCULARSTRING.
+     * Supports both common full-circle representations:
+     *   - 5-point: CIRCULARSTRING(p0, p90, p180, p270, p0)
+     *   - 3-point: CIRCULARSTRING(p0, p180, p0)
+     *
+     * @param wkt WKT string, e.g. "CIRCULARSTRING(1 0, 0 1, -1 0, 0 -1, 1 0)"
+     * @returns {Circle} new Circle instance
+     * @throws {TypeError|RangeError} if parsing fails or geometry is invalid
+     */
+    static fromWKT(wkt: unknown): Circle {
+        if (typeof wkt !== "string" || wkt.trim() === "") {
+            throw new TypeError("fromWKT requires a valid WKT string");
+        }
+
+        const trimmed = wkt.trim();
+
+        const match = trimmed.match(/^CIRCULARSTRING\s*\((.+)\)$/i);
+        if (!match?.[1]) {
+            throw new TypeError(`fromWKT: expected CIRCULARSTRING, got: ${wkt}`);
+        }
+
+        const coordPairs = match[1]
+            .trim()
+            .split(",")
+            .map(s => s.trim());
+
+        if (coordPairs.length < 3) {
+            throw new TypeError(
+                `fromWKT: CIRCULARSTRING must have at least 3 points, got ${coordPairs.length}`,
+            );
+        }
+
+        const points: Point[] = coordPairs.map(pair => {
+            const parts = pair.split(/\s+/);
+
+            if (parts.length < 2) {
+                throw new TypeError(`fromWKT: invalid coordinate pair: ${pair}`);
+            }
+
+            const x = Number(parts[0]);
+            const y = Number(parts[1]);
+
+            if (!Number.isFinite(x) || !Number.isFinite(y)) {
+                throw new TypeError(`fromWKT: invalid coordinate pair: ${pair}`);
+            }
+
+            return new Point(x, y);
+        });
+
+        const first = points[0];
+        const last = points.at(-1);
+
+        if (first === undefined || last === undefined) {
+            throw new TypeError("fromWKT: no points parsed from CIRCULARSTRING");
+        }
+
+        if (!first.isSameLocation(last, EPSILON * 10)) {
+            throw new RangeError("fromWKT: CIRCULARSTRING is not closed");
+        }
+
+        let opposite: Point | undefined;
+
+        if (points.length === 3) {
+            opposite = points[1];
+        } else if (points.length === 5) {
+            opposite = points[2];
+        } else {
+            opposite = points.reduce<Point>((farthest, point) => {
+                return point.distanceTo(first) > farthest.distanceTo(first)
+                    ? point
+                    : farthest;
+            }, first);
+        }
+
+        if (opposite === undefined) {
+            throw new RangeError("fromWKT: cannot determine opposite point");
+        }
+
+        return Circle.fromDiameter(first, opposite);
+    }
+
+    /**
+     * Creates a Circle from an EWKT string (with optional SRID).
+     * Reuses fromWKT() after stripping the SRID prefix.
+     */
+    static fromEWKT(ewkt: unknown): Circle {
+        if (typeof ewkt  !== "string" || ewkt.trim() === "") {
+            throw new TypeError("fromEWKT requires a valid EWKT string");
+        }
+
+        let geomPart = ewkt.trim();
+
+        // Remove SRID=xxxx; prefix if present
+        const sridMatch = geomPart.match(/^SRID=\d+;/i);
+        if (sridMatch) {
+            geomPart = geomPart.slice(sridMatch[0].length).trim();
+        }
+
+        return Circle.fromWKT(geomPart);
+    }
+
+    /**
      * clone returns a new Circle that is a copy of itself
      * @returns {Circle} a new Circle located at the same cartesian coordinates as this Circle
      */
@@ -273,6 +375,46 @@ export default class Circle implements GeometryDriver {
         };
     }
 
+
+    /**
+     * toWKT: Returns an EWKT representation of the circle as a CIRCULARSTRING.
+     * Uses 5 points (two arcs) to properly represent a full closed circle,
+     * as required by PostGIS.
+     *
+     * @param precision decimal places for coordinates (default 8)
+     */
+    toWKT(precision: number = 8): string {
+        const p0 = this.getPointOnCircle(0);           //   0°  (east)
+        const p1 = this.getPointOnCircle(Math.PI / 2); //  90°  (north)
+        const p2 = this.getPointOnCircle(Math.PI);     // 180°  (west)
+        const p3 = this.getPointOnCircle(3 * Math.PI / 2); // 270° (south)
+        const p4 = p0.clone();                         // back to start
+
+        // Use toString with no surrounding parenthesis and custom precision
+        const pts = [
+            p0.toString(" ", false, precision),
+            p1.toString(" ", false, precision),
+            p2.toString(" ", false, precision),
+            p3.toString(" ", false, precision),
+            p4.toString(" ", false, precision),
+        ].join(", ");
+
+        const circularString = `CIRCULARSTRING(${pts})`;
+        return `${circularString}`;
+    }
+
+    /**
+     * toEWKT: Returns an EWKT representation of the circle as a CIRCULARSTRING.
+     * Uses 5 points (two arcs) to properly represent a full closed circle,
+     * as required by PostGIS.
+     *
+     * @param srid Spatial Reference ID (default 2056 for Swiss MN95)
+     * @param precision decimal places for coordinates (default 8)
+     */
+    toEWKT(srid: number = 2056, precision: number = 8): string {
+        return `SRID=${srid};${this.toWKT(precision)}`;
+    }
+
     toJSON(): string {
         return JSON.stringify(this.toObject());
     }
@@ -297,6 +439,19 @@ export default class Circle implements GeometryDriver {
     equal(other: Circle): boolean {
         assertIsCircle(other, "Circle equal other")
         return this.sameLocation(other) && this.name === other.name;
+    }
+
+    /**
+     * Returns a Point on the circle's circumference at a given angle.
+     * @param angleRadians angle in radians (counter-clockwise from positive X axis)
+     */
+    private getPointOnCircle(angleRadians: number): Point {
+        const dx = this.radius * Math.cos(angleRadians);
+        const dy = this.radius * Math.sin(angleRadians);
+        return new Point(
+            this.center.x + dx,
+            this.center.y + dy
+        );
     }
 
     // ──────────────────────────────────────────────────────────────────────────────
@@ -371,7 +526,7 @@ export default class Circle implements GeometryDriver {
         assertIsPoint(center, "Circle rotateAround center")
         // if given center is origin no need translate
         if (center.isOrigin()) {
-            return this.clone();
+            return this.rotate(theta);
         }
         // Translate points so center is the origin
         const centerTranslated = this.center.subtract(center);

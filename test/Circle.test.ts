@@ -287,4 +287,153 @@ describe("Circle", () => {
         });
     });
 
+
+    describe("Circle WKT and EWKT factories", () => {
+        test("fromWKT should throw a TypeError for non-string input", () => {
+            expect(() => {
+                Circle.fromWKT(123);
+            }).toThrow(TypeError);
+        });
+
+        test("fromWKT should throw a TypeError for an empty string", () => {
+            expect(() => {
+                Circle.fromWKT("   ");
+            }).toThrow(TypeError);
+        });
+
+        test("fromWKT should throw a TypeError when geometry type is not CIRCULARSTRING", () => {
+            expect(() => {
+                Circle.fromWKT("POINT(1 2)");
+            }).toThrow(TypeError);
+        });
+
+        test("fromWKT should throw a TypeError if CIRCULARSTRING has less than 3 points", () => {
+            expect(() => {
+                Circle.fromWKT("CIRCULARSTRING(1 0, -1 0)");
+            }).toThrow(TypeError);
+        });
+
+        test("fromWKT should throw a TypeError for an invalid coordinate pair with one coordinate", () => {
+            expect(() => {
+                Circle.fromWKT("CIRCULARSTRING(1 0, 2, 1 0)");
+            }).toThrow(TypeError);
+        });
+
+        test("fromWKT should throw a TypeError for non-numeric coordinates", () => {
+            expect(() => {
+                Circle.fromWKT("CIRCULARSTRING(1 0, foo bar, 1 0)");
+            }).toThrow(TypeError);
+        });
+
+        test("fromWKT should throw a RangeError when CIRCULARSTRING is not closed", () => {
+            expect(() => {
+                Circle.fromWKT("CIRCULARSTRING(1 0, 0 1, -1 0)");
+            }).toThrow(RangeError);
+        });
+
+        test("fromWKT should create a Circle from a 3-point full-circle CIRCULARSTRING", () => {
+            const newCircle = Circle.fromWKT("CIRCULARSTRING(1 0, -1 0, 1 0)");
+
+            expect(newCircle.center.x).toBeCloseTo(0);
+            expect(newCircle.center.y).toBeCloseTo(0);
+            expect(newCircle.radius).toBeCloseTo(1);
+        });
+
+        test("fromWKT should create a Circle from a 5-point full-circle CIRCULARSTRING", () => {
+            const newCircle = Circle.fromWKT("CIRCULARSTRING(4 2, 1 5, -2 2, 1 -1, 4 2)");
+
+            expect(newCircle.center.x).toBeCloseTo(1);
+            expect(newCircle.center.y).toBeCloseTo(2);
+            expect(newCircle.radius).toBeCloseTo(3);
+        });
+
+        test("fromWKT should use the farthest point fallback for non-standard closed CIRCULARSTRING", () => {
+            const newCircle = Circle.fromWKT("CIRCULARSTRING(4 2, 2 4, 1 5, -2 2, 1 -1, 4 2)");
+
+            expect(newCircle.center.x).toBeCloseTo(1);
+            expect(newCircle.center.y).toBeCloseTo(2);
+            expect(newCircle.radius).toBeCloseTo(3);
+        });
+
+        test("fromEWKT should throw a TypeError for non-string input", () => {
+            expect(() => {
+                Circle.fromEWKT(null);
+            }).toThrow(TypeError);
+        });
+
+        test("fromEWKT should throw a TypeError for an empty string", () => {
+            expect(() => {
+                Circle.fromEWKT("   ");
+            }).toThrow(TypeError);
+        });
+
+        test("fromEWKT should create a Circle after stripping the SRID prefix", () => {
+            const newCircle = Circle.fromEWKT("SRID=2056;CIRCULARSTRING(4 2, 1 5, -2 2, 1 -1, 4 2)");
+
+            expect(newCircle.center.x).toBeCloseTo(1);
+            expect(newCircle.center.y).toBeCloseTo(2);
+            expect(newCircle.radius).toBeCloseTo(3);
+        });
+
+        test("fromEWKT should also accept WKT without SRID prefix", () => {
+            const newCircle = Circle.fromEWKT("CIRCULARSTRING(4 2, 1 5, -2 2, 1 -1, 4 2)");
+
+            expect(newCircle.center.x).toBeCloseTo(1);
+            expect(newCircle.center.y).toBeCloseTo(2);
+            expect(newCircle.radius).toBeCloseTo(3);
+        });
+    });
+
+    describe("Circle WKT and EWKT output functions", () => {
+        test("toWKT should return a valid 5-point CIRCULARSTRING", () => {
+            const wkt = circle.toWKT(2);
+
+            expect(wkt).toBe("CIRCULARSTRING(4 2, 1 5, -2 2, 1 -1, 4 2)");
+        });
+
+        test("toWKT should be readable by fromWKT", () => {
+            const parsed = Circle.fromWKT(circle.toWKT(8));
+
+            expect(parsed.center.x).toBeCloseTo(circle.center.x);
+            expect(parsed.center.y).toBeCloseTo(circle.center.y);
+            expect(parsed.radius).toBeCloseTo(circle.radius);
+        });
+
+        test("toEWKT should return an EWKT with default SRID 2056", () => {
+            expect(circle.toEWKT(2056, 2)).toBe(
+                "SRID=2056;CIRCULARSTRING(4 2, 1 5, -2 2, 1 -1, 4 2)",
+            );
+        });
+
+        test("toEWKT should return an EWKT with a custom SRID", () => {
+            expect(circle.toEWKT(4326, 2)).toBe(
+                "SRID=4326;CIRCULARSTRING(4 2, 1 5, -2 2, 1 -1, 4 2)",
+            );
+        });
+    });
+
+    describe("Circle clone and rendering visitor", () => {
+        test("clone should return an independent copy", () => {
+            const cloned = circle.clone();
+
+            expect(cloned).not.toBe(circle);
+            expect(cloned.center).not.toBe(circle.center);
+            expect(cloned.equal(circle)).toBe(true);
+        });
+
+        test("accept should delegate to renderer.renderCircle", () => {
+            const options = {strokeWidth: 2} as any;
+            const renderer = {
+                renderCircle(receivedCircle: Circle, receivedOptions: unknown, receivedInvertY: boolean): string {
+                    expect(receivedCircle).toBe(circle);
+                    expect(receivedOptions).toBe(options);
+                    expect(receivedInvertY).toBe(true);
+                    return "rendered-circle";
+                },
+            };
+
+            expect(circle.accept(renderer, options, true)).toBe("rendered-circle");
+        });
+    });
+
 });

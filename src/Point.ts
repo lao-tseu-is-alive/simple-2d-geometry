@@ -240,11 +240,11 @@ export default class Point implements iPoint, GeometryDriver {
     /**
      * toEWKT returns a Postgis Extended Well-known text (EWKT) representation of this class instance
      * https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT
-     * @param {number} srid is the Spatial reference systems identifier EPSG code default is 2056 for Switzerland MN03
+     * @param {number} srid is the Spatial reference systems identifier EPSG code default is 2056 for Switzerland MN95
      * @returns {string}
      */
     toEWKT(srid: number = 2056): string {
-        return `SRID=${srid};POINT(${this.x} ${this.y})`;
+        return `SRID=${srid};${this.toWKT()}`;
     }
 
     // Note : to implement toEWKB I can maybe use this lib : https://github.com/cschwarz/wkx
@@ -258,7 +258,7 @@ export default class Point implements iPoint, GeometryDriver {
     }
 
     /**
-     * toJSON returns a JSON  representation of this class instance geometry
+     * toJSON returns a JSON representation of this class instance geometry
      * @returns {string}
      */
     toJSON(): string {
