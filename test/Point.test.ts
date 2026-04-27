@@ -894,12 +894,30 @@ describe("Point.perpendicular()", () => {
         perpendicularLength,
         new Angle(135, "degrees"),
         "P2",
-    ).moveTo(P1.x, P1.y);
+    ).moveRel(P1.x, P1.y);
     test("should return a point perpendicular ", () => {
         const P4 = P0.perpendicular(P1, perpendicularLength);
         expect(P4.x).toBeCloseTo(P2.x);
         expect(P4.y).toBeCloseTo(P2.y);
     });
+    test("should return a point perpendicular to the left ", () => {
+        const P1MirrorY = P1.perpendicular(P0, 2.828427125);
+        expect(P1MirrorY.x).toBeCloseTo(P1.x);
+        expect(P1MirrorY.y).toBeCloseTo(-P1.y);
+    });
+    test("should return a point perpendicular to the right ", () => {
+        const P1MirrorY = P1.perpendicular(P0, 2.828427125, false);
+        expect(P1MirrorY.x).toBeCloseTo(-P1.x);
+        expect(P1MirrorY.y).toBeCloseTo(P1.y);
+    });
+
+    test("should return a correct perpendicular", ()=> {
+        const a = new Point(0, 0);
+        const b = new Point(1, 0);
+        const p = a.perpendicular(b, 2);
+        expect(p.x).toBeCloseTo(1)
+        expect(p.y).toBeCloseTo(2)
+    })
 });
 
 describe("Point.sideOfLine()", () => {

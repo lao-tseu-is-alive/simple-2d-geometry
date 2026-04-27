@@ -683,19 +683,21 @@ export default class Point implements iPoint, GeometryDriver {
      * the point returned will be at a given length distance starting from other point
      * @param {Point}  other is the support point to draw the baseline, where the perpendicular will begin
      * @param {Number} length is the distance between pointA and the returned point
+     * @param {Boolean} toTheLeft (default True) gives the perpendicular to the left of the vector going from this to other
      * @returns {Point} returns a new Point located at a length distance from the other point and perpendicular to line from this point to other
      */
-    perpendicular(other: Point, length: number): Point {
+    perpendicular(other: Point, length: number, toTheLeft:boolean=true): Point {
         assertIsPoint(other, "perpendicular other")
         const angleLine = this.angleTo(other);
+        const rotation = toTheLeft ? angleLine.add(Math.PI / 2, "radians"):angleLine.add(-Math.PI / 2, "radians");
         // get a Polar point at origin with
         const polarPoint = Point.fromPolar(
             length,
-            angleLine.add(Math.PI / 2, "radians"),
+            rotation,
             other.name,
         );
         // return the point
-        return polarPoint.moveTo(other.x, other.y);
+        return polarPoint.moveRel(other.x, other.y);
     }
 
     /**
