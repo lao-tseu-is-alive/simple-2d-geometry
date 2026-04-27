@@ -201,7 +201,9 @@ export default class Line implements GeometryDriver {
      * @param {Point} p is the Point where the line should pass
      */
     static fromSlopeAndPoint(m: number, p: Point): Line {
-        // For horizontal/vertical or undefined slope, fallback to a direction vector
+        // For horizontal/vertical, fallback to a direction vector
+        if (m == Number.POSITIVE_INFINITY) return new Line(p, new Point(p.x, p.y+1.0));
+        if (m == Number.NEGATIVE_INFINITY) return new Line(p, new Point(p.x, p.y-1.0));
         const dx = 1;
         const dy = m * dx;
         return new Line(p, new Point(p.x + dx, p.y + dy));

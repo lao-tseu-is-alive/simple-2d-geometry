@@ -185,6 +185,12 @@ describe("Line module", () => {
             expect(l.start.isSameLocation(new Point(0, 0))).toBe(true);
             expect(l.end.isSameLocation(new Point(1, 2))).toBe(true);
         });
+        test("fromSlopeAndPoint should construct a vertical line from the point when m is infinite", () => {
+            const l = Line.fromSlopeAndPoint(Number.POSITIVE_INFINITY, new Point(0, 0));
+            expect(l.start.isSameLocation(new Point(0, 0))).toBe(true);
+            expect(l.angle).toBeCloseTo(Math.PI/2);
+            expect(l.isVertical).toBe(true)
+        });
     });
 
     describe("Serialization & Formatting", () => {
@@ -397,6 +403,7 @@ describe("Line module", () => {
                 },
                 renderCircle: () => "",
                 renderTriangle: () => "",
+                renderPolygon: () => "",
                 compose: () => ""
             };
 
