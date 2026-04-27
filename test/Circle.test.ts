@@ -30,7 +30,8 @@ describe("Circle", () => {
         });
 
         test("should create a Circle from center and radius", () => {
-            expect(circle.center).toEqual(center);
+            expect(circle.center.x).toEqual(center.x);
+            expect(circle.center.y).toEqual(center.y);
             expect(circle.radius).toEqual(radius);
             expect(circle.name).toEqual(name);
         });
@@ -62,14 +63,16 @@ describe("Circle", () => {
 
     describe("Circle constructor", () => {
         test("constructor with parameters should store center, radius and name", () => {
-            expect(circle.center).toEqual(center);
+            expect(circle.center.x).toEqual(center.x);
+            expect(circle.center.y).toEqual(center.y);
             expect(circle.radius).toEqual(radius);
             expect(circle.name).toEqual(name);
             expect(circle instanceof Circle).toBe(true);
         });
         test("constructor with only center and radius should store center and radius and empty name", () => {
             const circle2 = new Circle(center, radius);
-            expect(circle2.center).toEqual(center);
+            expect(circle2.center.x).toEqual(center.x);
+            expect(circle2.center.y).toEqual(center.y);
             expect(circle2.radius).toEqual(radius);
             expect(circle2.name).toEqual("");
         });
@@ -91,13 +94,15 @@ describe("Circle", () => {
         });
         test("fromArray should create a Circle from an array", () => {
             const newCircle = Circle.fromArray([1, 2, 3], name);
-            expect(newCircle.center).toEqual(center);
+            expect(newCircle.center.x).toEqual(center.x);
+            expect(newCircle.center.y).toEqual(center.y);
             expect(newCircle.radius).toEqual(radius);
             expect(newCircle.name).toEqual(name);
         });
         test("fromArray should create a Circle from an array with empty name", () => {
             const newCircle = Circle.fromArray([1, 2, 3]);
-            expect(newCircle.center).toEqual(center);
+            expect(newCircle.center.x).toEqual(center.x);
+            expect(newCircle.center.y).toEqual(center.y);
             expect(newCircle.radius).toEqual(radius);
             expect(newCircle.name).toEqual("");
         });
@@ -236,7 +241,8 @@ describe("Circle", () => {
 
         test("translate returns a new Circle with translated center", () => {
             const translated = circle.translate(new Point(5, -3));
-            expect(translated.center).toEqual(new Point(6, -1));
+            expect(translated.center.x).toEqual(6);
+            expect(translated.center.y).toEqual(-1);
             expect(translated.radius).toBe(circle.radius);
             expect(translated.name).toBe(circle.name);
         });

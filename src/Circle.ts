@@ -2,7 +2,7 @@ import Point, {assertIsPoint, type coordinate2dArray, type iPoint} from "./Point
 import type {GeometryDriver, Extent} from "./Driver.ts";
 import type {RenderDriver, RenderOptions} from "./RenderDriver.ts";
 import Converters from "./Converters.ts";
-import {EPSILON, Guard} from "./Geometry.ts";
+import {EPSILON, Guard, roundNumber} from "./Geometry.ts";
 import type Angle from "./Angle.ts";
 
 export interface CircleInterface {
@@ -24,7 +24,7 @@ export default class Circle implements GeometryDriver {
     private _name: string = "";
 
     get center(): Point {
-        return this._center;
+        return this._center.clone();
     }
 
     set center(input: Point) {
@@ -257,7 +257,7 @@ export default class Circle implements GeometryDriver {
         precision: number = 2,
         withName: boolean = true,
     ): string {
-        const tmpRes = `${this.center.toString(separator, surroundingParenthesis, precision)}${separator}radius:${this.radius}`;
+        const tmpRes = `${this.center.toString(separator, surroundingParenthesis, precision)}${separator}radius:${roundNumber(this.radius, precision)}`;
         if (surroundingParenthesis) {
             return withName ? `${this.name}:(${tmpRes})` : `(${tmpRes})`;
         } else {

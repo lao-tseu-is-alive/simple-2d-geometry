@@ -122,7 +122,7 @@ export default class Line implements GeometryDriver {
      */
     get yIntercept(): number {
         if (this.isVertical) return NaN;
-        return this.p1.y - this.slope * this.p1.x;
+        return this.p1.y - (this._direction.y / this._direction.x) * this.p1.x;
     }
 
     /**
@@ -202,8 +202,8 @@ export default class Line implements GeometryDriver {
      */
     static fromSlopeAndPoint(m: number, p: Point): Line {
         // For horizontal/vertical, fallback to a direction vector
-        if (m == Number.POSITIVE_INFINITY) return new Line(p, new Point(p.x, p.y+1.0));
-        if (m == Number.NEGATIVE_INFINITY) return new Line(p, new Point(p.x, p.y-1.0));
+        if (m == Number.POSITIVE_INFINITY) return new Line(p, new Point(p.x, p.y + 1.0));
+        if (m == Number.NEGATIVE_INFINITY) return new Line(p, new Point(p.x, p.y - 1.0));
         const dx = 1;
         const dy = m * dx;
         return new Line(p, new Point(p.x + dx, p.y + dy));
@@ -268,19 +268,29 @@ export default class Line implements GeometryDriver {
     }
 
     /**
-     * sameLocation allows to compare if this Line segment is at exact  same location as other
+     * sameLocation allows comparing if this Line segment is at exact same location as other
      * @param {Line} other
-     * @returns {boolean}
+     * @returns {boolean} if the other line is in reverse order (start ↔ end) it will also return true
      */
     sameLocation(other: Line): boolean {
         assertIsLine(other, "Line sameLocation other")
-        /** Checks if two infinite lines represent the exact same infinite line */
-        //if (!this.isParallelTo(other)) return false;
-        //    return this.getDistanceTo(other.p1) < EPSILON;
         return (
-            this.start.isSameLocation(other.start) &&
-            this.end.isSameLocation(other.end)
+            this.start.isSameLocation(other.start) && this.end.isSameLocation(other.end) ||
+            this.start.isSameLocation(other.end) && this.end.isSameLocation(other.start)
         );
+    }
+
+    /**
+     * sameInfiniteLineLocation: allows comparing if this infinite Line is the same as the other infinite line
+     * i.e., they are collinear and overlap on the same infinite line
+     * @param {Line} other
+     * @returns {boolean}
+     */
+    sameInfiniteLineLocation(other: Line): boolean {
+        assertIsLine(other, "Line sameInfiniteLineLocation other")
+        if (!this.isParallelTo(other)) return false;
+        // Check if other.start lies on this infinite line
+        return this.containsPoint(other.start) || this.containsPoint(other.end);
     }
 
     /**
@@ -396,8 +406,9 @@ export default class Line implements GeometryDriver {
      */
     isPointOnSegment(point: Point): boolean {
         assertIsPoint(point, "Line isPointOnSegment point");
-        // Must be collinear
-        if (point.distanceToSegment(this.start, this.end) > EPSILON) return false;
+
+        // Must lie on the infinite line
+        if (!this.containsPoint(point)) return false;
 
         // Must lie within the bounding box of the segment
         const minX = Math.min(this.start.x, this.end.x) - EPSILON;
@@ -406,6 +417,23 @@ export default class Line implements GeometryDriver {
         const maxY = Math.max(this.start.y, this.end.y) + EPSILON;
 
         return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
+    }
+
+    /**
+     * containsPoint checks if a given point lies on this infinite line (within EPSILON tolerance).
+     * @param point The point to test
+     * @returns {boolean} true if the point lies on the infinite line defined by this Line
+     */
+    containsPoint(point: Point): boolean {
+        assertIsPoint(point, "Line containsPoint point");
+
+        // Fast path: if the point is one of the endpoints, it's obviously on the line
+        if (this.start.isSameLocation(point) || this.end.isSameLocation(point)) {
+            return true;
+        }
+
+        // Main test: distance from point to the infinite line must be (almost) zero
+        return this.getDistanceTo(point) < EPSILON;
     }
 
     /** Orthogonally projects a other onto this line

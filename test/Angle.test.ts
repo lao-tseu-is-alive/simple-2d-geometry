@@ -94,5 +94,29 @@ describe('Angle module', () => {
             expect(A2.angle).toBe(Math.PI);
         });
     })
+    describe('Angle add', ()=>{
+        const A0 = new Angle(0, "radians")
+        const AD = new Angle(0, "degrees")
+        test('adding Pi to radians angle radian should return angle Pi radians', ()=>{
+            const A1=A0.add(Math.PI, "radians")
+            expect(A1.angle).toBe(Math.PI)
+            expect(A1.type).toBe("radians")
+        })
+        test('adding 180 degrees to radians angle should return angle Pi radians', ()=>{
+            const A1=A0.add(180, "degrees")
+            expect(A1.angle).toBe(Math.PI)
+            expect(A1.type).toBe("radians")
+        })
+        test('adding Pi radian to degrees angle should return 180 degrees angle', ()=>{
+            const A1=AD.add(Math.PI, "radians")
+            expect(A1.angle).toBeCloseTo(180)
+            expect(A1.type).toBe("degrees")
+        })
+        test('adding 180 degrees to degrees angle should return 180 degrees angle', ()=>{
+            const A1=AD.add(180, "degrees")
+            expect(A1.angle).toBeCloseTo(180)
+            expect(A1.type).toBe("degrees")
+        })
+    })
 
 })

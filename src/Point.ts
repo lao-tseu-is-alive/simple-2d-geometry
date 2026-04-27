@@ -214,9 +214,9 @@ export default class Point implements iPoint, GeometryDriver {
         precision: number = 2,
     ): string {
         if (surroundingParenthesis) {
-            return `(${roundNumber(this.x, precision)}${separator}${roundNumber(this.y, 2)})`;
+            return `(${roundNumber(this.x, precision)}${separator}${roundNumber(this.y, precision)})`;
         } else {
-            return `${roundNumber(this.x, precision)}${separator}${roundNumber(this.y, 2)}`;
+            return `${roundNumber(this.x, precision)}${separator}${roundNumber(this.y, precision)}`;
         }
     }
 

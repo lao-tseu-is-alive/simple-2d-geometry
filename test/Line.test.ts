@@ -115,7 +115,7 @@ describe("Line module", () => {
             expect(diagLine.isVertical).toBe(false);
             expect(diagLine.isHorizontal).toBe(false);
         });
-        test("yIntercept should return correct offset or null if vertical", () => {
+        test("yIntercept should return correct offset or NaN if vertical", () => {
             const l1 = new Line(new Point(0, 5), new Point(1, 6)); // y = 1x + 5
             expect(l1.yIntercept).toBeCloseTo(5);
 
@@ -123,6 +123,8 @@ describe("Line module", () => {
             expect(vLine.yIntercept).toBeNaN(); // slope is Infinity, so Infinity * x results in NaN or we handle it gracefully. Wait, based on slopeTo, vertical slope is Infinity.
             // Let's test the specific logic implemented in Line.ts
             expect(vLine.yIntercept).toBeNaN();
+            const horizontalLine = new Line(new Point(2,2), new Point(4,2))
+            expect(horizontalLine.yIntercept).toBe(2)
         });
     });
 
@@ -188,7 +190,7 @@ describe("Line module", () => {
         test("fromSlopeAndPoint should construct a vertical line from the point when m is infinite", () => {
             const l = Line.fromSlopeAndPoint(Number.POSITIVE_INFINITY, new Point(0, 0));
             expect(l.start.isSameLocation(new Point(0, 0))).toBe(true);
-            expect(l.angle).toBeCloseTo(Math.PI/2);
+            expect(l.angle.angle).toBeCloseTo(Math.PI/2);
             expect(l.isVertical).toBe(true)
         });
     });
@@ -236,6 +238,15 @@ describe("Line module", () => {
         test("sameLocation should throw an Error if not a Line", () => {
             expect(lBase.sameLocation.bind(undefined, {} as unknown as Line)).toThrow(TypeError);
         });
+        test('sameInfiniteLineLocation should return false if not parallel', ()=>{
+            const lTest = new Line(new Point(20, 10), P1, "L1");
+            expect(lBase.sameInfiniteLineLocation(lTest)).toBe(false);
+        })
+        test('sameInfiniteLineLocation should return true if ', ()=>{
+            const lTest = new Line(new Point(-10, -10), P1, "L1");
+            expect(lBase.sameInfiniteLineLocation(lTest)).toBe(true);
+
+        })
         test("equal should return true if same location and same name", () => {
             expect(lBase.equal(new Line(PO, P1, "L0"))).toBe(true);
         });

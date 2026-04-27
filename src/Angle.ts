@@ -52,13 +52,13 @@ export default class Angle {
       //convert angleValue
       if (typeAngle === "degrees") {
         const angleValueRadians = (angleValue * Math.PI) / 180;
-        return new Angle(this.angle + angleValueRadians, typeAngle);
+        return new Angle(this.angle + angleValueRadians, this.type);
       } else {
         const angleValueDegrees = (angleValue * 180) / Math.PI;
-        return new Angle(this.angle + angleValueDegrees, typeAngle);
+        return new Angle(this.angle + angleValueDegrees, this.type);
       }
     } else {
-      return new Angle(this.angle + angleValue, typeAngle);
+      return new Angle(this.angle + angleValue, this.type);
     }
   }
 
