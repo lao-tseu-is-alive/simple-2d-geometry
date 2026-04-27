@@ -315,7 +315,7 @@ export default class Line implements GeometryDriver {
             this.p1.y + t * this.direction.y);
     }
 
-    /** Shortest perpendicular distance from a other to this infinite line */
+    /** Shortest perpendicular distance from an other to this infinite line */
     getDistanceTo(other: Point): number {
         assertIsPoint(other, "Line getDistanceTo other")
         const dx = this._direction.x;

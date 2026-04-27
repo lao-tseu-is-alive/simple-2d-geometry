@@ -738,6 +738,13 @@ describe("Point module", () => {
         test("should throw an TypeError when the parameter is not a valid Point", () => {
             expect(P1.reflect.bind(undefined, {} as Point)).toThrow(TypeError);
         });
+        test("should throw a RangeError if p and q are the same", () => {
+            // Use expect().toThrow() to check for the specific error type
+            // The code that should throw is wrapped in a function () => {...}
+            expect(() => {
+                P0.reflect(P1,P1);
+            }).toThrow(RangeError);
+        })
         test("should return a clone of the point ", () => {
             const P3 = P1.reflect(P0, P2);
             expect(P3).not.toBe(P1);

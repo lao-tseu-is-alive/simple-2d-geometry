@@ -651,6 +651,9 @@ export default class Point implements iPoint, GeometryDriver {
         assertIsPoint(p, "project p")
         assertIsPoint(q, "project q")
         const pq = q.subtract(p);
+        const l = pq.magnitudeSquared();
+        // If segment is a single point, return that point
+        if (l === 0) return p.clone();
         const t = this.subtract(p).dot(pq) / pq.dot(pq);
         return p.add(pq.multiply(t));
     }
@@ -664,6 +667,11 @@ export default class Point implements iPoint, GeometryDriver {
     reflect(p: Point, q: Point): Point {
         assertIsPoint(p, "reflect p")
         assertIsPoint(q, "reflect q")
+        const pq = q.subtract(p);
+        const l = pq.magnitudeSquared();
+        // If segment is a single point it's a degenerate “line” we should throw,
+        // because reflection is undefined without a direction
+        if (l === 0) throw new RangeError("zero length segment: p and q are the same,reflection is undefined without a direction");
         const projection = this.project(p, q);
         return this.add(projection.subtract(this).multiply(2));
     }
