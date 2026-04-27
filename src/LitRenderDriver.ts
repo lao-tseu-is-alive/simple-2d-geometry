@@ -5,6 +5,7 @@ import type Circle from "./Circle.ts";
 import type Triangle from "./Triangle.ts";
 import type Polygon from "./Polygon.ts";
 import type { RenderDriver, RenderOptions, ComposeOptions } from "./RenderDriver.ts";
+import type {Extent} from "./Driver.ts";
 
 
 /**
@@ -67,7 +68,37 @@ export default class LitRenderDriver implements RenderDriver<TemplateResult> {
         return svg`<polygon points="${points}" style=${this.getStyle(options)}/>`;
     }
 
-    compose(elements: TemplateResult[]): TemplateResult {
-        return svg`${elements}`;
+    compose(elements: TemplateResult[], viewBox: Extent, options: ComposeOptions): TemplateResult {
+        const [minX, minY, maxX, maxY] = viewBox;
+        const pad = options.padding;
+
+        let vbMinX: number, vbMinY: number, vbWidth: number, vbHeight: number;
+
+        // Calcul rigoureux de la ViewBox respectant le repère cartésien
+        if (options.invertY) {
+            vbMinX = minX - pad;
+            vbMinY = -maxY - pad;
+            vbWidth = (maxX - minX) + 2 * pad;
+            vbHeight = (maxY - minY) + 2 * pad;
+        } else {
+            vbMinX = minX - pad;
+            vbMinY = minY - pad;
+            vbWidth = (maxX - minX) + 2 * pad;
+            vbHeight = (maxY - minY) + 2 * pad;
+        }
+
+        const width = options.width !== undefined ? options.width : '100%';
+        const height = options.height !== undefined ? options.height : '100%';
+
+        // Encapsulation dans un contexte SVG valide et réactif
+        return svg`<svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        viewBox="${vbMinX} ${vbMinY} ${vbWidth} ${vbHeight}"
+        width="${width}"
+        height="${height}"
+        class="simple-2d-board"
+    >
+        ${elements}
+    </svg>`;
     }
 }
