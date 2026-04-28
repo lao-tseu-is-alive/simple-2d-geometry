@@ -2,7 +2,6 @@ import type { RenderDriver, RenderOptions } from "./RenderDriver.ts";
 
 /**
  * Represents an Axis-Aligned Bounding Box.
- * Extremely useful for broad-phase collision detection.
  */
 export interface BoundingBox {
   minX: number;

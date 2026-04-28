@@ -563,13 +563,16 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} q
      * @return {Number} the distance calculated between this Point and the line defined by p and q
      * @throws {TypeError} if p or q are not Points
+     * @throws {RangeError} if p and q are at the same location (undefined line)
      */
     distanceToInfiniteLine(p: Point, q: Point): number {
         assertIsPoint(p, "distanceToInfiniteLine p")
         assertIsPoint(q, "distanceToInfiniteLine q")
-        return Math.abs(
-            p.subtract(q).cross(this.subtract(q)) / p.subtract(q).norm(),
-        );
+        if (p.isSameLocation(q)) {
+            throw new RangeError("distanceToInfiniteLine: points p and q cannot be at the same location. An infinite line requires two distinct points.");
+        }
+        const pq = p.subtract(q);
+        return Math.abs(pq.cross(this.subtract(q)) / pq.norm());
     }
 
     /**
@@ -694,10 +697,10 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Boolean} toTheLeft (default True) gives the perpendicular to the left of the vector going from this to other
      * @returns {Point} returns a new Point located at a length distance from the other point and perpendicular to line from this point to other
      */
-    perpendicular(other: Point, length: number, toTheLeft:boolean=true): Point {
+    perpendicular(other: Point, length: number, toTheLeft: boolean = true): Point {
         assertIsPoint(other, "perpendicular other")
         const angleLine = this.angleTo(other);
-        const rotation = toTheLeft ? angleLine.add(Math.PI / 2, "radians"):angleLine.add(-Math.PI / 2, "radians");
+        const rotation = toTheLeft ? angleLine.add(Math.PI / 2, "radians") : angleLine.add(-Math.PI / 2, "radians");
         // get a Polar point at origin with
         const polarPoint = Point.fromPolar(
             length,

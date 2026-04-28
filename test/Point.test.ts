@@ -688,6 +688,11 @@ describe("Point module", () => {
                 TypeError,
             );
         });
+        test("should throw an RangeError when the parameter is not a valid Point", () => {
+            expect(() => {
+                P1.distanceToInfiniteLine(P2, P2)
+            }).toThrow(RangeError);
+        });
     });
 
     describe("Point.distanceToSegment()", () => {
@@ -742,7 +747,7 @@ describe("Point module", () => {
             // Use expect().toThrow() to check for the specific error type
             // The code that should throw is wrapped in a function () => {...}
             expect(() => {
-                P0.reflect(P1,P1);
+                P0.reflect(P1, P1);
             }).toThrow(RangeError);
         })
         test("should return a clone of the point ", () => {
@@ -918,7 +923,7 @@ describe("Point.perpendicular()", () => {
         expect(P1MirrorY.y).toBeCloseTo(P1.y);
     });
 
-    test("should return a correct perpendicular", ()=> {
+    test("should return a correct perpendicular", () => {
         const a = new Point(0, 0);
         const b = new Point(1, 0);
         const p = a.perpendicular(b, 2);
