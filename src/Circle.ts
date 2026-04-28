@@ -1,4 +1,10 @@
-import Point, {assertIsPoint, type coordinate2dArray, type iPoint} from "./Point.ts";
+import Point, {
+    assertIsIPoint,
+    assertIsPoint,
+    type coordinate2dArray,
+    type iPoint,
+    type ReadonlyPoint
+} from "./Point.ts";
 import type {GeometryDriver, Extent} from "./Driver.ts";
 import type {RenderDriver, RenderOptions} from "./RenderDriver.ts";
 import Converters from "./Converters.ts";
@@ -23,7 +29,7 @@ export default class Circle implements GeometryDriver {
     private _radius: number = 1.0; // default radius
     private _name: string = "";
 
-    get center(): Point {
+    get center(): ReadonlyPoint {
         return this._center.clone();
     }
 
@@ -107,7 +113,7 @@ export default class Circle implements GeometryDriver {
         }
         if (inputArray.length === 3) {
             return new Circle(
-                Point.fromArray(inputArray.slice(0, 2) as coordinate2dArray),
+                Point.fromArray(inputArray.slice(0, 2) as unknown as coordinate2dArray),
                 inputArray[2],
                 name,
             );
@@ -462,17 +468,17 @@ export default class Circle implements GeometryDriver {
      * @param {Circle} other
      * @returns {boolean}
      */
-    containsPoint(other: Point): boolean {
-        assertIsPoint(other, "Circle containsPoint other")
+    containsPoint(other: Readonly<iPoint>): boolean {
+        assertIsIPoint(other, "Circle containsPoint other")
         const distanceSq = this.distanceToPointSq(other);
         return distanceSq <= Math.pow(this.radius, 2);
     }
 
     /**
-     * Calculates the Euclidean distance to a other.
+     * Calculates the Euclidean distance to an other.
      * Note: Using distance squared is computationally cheaper (avoiding Math.sqrt).
      */
-    distanceToPointSq(other: Point): number {
+    distanceToPointSq(other: Readonly<iPoint>): number {
         assertIsPoint(other, "distanceToPointSq other")
         const dx = this.center.x - other.x;
         const dy = this.center.y - other.y;
@@ -498,7 +504,7 @@ export default class Circle implements GeometryDriver {
      * @param {Point} other
      * @returns {Circle} return a new Circle object translated by other.x, other.y
      */
-    translate(other: Point): Circle {
+    translate(other: Readonly<iPoint>): Circle {
         assertIsPoint(other, "Circle translate other")
         const newCenter = this.center.add(other);
         return new Circle(newCenter, this.radius, this.name)
@@ -522,7 +528,7 @@ export default class Circle implements GeometryDriver {
      * @param {Angle} theta is the angle to rotate this Circle
      * @param {Point} center is the Point to use as center of rotation
      */
-    rotateAround(theta: Angle, center: Point): Circle {
+    rotateAround(theta: Angle, center: Readonly<iPoint>): Circle {
         assertIsPoint(center, "Circle rotateAround center")
         // if given center is origin no need translate
         if (center.isOrigin()) {

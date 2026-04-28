@@ -1,10 +1,15 @@
-import Point, {assertIsPoint, type coordinate2dArray, type iPoint} from "./Point.ts";
+import Point, {
+    assertIsIPoint,
+    assertIsPoint,
+    type coordinate2dArray,
+    type iPoint,
+    type ReadonlyPoint
+} from "./Point.ts";
 import Converters from "./Converters.ts";
 import {EPSILON, Guard} from "./Geometry.ts";
 import Angle from "./Angle.ts";
 import type {GeometryDriver, Extent} from "./Driver.ts";
 import type {RenderDriver, RenderOptions} from "./RenderDriver.ts";
-import Line from "./Line.ts";
 
 /**
  * TriangleInterface is an interface for a Triangle object
@@ -59,83 +64,83 @@ export default class Triangle implements GeometryDriver {
 
     /**
      * get pA returns the first Point of the triangle
-     * @returns {Point} the first Point of the triangle
+     * @returns {ReadonlyPoint} the first Point of the triangle
      */
-    get pA(): Point {
-        return this._pA;
+    get pA(): ReadonlyPoint {
+        return this._pA.clone();
     }
 
     /**
      * set pA allows to change the first Point of the triangle
-     * @param {Point} input is the new first Point of the triangle
+     * @param {Readonly<iPoint>} input is the new first Point of the triangle
      */
-    set pA(input: Point) {
-        assertIsPoint(input, "Triangle pA")
-        if (input.isSameLocation(this._pB)) {
+    set pA(input: Readonly<iPoint>) {
+        assertIsIPoint(input, "Triangle pA")
+        if (this._pB.isSameLocation(input)) {
             throw new RangeError(
-                `pA:'${input.dump()}' should be at different location from pB:'${this._pB.dump()}'`,
+                `pA should be at different location from pB`,
             );
         }
-        if (input.isSameLocation(this._pC)) {
+        if (this._pC.isSameLocation(input)) {
             throw new RangeError(
-                `pA:'${input.dump()}' should be at different location from pC:'${this._pC.dump()}'`,
+                `pA should be at different location from pC`,
             );
         }
-        this._pA = input;
+        this._pA = new Point(input.x, input.y, input.name);
     }
 
     /**
      * get pB returns the second Point of the triangle
-     * @returns {Point} the second Point of the triangle
+     * @returns {ReadonlyPoint} the second Point of the triangle
      */
-    get pB(): Point {
-        return this._pB;
+    get pB(): ReadonlyPoint {
+        return this._pB.clone();
     }
 
     /**
      * set pB allows to change the second Point of the triangle
-     * @param {Point} input is the new second Point of the triangle
+     * @param {Readonly<iPoint>} input is the new second Point of the triangle
      */
-    set pB(input: Point) {
-        assertIsPoint(input, "Triangle pB")
-        if (input.isSameLocation(this._pA)) {
+    set pB(input: Readonly<iPoint>) {
+        assertIsIPoint(input, "Triangle pB")
+        if (this._pA.isSameLocation(input)) {
             throw new RangeError(
-                `pB:'${input.dump()}' should be at different location from pA:'${this._pB.dump()}'`,
+                `pB should be at different location from pA`,
             );
         }
-        if (input.isSameLocation(this._pC)) {
+        if (this._pC.isSameLocation(input)) {
             throw new RangeError(
-                `pB:'${input.dump()}' should be at different location from pC:'${this._pC.dump()}'`,
+                `pB should be at different location from pC`,
             );
         }
-        this._pB = input;
+        this._pB = new Point(input.x, input.y, input.name);
     }
 
     /**
      * get pC returns the third Point of the triangle
-     * @returns {Point} the third Point of the triangle
+     * @returns {ReadonlyPoint} the third Point of the triangle
      */
-    get pC(): Point {
-        return this._pC;
+    get pC(): ReadonlyPoint {
+        return this._pC.clone();
     }
 
     /**
      * set pC allows to change the third Point of the triangle
-     * @param {Point} input is the new third Point of the triangle
+     * @param {Readonly<iPoint>} input is the new third Point of the triangle
      */
-    set pC(input: Point) {
-        assertIsPoint(input, "Triangle pC")
-        if (input.isSameLocation(this._pA)) {
+    set pC(input: Readonly<iPoint>) {
+        assertIsIPoint(input, "Triangle pC")
+        if (this._pA.isSameLocation(input)) {
             throw new RangeError(
-                `pC:'${input.dump()}' should be at different location from pA:'${this._pB.dump()}'`,
+                `pC should be at different location from pA`,
             );
         }
-        if (input.isSameLocation(this._pB)) {
+        if (this._pB.isSameLocation(input)) {
             throw new RangeError(
-                `pC:'${input.dump()}' should be at different location from pB:'${this._pC.dump()}'`,
+                `pC should be at different location from pB`,
             );
         }
-        this._pC = input;
+        this._pC = new Point(input.x, input.y, input.name);
     }
 
     /**
@@ -266,9 +271,9 @@ export default class Triangle implements GeometryDriver {
     static fromTriangle(other: Triangle): Triangle {
         assertIsTriangle(other, "Triangle fromTriangle other")
         return new Triangle(
-            other.pA,
-            other.pB,
-            other.pC,
+            other._pA,
+            other._pB,
+            other._pC,
             other.name,
         );
     }
@@ -413,7 +418,7 @@ export default class Triangle implements GeometryDriver {
      * @returns {number} the determinant of the triangle
      */
     determinant(): number {
-        return Point.determinant(this.pA, this.pB, this.pC);
+        return Point.determinant(this._pA, this._pB, this._pC);
     }
 
     /**

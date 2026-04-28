@@ -1,9 +1,15 @@
-import Point, {assertIsPoint, type coordinate2dArray, type iPoint} from "./Point.ts";
+import Point, {
+    assertIsIPoint,
+    assertIsPoint,
+    type coordinate2dArray,
+    type iPoint,
+    type ReadonlyPoint
+} from "./Point.ts";
 import Converters from "./Converters.ts";
 import Angle from "./Angle.ts";
 import type {GeometryDriver, Extent} from "./Driver.ts";
 import type {RenderDriver, RenderOptions} from "./RenderDriver.ts";
-import {EPSILON, Guard} from "./Geometry.ts";
+import {EPSILON, Guard, isNumeric} from "./Geometry.ts";
 
 export interface LineInterface {
     start: iPoint;
@@ -33,38 +39,44 @@ export default class Line implements GeometryDriver {
     private _start: Point = Point.fromArray([0, 0]); // default start point
     private _end: Point = Point.fromArray([1, 1]); // default end point
     private _name: string | undefined = undefined;
-    private _direction: Point;
-    private _lenSq: number;
+    private _direction: Point = new Point(0, 0);
+    private _lenSq: number = 0;
 
-    get start(): Point {
-        return this._start.clone();
-    }
-
-    set start(input: Point) {
-        assertIsPoint(input, "Line start")
-        if (input.isSameLocation(this._end)) {
-            throw new RangeError(
-                `start:'${input.dump()}' should be at different location from end:'${this._end.dump()}'`,
-            );
-        }
-        this._start = input;
-        this._direction = this.end.subtract(this.start)
+    /**
+     * updateDirectionAndLength: calculates and caches the _direction and _lenSq everytime _start and _end changes
+     */
+    private updateDirectionAndLength() {
+        // calculate the direction vector
+        this._direction = this._end.subtract(this._start)
         // Calculate lenSq directly to avoid Point.distanceSquaredTo's Epsilon snapping
         this._lenSq = this._direction.x * this._direction.x + this._direction.y * this._direction.y;
     }
 
-    get end(): Point {
+    get start(): ReadonlyPoint {
+        return this._start.clone();
+    }
+
+    set start(input: Readonly<iPoint>) {
+        assertIsIPoint(input, "Line start")
+        if (this._end.isSameLocation(input)) {
+            throw new RangeError(`start should be at different location from end`);
+        }
+        this._start = new Point(input.x, input.y, input.name)
+        this.updateDirectionAndLength();
+    }
+
+
+    get end(): ReadonlyPoint {
         return this._end.clone();
     }
 
-    set end(input: Point) {
-        assertIsPoint(input, "Line end")
-        if (input.isSameLocation(this._start)) {
+    set end(input: Readonly<iPoint>) {
+        assertIsIPoint(input, "Line end")
+        if (this._start.isSameLocation(input)) {
             throw new RangeError("end should be at different location from start");
         }
-        this._end = input;
-        this._direction = this.end.subtract(this.start)
-        this._lenSq = this._direction.x * this._direction.x + this._direction.y * this._direction.y;
+        this._end = new Point(input.x, input.y, input.name);
+        this.updateDirectionAndLength();
     }
 
     get name(): string {
@@ -78,11 +90,11 @@ export default class Line implements GeometryDriver {
         this._name = value;
     }
 
-    get p1(): Point {
+    get p1(): ReadonlyPoint {
         return this.start;
     }
 
-    get p2(): Point {
+    get p2(): ReadonlyPoint {
         return this.end;
     }
 
@@ -91,15 +103,15 @@ export default class Line implements GeometryDriver {
     }
 
     get length(): number {
-        return this.start.distanceTo(this.end);
+        return this._start.distanceTo(this._end);
     }
 
     get angle(): Angle {
-        return this.start.angleTo(this.end);
+        return this._start.angleTo(this._end);
     }
 
     get slope(): number {
-        return this.start.slopeTo(this.end);
+        return this._start.slopeTo(this._end);
     }
 
     get isVertical(): boolean {
@@ -121,7 +133,7 @@ export default class Line implements GeometryDriver {
      */
     get yIntercept(): number {
         if (this.isVertical) return NaN;
-        return this.p1.y - (this._direction.y / this._direction.x) * this.p1.x;
+        return this._start.y - (this._direction.y / this._direction.x) * this._start.x;
     }
 
     /**
@@ -142,9 +154,7 @@ export default class Line implements GeometryDriver {
         this._start = start.clone();
         this._end = end.clone();
         if (name !== undefined) this.name = name;
-        // calculate the direction vector
-        this._direction = this.end.subtract(this.start)
-        this._lenSq = this._direction.x * this._direction.x + this._direction.y * this._direction.y;
+        this.updateDirectionAndLength();
     }
 
     // ──────────────────────────────────────────────────────────────────────────────
@@ -198,13 +208,14 @@ export default class Line implements GeometryDriver {
      * @param {number} m is the slope of the line
      * @param {Point} p is the Point where the line should pass
      */
-    static fromSlopeAndPoint(m: number, p: Point): Line {
+    static fromSlopeAndPoint(m: number, p: Readonly<iPoint>): Line {
         // For horizontal/vertical, fallback to a direction vector
-        if (m == Number.POSITIVE_INFINITY) return new Line(p, new Point(p.x, p.y + 1.0));
-        if (m == Number.NEGATIVE_INFINITY) return new Line(p, new Point(p.x, p.y - 1.0));
+        const p1 = Point.fromObject(p)
+        if (m == Number.POSITIVE_INFINITY) return new Line(p1, new Point(p.x, p.y + 1.0));
+        if (m == Number.NEGATIVE_INFINITY) return new Line(p1, new Point(p.x, p.y - 1.0));
         const dx = 1;
         const dy = m * dx;
-        return new Line(p, new Point(p.x + dx, p.y + dy));
+        return new Line(p1, new Point(p.x + dx, p.y + dy));
     }
 
     static fromObject(data: Record<string, unknown>) {
@@ -244,7 +255,7 @@ export default class Line implements GeometryDriver {
         precision: number = 2,
         withName: boolean = true,
     ): string {
-        const tmpRes = `${this.start.toString(separator, surroundingParenthesis, precision)}${separator}${this.end.toString(separator, surroundingParenthesis, precision)}`;
+        const tmpRes = `${this._start.toString(separator, surroundingParenthesis, precision)}${separator}${this._end.toString(separator, surroundingParenthesis, precision)}`;
         if (surroundingParenthesis) {
             return withName ? `${this.name}:(${tmpRes})` : `(${tmpRes})`;
         } else {
@@ -253,8 +264,8 @@ export default class Line implements GeometryDriver {
     }
 
     toLineEquation(): string {
-        if (this.isVertical) return `Line: x = ${this.p1.x.toFixed(4)}`;
-        if (this.isHorizontal) return `Line: y = ${this.p1.y.toFixed(4)}`;
+        if (this.isVertical) return `Line: x = ${this._start.x.toFixed(4)}`;
+        if (this.isHorizontal) return `Line: y = ${this._start.y.toFixed(4)}`;
         return `Line: y = ${this.slope!.toFixed(4)}x + ${this.yIntercept!.toFixed(4)}`;
     }
 
@@ -263,7 +274,7 @@ export default class Line implements GeometryDriver {
      * https://en.wikipedia.org/wiki/Well-known_text
      * @returns {string} WKT representation of this line geometry
      */
-    toWKT (): string {
+    toWKT(): string {
         return `LINESTRING(${this._start.x} ${this._start.y}, ${this._end.x} ${this._end.y})`
     }
 
@@ -273,7 +284,7 @@ export default class Line implements GeometryDriver {
      * @param {number} srid is the Spatial reference systems identifier EPSG code, default is 2056 for Switzerland MN95
      * @returns {string} WKT representation of this line geometry
      */
-    toEWKT (srid = 2056) {
+    toEWKT(srid: number = 2056): string {
         return `SRID=${srid};${this.toWKT()}`
     }
 
@@ -283,15 +294,15 @@ export default class Line implements GeometryDriver {
      * toGeoJSON: give a GeoJSON (http://geojson.org/) representation of this class instance geometry
      * @returns {string}
      */
-    toGeoJSON () {
+    toGeoJSON(): string {
         return `{"type":"LineString","coordinates":[[${this._start.x},${this._start.y}],[${this._end.x},${this._end.y}]]}`
     }
 
     toJSON(): string {
         if (this.name.length > 0) {
-            return `{"start":${this.start.toJSON()}, "end":${this.end.toJSON()}, "name":"${this.name}"}`;
+            return `{"start":${this._start.toJSON()}, "end":${this._end.toJSON()}, "name":"${this.name}"}`;
         }
-        return `{"start":${this.start.toJSON()}, "end":${this.end.toJSON()}}`;
+        return `{"start":${this._start.toJSON()}, "end":${this._end.toJSON()}}`;
     }
 
     /**
@@ -302,8 +313,8 @@ export default class Line implements GeometryDriver {
     sameLocation(other: Line): boolean {
         assertIsLine(other, "Line sameLocation other")
         return (
-            this.start.isSameLocation(other.start) && this.end.isSameLocation(other.end) ||
-            this.start.isSameLocation(other.end) && this.end.isSameLocation(other.start)
+            this._start.isSameLocation(other._start) && this._end.isSameLocation(other._end) ||
+            this._start.isSameLocation(other._end) && this._end.isSameLocation(other._start)
         );
     }
 
@@ -317,7 +328,7 @@ export default class Line implements GeometryDriver {
         assertIsLine(other, "Line sameInfiniteLineLocation other")
         if (!this.isParallelTo(other)) return false;
         // Check if other.start lies on this infinite line
-        return this.containsPoint(other.start) || this.containsPoint(other.end);
+        return this.containsPoint(other._start) || this.containsPoint(other._end);
     }
 
     /**
@@ -344,29 +355,28 @@ export default class Line implements GeometryDriver {
 
     /**
      * getPointAt returns a point on the line using parametric form: P(t) = P1 + t * direction
-     * Here, `direction` is the vector from `P1` to `P2`, so `t = 0` gives `P1`
-     *  and `t = 1` gives `P2`.
+     * Here, `direction` is the vector from `P1` to `P2`, so `t = 0` gives `P1` and `t = 1` gives `P2`.
      * @param t Parameter along the line. `t=0` → `p1`, `t=1` → `p2`, `t=0.5` → midpoint between p1 and p2
      */
     getPointAt(t: number): Point {
         return new Point(
-            this.p1.x + t * this.direction.x,
-            this.p1.y + t * this.direction.y);
+            this._start.x + t * this._direction.x,
+            this._start.y + t * this._direction.y);
     }
 
     /** Shortest perpendicular distance from an other to this infinite line */
-    getDistanceTo(other: Point): number {
-        assertIsPoint(other, "Line getDistanceTo other")
+    getDistanceTo(other: Readonly<iPoint>): number {
+        assertIsIPoint(other, "Line getDistanceTo other")
         const dx = this._direction.x;
         const dy = this._direction.y;
-        const num = Math.abs(dx * (this.p1.y - other.y) - dy * (this.p1.x - other.x));
+        const num = Math.abs(dx * (this._start.y - other.y) - dy * (this._start.x - other.x));
         return num / Math.sqrt(this._lenSq);
     }
 
     /** Checks if another line is parallel (directions are collinear) */
     isParallelTo(other: Line): boolean {
         assertIsLine(other, "Line isParallelTo other")
-        const crossSq = Math.pow(this._direction.x * other.direction.y - this._direction.y * other.direction.x, 2);
+        const crossSq = Math.pow(this._direction.x * other._direction.y - this._direction.y * other._direction.x, 2);
         const lenSq = this._lenSq * other._lenSq;
         // robust Scale-invariant comparison
         return (crossSq / lenSq) < (EPSILON * EPSILON);
@@ -375,7 +385,7 @@ export default class Line implements GeometryDriver {
     /** Checks if another line is perpendicular */
     isPerpendicularTo(other: Line): boolean {
         assertIsLine(other, "Line isPerpendicularTo other")
-        return Math.abs(this._direction.x * other.direction.x + this._direction.y * other.direction.y) < EPSILON;
+        return Math.abs(this._direction.x * other._direction.x + this._direction.y * other._direction.y) < EPSILON;
     }
 
     /** getIntersectionWith returns intersection point of two infinite lines, or null if parallel
@@ -387,11 +397,11 @@ export default class Line implements GeometryDriver {
 
         const A1 = this._direction.y;
         const B1 = -this._direction.x;
-        const C1 = A1 * this.p1.x + B1 * this.p1.y;
+        const C1 = A1 * this._start.x + B1 * this._start.y;
 
-        const A2 = other.direction.y;
-        const B2 = -other.direction.x;
-        const C2 = A2 * other.p1.x + B2 * other.p1.y;
+        const A2 = other._direction.y;
+        const B2 = -other._direction.x;
+        const C2 = A2 * other._start.x + B2 * other._start.y;
 
         const det = A1 * B2 - A2 * B1;
         if (Math.abs(det) < EPSILON) return null; // Parallel fallback
@@ -401,14 +411,14 @@ export default class Line implements GeometryDriver {
 
     /**
      * getSegmentIntersectionWith returns the intersection point of two finite line segments.
-     * Returns null if they do not intersect, or if they are parallel/collinear.
+     * Returns null if they do not intersect or if they are parallel/collinear.
      */
     getSegmentIntersectionWith(other: Line): Point | null {
         assertIsLine(other, "Line getSegmentIntersectionWith other");
 
-        const p = this.start;
+        const p = this._start;
         const r = this._direction;
-        const q = other.start;
+        const q = other._start;
         const s = other._direction;
 
         const rCrossS = r.cross(s);
@@ -431,32 +441,32 @@ export default class Line implements GeometryDriver {
 
     /** * isPointOnSegment checks if a point lies strictly on this bounded segment.
      */
-    isPointOnSegment(point: Point): boolean {
-        assertIsPoint(point, "Line isPointOnSegment point");
+    isPointOnSegment(point: Readonly<iPoint>): boolean {
+        assertIsIPoint(point, "Line isPointOnSegment point");
 
         // Must lie on the infinite line
         if (!this.containsPoint(point)) return false;
 
         // Must lie within the bounding box of the segment
-        const minX = Math.min(this.start.x, this.end.x) - EPSILON;
-        const maxX = Math.max(this.start.x, this.end.x) + EPSILON;
-        const minY = Math.min(this.start.y, this.end.y) - EPSILON;
-        const maxY = Math.max(this.start.y, this.end.y) + EPSILON;
+        const minX = Math.min(this._start.x, this._end.x) - EPSILON;
+        const maxX = Math.max(this._start.x, this._end.x) + EPSILON;
+        const minY = Math.min(this._start.y, this._end.y) - EPSILON;
+        const maxY = Math.max(this._start.y, this._end.y) + EPSILON;
 
         return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
     }
 
     /**
      * containsPoint checks if a given point lies on this infinite line (within EPSILON tolerance).
-     * @param point The point to test
-     * @param tolerance
+     * @param {iPoint} point is the point to test
+     * @param {number} tolerance to use for the test (default is EPSILON 1e-9)
      * @returns {boolean} true if the point lies on the infinite line defined by this Line
      */
-    containsPoint(point: Point, tolerance: number = EPSILON): boolean {
-        assertIsPoint(point, "Line containsPoint point");
+    containsPoint(point: Readonly<iPoint>, tolerance: number = EPSILON): boolean {
+        assertIsIPoint(point, "Line containsPoint point");
 
         // Fast path: if the point is one of the endpoints, it's obviously on the line
-        if (this.start.isSameLocation(point) || this.end.isSameLocation(point)) {
+        if (this._start.isSameLocation(point) || this._end.isSameLocation(point)) {
             return true;
         }
 
@@ -464,18 +474,18 @@ export default class Line implements GeometryDriver {
         return this.getDistanceTo(point) < tolerance;
     }
 
-    /** Orthogonally projects an other onto this line
+    /** Orthogonally projects another onto this line
      * Drops a perpendicular from other to line. Essential for snapping, Voronoi, etc.
      * */
-    projectPointToLine(other: Point): Point {
-        assertIsPoint(other, "Line projectPointToLine other")
-        const t = ((other.x - this.p1.x) * this._direction.x + (other.y - this.p1.y) * this._direction.y) / this._lenSq;
-        return new Point(this.p1.x + t * this._direction.x, this.p1.y + t * this._direction.y);
+    projectPointToLine(other: Readonly<iPoint>): Point {
+        assertIsIPoint(other, "Line projectPointToLine other")
+        const t = ((other.x - this._start.x) * this._direction.x + (other.y - this._start.y) * this._direction.y) / this._lenSq;
+        return new Point(this._start.x + t * this._direction.x, this._start.y + t * this._direction.y);
     }
 
-    /** Reflects an other across this line */
-    reflectPointAcrossLine(other: Point): Point {
-        assertIsPoint(other, "Line reflectPointAcrossLine other")
+    /** Reflects another across this line */
+    reflectPointAcrossLine(other: Readonly<iPoint>): Point {
+        assertIsIPoint(other, "Line reflectPointAcrossLine other")
         const proj = this.projectPointToLine(other);
         return new Point(2 * proj.x - other.x, 2 * proj.y - other.y);
     }
@@ -484,7 +494,7 @@ export default class Line implements GeometryDriver {
     getAngleTo(other: Line): number {
         assertIsLine(other, "Line getAngleTo other")
         const dx1 = this._direction.x, dy1 = this._direction.y;
-        const dx2 = other.direction.x, dy2 = other.direction.y;
+        const dx2 = other._direction.x, dy2 = other._direction.y;
         const len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
         const len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
         if (len1 < EPSILON || len2 < EPSILON) return NaN;
@@ -492,6 +502,62 @@ export default class Line implements GeometryDriver {
         const cosAngle = (dx1 * dx2 + dy1 * dy2) / (len1 * len2);
         // Clamp for floating-point safety
         return Math.acos(Math.max(-1, Math.min(1, cosAngle)));
+    }
+
+    /**
+     * moveToArray will move this Line to the new position in cartesian space given by the arrCoordinates
+     * @param {Array} arrCoordinates is an array with the 2 cartesian coordinates [x, y]
+     * @returns {Line} return this instance of the object (to allow function chaining)
+     */
+    moveToArray(arrCoordinates: coordinate2dArray): Line {
+        this._start.moveToArray(arrCoordinates);
+        this._end.moveToArray(arrCoordinates);
+        this.updateDirectionAndLength()
+        return this;
+    }
+
+    /**
+     * moveTo will move this Line to the new position in cartesian space given by the newX and newY values
+     * @param {number} newX is the new x coordinates in cartesian space of this Point
+     * @param {number} newY is the new y coordinates in cartesian space of this Point
+     * @returns {Line} return this instance of the object (to allow function chaining)
+     */
+    moveTo(newX: number, newY: number): Line {
+        this._start.moveTo(newX, newY)
+        this._end.moveTo(newX, newY)
+        this.updateDirectionAndLength()
+        return this;
+    }
+
+    /**
+     * moveRel move this Point relative to its position by the deltaX, deltaY displacement in cartesian space
+     * @param {number} deltaX is the new x coordinates in cartesian space of this Point
+     * @param {number} deltaY is the new y coordinates in cartesian space of this Point
+     * @returns {Point} return this instance of the object (to allow function chaining)
+     */
+    moveRel(deltaX: number, deltaY: number): Line {
+        this._start.moveRel(deltaX, deltaY);
+        this._end.moveRel(deltaX, deltaY);
+        this.updateDirectionAndLength()
+        return this;
+    }
+
+    /**
+     * moveRelArray move this Line relative to its position by the arrVector displacement in cartesian space
+     * @param {Array} arrVector is an array representing the vector displacement to apply to actual coordinates [deltaX, deltaY]
+     * @returns {Point} return this instance of the object (to allow function chaining)
+     */
+    moveRelArray(arrVector: coordinate2dArray): Line {
+        if (isNumeric(arrVector[0]) && isNumeric(arrVector[1])) {
+            this._start.moveRelArray(arrVector)
+            this._end.moveRelArray(arrVector)
+            this.updateDirectionAndLength()
+            return this;
+        } else {
+            throw new TypeError(
+                "moveRelArray needs an array of 2 numbers like this [1.0, 2.0]",
+            );
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────────────
@@ -503,10 +569,10 @@ export default class Line implements GeometryDriver {
      * @param {Point} other
      * @returns {Line} return a new Line object translated by other.x,other.y
      */
-    translate(other: Point): Line {
-        assertIsPoint(other, "Line translate other")
-        const newStart = this.start.add(other);
-        const newEnd = this.end.add(other);
+    translate(other: Readonly<iPoint>): Line {
+        assertIsIPoint(other, "Line translate other")
+        const newStart = this._start.add(other);
+        const newEnd = this._end.add(other);
         return new Line(newStart, newEnd)
     }
 
@@ -516,7 +582,7 @@ export default class Line implements GeometryDriver {
      * @returns {Line} return a new Line object rotated by theta
      */
     rotate(theta: Angle): Line {
-        return new Line(this.p1.rotate(theta), this.p2.rotate(theta))
+        return new Line(this._start.rotate(theta), this._end.rotate(theta))
     }
 
     /**
@@ -525,16 +591,16 @@ export default class Line implements GeometryDriver {
      * @param {Point} center is the Point to use as a center of rotation
      * @returns {Line} return a new Line object rotated
      */
-    rotateAround(theta: Angle, center: Point): Line {
-        assertIsPoint(center, "Line rotateAround center")
+    rotateAround(theta: Angle, center: Readonly<iPoint>): Line {
+        assertIsIPoint(center, "Line rotateAround center")
         // if given center is origin no need translate
-        if (center.isOrigin()) {
+        if (center.x === 0 && center.y === 0) {
             return this.rotate(theta);
         }
         // Translate points so center is the origin
-        const p1Translated = this.p1.subtract(center);
+        const p1Translated = this._start.subtract(center);
         const p1Rotated = p1Translated.rotate(theta);
-        const p2Translated = this.p2.subtract(center);
+        const p2Translated = this._end.subtract(center);
         const p2Rotated = p2Translated.rotate(theta);
         // Translate point back
         return new Line(p1Rotated.add(center), p2Rotated.add(center));
@@ -562,10 +628,10 @@ export default class Line implements GeometryDriver {
      */
     getExtent(): Extent {
         return [
-            Math.min(this.start.x, this.end.x),
-            Math.min(this.start.y, this.end.y),
-            Math.max(this.start.x, this.end.x),
-            Math.max(this.start.y, this.end.y),
+            Math.min(this._start.x, this._end.x),
+            Math.min(this._start.y, this._end.y),
+            Math.max(this._start.x, this._end.x),
+            Math.max(this._start.y, this._end.y),
         ];
     }
 

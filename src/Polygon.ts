@@ -1,4 +1,4 @@
-import Point, {assertIsPoint, type coordinate2dArray, type iPoint} from "./Point.ts";
+import Point, {assertIsPoint, type coordinate2dArray, type iPoint, type ReadonlyPoint} from "./Point.ts";
 import Converters from "./Converters.ts";
 import Angle from "./Angle.ts";
 import Line from "./Line.ts";
@@ -43,7 +43,7 @@ export default class Polygon implements GeometryDriver {
      * get points returns a copy of the array of vertices defining the polygon
      * @returns {Point[]} a copy of the vertices array
      */
-    get points(): Point[] {
+    get points(): ReadonlyArray<ReadonlyPoint> {
         return this._points.map(p => p.clone());
     }
 
@@ -108,7 +108,7 @@ export default class Polygon implements GeometryDriver {
      * @param {Point[]} points array of vertices defining the polygon
      * @param {string | undefined} name optional name of this polygon
      */
-    constructor(points: Point[], name?: string) {
+    constructor(points: ReadonlyArray<iPoint>, name?: string) {
         if (!Array.isArray(points) || points.length < 3) {
             throw new RangeError("Polygon needs at least 3 vertices");
         }
@@ -128,7 +128,7 @@ export default class Polygon implements GeometryDriver {
      * @param {Polygon} other is the Polygon you want to copy
      * @returns {Polygon} a new Polygon located at the same cartesian coordinates as other
      */
-    static fromPolygon(other: Polygon): Polygon {
+    static fromPolygon(other: Readonly<PolygonInterface>): Polygon {
         assertIsPolygon(other, "Polygon fromPolygon other");
         return new Polygon(other.points, other.name);
     }
@@ -190,7 +190,7 @@ export default class Polygon implements GeometryDriver {
      * @returns {Polygon} a new Polygon located at the same cartesian coordinates as this Polygon
      */
     clone(): Polygon {
-        return Polygon.fromPolygon(this);
+        return new Polygon(this.points, this.name);
     }
 
     /**
@@ -464,7 +464,7 @@ export default class Polygon implements GeometryDriver {
      * @param {Point} other
      * @returns {Polygon} return a new Polygon object translated by other.x, other.y
      */
-    translate(other: Point): Polygon {
+    translate(other: Readonly<iPoint>): Polygon {
         assertIsPoint(other, "Polygon translate other");
         return new Polygon(
             this._points.map(p => p.add(other)),
@@ -490,7 +490,7 @@ export default class Polygon implements GeometryDriver {
      * @param {Point} center is the Point to use as center of rotation
      * @returns {Polygon} return a new Polygon object rotated
      */
-    rotateAround(theta: Angle, center: Point): Polygon {
+    rotateAround(theta: Angle, center: Readonly<iPoint>): Polygon {
         assertIsPoint(center, "Polygon rotateAround center");
         return new Polygon(
             this._points.map(p => p.rotateAround(theta, center)),
@@ -516,7 +516,7 @@ export default class Polygon implements GeometryDriver {
      * @param {Point} center is the Point to use as center of scaling
      * @returns {Polygon} return a new Polygon object scaled
      */
-    scaleAround(factor: number, center: Point): Polygon {
+    scaleAround(factor: number, center: Readonly<iPoint>): Polygon {
         assertIsPoint(center, "Polygon scaleAround center");
         return new Polygon(
             this._points.map(p => p.subtract(center).multiply(factor).add(center)),

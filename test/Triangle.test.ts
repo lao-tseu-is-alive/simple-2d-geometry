@@ -48,7 +48,7 @@ describe("Triangle module", () => {
     test("pA setter should store a point", () => {
       const P2 = new Point(2, 4, "P2");
       T0.pA = P2;
-      expect(T0.pA).toBe(P2);
+      expect(T0.pA.isEqual(P2)).toBe(true);
     });
     test("pA setter should throw an Error if same location as pB ", () => {
       expect(() => {
@@ -68,7 +68,7 @@ describe("Triangle module", () => {
     test("pB setter should store a point", () => {
       const P3 = new Point(0, 0, "P3");
       T0.pB = P3;
-      expect(T0.pB).toBe(P3);
+      expect(T0.pB.isEqual(P3)).toBe(true);
     });
     test("pB setter should throw an Error if same location as pA ", () => {
       const T2 = new Triangle(PO, P1, P2, "T2");
@@ -145,8 +145,8 @@ describe("Triangle module", () => {
       expect(T2.pC.isSameLocation(T0.pC)).toBe(true);
     });
     test("should copy Points by value in the new Triangle", () => {
-      T2.pA.moveTo(1.0, 1.0);
-      expect(T2.pA.x).toBe(1.0);
+      T2.pA = new Point(10.0, 1.0);
+      expect(T2.pA.x).toBe(10.0);
       expect(T2.pA.y).toBe(1.0);
       expect(T2.pA.isEqual(T0.pA)).toBe(false);
       expect(T0.pA.x).toBe(0);

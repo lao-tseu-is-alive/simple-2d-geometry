@@ -141,7 +141,7 @@ describe("Line module", () => {
         });
         test("fromLine should copy Points by value in the new Line", () => {
             const L2 = Line.fromLine(lineL0);
-            L2.start = L2.start.moveTo(1.0, 10.0);
+            L2.moveTo(1.0, 10.0);
             expect(L2.start.x).toBe(1); // Modified locally
             expect(lineL0.start.x).toBe(0); // Original untouched
         });
@@ -222,6 +222,21 @@ describe("Line module", () => {
 
             const vert = new Line(new Point(3, 0), new Point(3, 10));
             expect(vert.toLineEquation()).toBe("Line: x = 3.0000");
+        });
+        describe("Line can be exported to OGC WKT and GeoJSON", () => {
+            const L1 = new Line(new Point(1.0, 2.0, "P1"), new Point(10.0, 2.0), "L1");
+            test("toWKT should return a correct OGC Well-known text (WKT) representation", () => {
+                expect(L1.toWKT()).toEqual(`LINESTRING(1 2, 10 2)`);
+            });
+            test("toEWKT should return a correct Postgis Extended Well-known text (EWKT) representation", () => {
+                const srid = 2056;
+                expect(L1.toEWKT()).toEqual(`SRID=${srid};LINESTRING(1 2, 10 2)`);
+            });
+            test("toGeoJSON should return a correct GeoJSON (https://geojson.org/) representation", () => {
+                expect(L1.toGeoJSON()).toEqual(
+                    `{"type":"LineString","coordinates":[[1,2],[10,2]]}`,
+                );
+            });
         });
     });
 

@@ -16,10 +16,24 @@ export interface iPoint {
     name?: string;
 }
 
-export type coordinate2dArray = [number, number];
+// Excluding
+export type ReadonlyPoint = Omit<Point, 'x' | 'y' | 'name' | 'moveTo' | 'moveRel' | 'moveToArray' | 'moveRelArray' | 'moveRelPolar' | 'rename'> & {
+    readonly x: number;
+    readonly y: number;
+    readonly name: string;
+};
+
+export type coordinate2dArray = readonly [number, number];
 
 export function assertIsPoint(val: any, msg: string = ""): asserts val is Point {
     Guard.throwIf(!(val instanceof Point), `${msg} expected a Point instance.`);
+}
+
+export function assertIsIPoint(val: any, msg: string = ""): asserts val is Readonly<iPoint> {
+    Guard.throwIf(
+        !val || typeof val.x !== 'number' || typeof val.y !== 'number',
+        `${msg} expected an object with x and y numeric coordinates.`
+    );
 }
 
 /**
@@ -318,7 +332,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} other
      * @returns {Point} return a new Point object with the sum of this Point and other
      */
-    add(other: Point): Point {
+    add(other: Readonly<iPoint>): Point {
+        assertIsIPoint(other, "add")
         return new Point(this.x + other.x, this.y + other.y)
     }
 
@@ -327,8 +342,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} other
      * @returns {Point} return a new Point object with the difference of this Point and other Point
      */
-    subtract(other: Point): Point {
-        assertIsPoint(other, "subtract")
+    subtract(other: Readonly<iPoint>): Point {
+        assertIsIPoint(other, "subtract")
         return new Point(this.x - other.x, this.y - other.y)
     }
 
@@ -379,8 +394,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} other
      * @returns {number} the dot product of this Point and other Point
      */
-    dot(other: Point): number {
-        assertIsPoint(other, "dot")
+    dot(other: Readonly<iPoint>): number {
+        assertIsIPoint(other, "dot")
         return this.x * other.x + this.y * other.y;
     }
 
@@ -391,8 +406,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} other point
      * @returns {number} The scalar value representing the 2D cross product (z-component of the 3D cross product).
      */
-    cross(other: Point): number {
-        assertIsPoint(other, "cross")
+    cross(other: Readonly<iPoint>): number {
+        assertIsIPoint(other, "cross")
         return this.x * other.y - this.y * other.x;
     }
 
@@ -528,11 +543,11 @@ export default class Point implements iPoint, GeometryDriver {
 
     /**
      * distanceTo calculates the distance from this point to other point
-     * @param {Point} other
+     * @param {iPoint} other
      * @return {Number} the distance calculated between this Point and other Point
      */
-    distanceTo(other: Point): number {
-        assertIsPoint(other, "distanceTo other")
+    distanceTo(other: Readonly<iPoint>): number {
+        assertIsIPoint(other, "distanceTo other")
         let distance = this.subtract(other).norm();
         if (distance <= EPSILON) {
             return 0;
@@ -547,8 +562,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} other - The other point.
      * @returns {Number} The squared distance.
      */
-    public distanceSquaredTo(other: Point): number {
-        assertIsPoint(other, "distanceSquaredTo other")
+    public distanceSquaredTo(other: Readonly<iPoint>): number {
+        assertIsIPoint(other, "distanceSquaredTo other")
         const distance = this.subtract(other).magnitudeSquared();
         if (distance <= EPSILON) {
             return 0;
@@ -684,8 +699,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} other
      * @returns {Point} return a new Point object located at the midpoint between this and other points
      */
-    midPoint(other: Point): Point {
-        assertIsPoint(other, "midPoint other")
+    midPoint(other: Readonly<iPoint>): Point {
+        assertIsIPoint(other, "midPoint other")
         return this.clone().add(other).divide(2);
     }
 
@@ -697,8 +712,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Boolean} toTheLeft (default True) gives the perpendicular to the left of the vector going from this to other
      * @returns {Point} returns a new Point located at a length distance from the other point and perpendicular to line from this point to other
      */
-    perpendicular(other: Point, length: number, toTheLeft: boolean = true): Point {
-        assertIsPoint(other, "perpendicular other")
+    perpendicular(other: Readonly<iPoint>, length: number, toTheLeft: boolean = true): Point {
+        assertIsIPoint(other, "perpendicular other")
         const angleLine = this.angleTo(other);
         const rotation = toTheLeft ? angleLine.add(Math.PI / 2, "radians") : angleLine.add(-Math.PI / 2, "radians");
         // get a Polar point at origin with
@@ -717,8 +732,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @return {Angle} the angle in radian calculated between this Point and other point
      * @throws {RangeError} if points are at the same location
      */
-    angleTo(other: Point): Angle {
-        assertIsPoint(other, "angleTo other")
+    angleTo(other: Readonly<iPoint>): Angle {
+        assertIsIPoint(other, "angleTo other")
         if (this.isSameLocation(other, EPSILON)) {
             throw new RangeError("angleTo: points are at the same location");
         }
@@ -739,11 +754,11 @@ export default class Point implements iPoint, GeometryDriver {
      * slopeTo calculates the slope between this point and other point
      * if the line between this Point and other point is vertical the result is Infinity
      * if the line is horizontal the result is 0
-     * @param {Point} other
+     * @param {iPoint} other
      * @return {Number} the slope calculated between this Point and other point
      */
-    slopeTo(other: Point): number {
-        assertIsPoint(other, "slopeTo other")
+    slopeTo(other: Readonly<iPoint>): number {
+        assertIsIPoint(other, "slopeTo other")
         if (this.isSameLocation(other)) {
             throw new RangeError("slopeTo: points are at the same location");
         }
@@ -772,7 +787,7 @@ export default class Point implements iPoint, GeometryDriver {
      * @throws {RangeError} If the provided tolerance is negative, as it's mathematically illogical for this comparison.
      */
     isSameLocation(
-        other: Point | undefined | null,
+        other: Readonly<iPoint> | undefined | null,
         tolerance: number = EPSILON,
     ): boolean {
         // 1. Robustness: Validate tolerance input.
@@ -786,8 +801,8 @@ export default class Point implements iPoint, GeometryDriver {
             // Using == checks for both null and undefined
             return false;
         }
-        // 3. Robustness: if we recieve something it should be a Point
-        assertIsPoint(other, "isSameLocation other")
+        // 3. Robustness: if we receive something, it should be a Point
+        assertIsIPoint(other, "isSameLocation other")
         // 4. Clarity & Logic: Calculate absolute differences for each coordinate.
         const deltaX = Math.abs(this.x - other.x);
         const deltaY = Math.abs(this.y - other.y);
@@ -797,7 +812,7 @@ export default class Point implements iPoint, GeometryDriver {
     }
 
     /**
-     * isEqual allows to compare equality with other, they should have the same values for x and y and name
+     * isEqual allows comparing equality with other, they should have the same values for x and y and name
      * Math.sqrt(2) * Math.sqrt(2) should give 2 but gives instead 2.0000000000000004
      * Math.sqrt(3) * Math.sqrt(3) should give 2 but gives instead 2.9999999999999996
      * So the Point Class equality test should take this fact account to test near equality with tolerance
@@ -805,19 +820,19 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {number} tolerance The maximum allowed difference for coordinates (default: Geometry.EPSILON)
      * @returns {boolean}
      */
-    isEqual(other: Point, tolerance: number = EPSILON): boolean {
-        assertIsPoint(other, "isEqual other")
+    isEqual(other: Readonly<iPoint>, tolerance: number = EPSILON): boolean {
+        assertIsIPoint(other, "isEqual other")
         return this.isSameLocation(other, tolerance) && this.name === other.name;
     }
 
     /**
-     * lessThan allows to compare if this Point is less than other point
+     * lessThan allows comparing if this Point is less than other point
      * if x is different then the comparison is made on x else on y
      * @param {Point} other
      * @returns {boolean}
      */
-    lessThan(other: Point): boolean {
-        assertIsPoint(other, "lessThan other")
+    lessThan(other: Readonly<iPoint>): boolean {
+        assertIsIPoint(other, "lessThan other")
         return this.x !== other.x ? this.x < other.x : this.y < other.y;
     }
 
@@ -827,8 +842,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} other
      * @returns {boolean}
      */
-    lessThanOrEqual(other: Point): boolean {
-        assertIsPoint(other, "lessThanOrEqual other")
+    lessThanOrEqual(other: Readonly<iPoint>): boolean {
+        assertIsIPoint(other, "lessThanOrEqual other")
         return this.x !== other.x ? this.x < other.x : this.y <= other.y;
     }
 
@@ -838,8 +853,8 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} other
      * @returns {boolean}
      */
-    greaterThan(other: Point): boolean {
-        assertIsPoint(other, "greaterThan other")
+    greaterThan(other: Readonly<iPoint>): boolean {
+        assertIsIPoint(other, "greaterThan other")
         return this.x !== other.x ? this.x > other.x : this.y > other.y;
     }
 
@@ -849,21 +864,21 @@ export default class Point implements iPoint, GeometryDriver {
      * @param {Point} other
      * @returns {boolean}
      */
-    greaterThanOrEqual(other: Point): boolean {
-        assertIsPoint(other, "greaterThanOrEqual other")
+    greaterThanOrEqual(other: Readonly<iPoint>): boolean {
+        assertIsIPoint(other, "greaterThanOrEqual other")
         return this.x !== other.x ? this.x > other.x : this.y >= other.y;
     }
 
     /**
      * isInsideCircle allows to check if this Point is inside the circle defined by the center and radius
-     * @param {Point} center is the center of the circle
+     * @param {Readonly<iPoint>} center is the center of the circle
      * @param {number} radius is the radius of the circle
      * @returns {boolean}
      * @throws {TypeError} if center is not a Point or radius is not a number
      * @throws {RangeError} if radius is negative
      */
-    isInsideCircle(center: Point, radius: number): boolean {
-        assertIsPoint(center, "isInsideCircle center")
+    isInsideCircle(center: Readonly<iPoint>, radius: number): boolean {
+        assertIsIPoint(center, "isInsideCircle center")
         if (isNumeric(radius)) {
             if (radius < 0) {
                 throw new RangeError("isInsideCircle: radius should be positive");
@@ -878,13 +893,13 @@ export default class Point implements iPoint, GeometryDriver {
 
     /**
      * isInsideRectangle allows to check if this Point is inside the rectangle defined by the two corners p1 and p2
-     * @param {Point} p1 is the first corner of the rectangle
-     * @param {Point} p2 is the second corner of the rectangle
+     * @param {Readonly<iPoint>} p1 is the first corner of the rectangle
+     * @param {Readonly<iPoint>} p2 is the second corner of the rectangle
      * @returns {boolean}
      */
-    isInsideRectangle(p1: Point, p2: Point): boolean {
-        assertIsPoint(p1, "isInsideRectangle p1")
-        assertIsPoint(p2, "isInsideRectangle p2")
+    isInsideRectangle(p1: Readonly<iPoint>, p2: Readonly<iPoint>): boolean {
+        assertIsIPoint(p1, "isInsideRectangle p1")
+        assertIsIPoint(p2, "isInsideRectangle p2")
         return (
             this.x >= Math.min(p1.x, p2.x) &&
             this.x <= Math.max(p1.x, p2.x) &&
