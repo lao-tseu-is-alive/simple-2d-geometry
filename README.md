@@ -8,19 +8,19 @@
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
 
-A zero-dependency 2D Geometry library written in strict TypeScript, featuring rigorous mathematical primitives and a pluggable **RenderDriver** architecture for SVG visualization.
+A 2D Geometry library written in strict TypeScript, featuring rigorous mathematical primitives and a pluggable **RenderDriver** architecture for versatile visualization.
 
 * [Documentation](https://lao-tseu-is-alive.github.io/geometry-2d/)
 * [Examples](https://github.com/lao-tseu-is-alive/geometry-2d/tree/main/example)
 
 ## Features
 
-- **Geometry Primitives** — `Point`, `Line`, `Circle`, `Triangle` with full mathematical operations (dot product, cross product, rotation, projection, reflection, polar coordinates, etc.)
+- **Geometry Primitives** — `Point`, `Line`, `Circle`, `Triangle`, `Polygon`, and `Angle` with full mathematical operations (dot product, cross product, rotation, projection, reflection, polar coordinates, etc.)
 - **RenderDriver Pattern** — Visitor-based double dispatch architecture that cleanly separates geometry math from rendering output
-- **SVG Visualization** — Built-in `SVGRenderDriver` producing pure SVG strings with automatic Cartesian-to-Screen Y-inversion
+- **Multiple Renderers** — Built-in `SVGRenderDriver` producing pure SVG strings and `LitRenderDriver` for reactive web components, both with automatic Cartesian-to-Screen Y-inversion
 - **Feature Orchestrator** — `Feature` class wrapping any geometry with visual state (stroke, fill, opacity, zIndex) via dependency injection
 - **DrawingBoard** — Canvas manager aggregating features with automatic `viewBox` computation, z-ordering, and visibility control
-- **Zero Dependencies** — No React, no D3, no DOM libraries. Pure TypeScript.
+- **Zero Dependencies (Core)** — `@lao-tseu-is-alive/geom-2d-core` is pure TypeScript math without external libraries. *(Note: `@lao-tseu-is-alive/geom-2d-drawing` leverages Lit for reactive DOM rendering)*
 - **Strictly Typed** — No `any` types. Full `strict` mode TypeScript.
 
 ## Architecture
@@ -34,22 +34,25 @@ graph LR
         L[Line]
         C[Circle]
         T[Triangle]
+        PO[Polygon]
     end
     subgraph "Contract"
         GD["GeometryDriver\ngetArea · getPerimeter · getExtent · accept()"]
-        RD["RenderDriver‹T›\nrenderPoint · renderLine · renderCircle · renderTriangle · compose"]
+        RD["RenderDriver‹T›\nrenderPoint · renderLine · renderCircle · renderTriangle · renderPolygon · compose"]
     end
     subgraph "Render Layer · Pluggable"
         SVG["SVGRenderDriver\nRenderDriver‹string›"]
+        LIT["LitRenderDriver\nRenderDriver‹TemplateResult›"]
         CAN["CanvasRenderDriver · future\nRenderDriver‹void›"]
     end
     subgraph "Orchestration"
         F["Feature\ngeometry + visual state"]
         DB["DrawingBoard‹T›\naggregation + viewBox"]
     end
-    P & L & C & T -. implements .-> GD
+    P & L & C & T & PO -. implements .-> GD
     GD -- "accept(renderer)" --> RD
     SVG -. implements .-> RD
+    LIT -. implements .-> RD
     CAN -. implements .-> RD
     F -- holds --> GD
     F -- renders via --> RD
@@ -61,10 +64,10 @@ graph LR
 
 | Concern | Solution |
 |---------|----------|
-| Geometry stays pure math | No SVG/Canvas knowledge pollutes the mathematical classes |
+| Geometry stays pure math | No SVG/Canvas/Lit knowledge pollutes the mathematical classes |
 | Open/Closed for renderers | Adding `CanvasRenderDriver` or `WebGLRenderDriver` requires **zero** changes to geometry classes |
 | Type-safe dispatch | Each geometry's `accept()` calls the correct `renderer.renderXxx(this, ...)` — no `switch`, no `instanceof` |
-| Generic output | `RenderDriver<string>` for SVG, `RenderDriver<void>` for Canvas2D, etc. |
+| Generic output | `RenderDriver<string>` for SVG, `RenderDriver<TemplateResult>` for Lit, etc. |
 
 ## Quick Start
 
@@ -78,7 +81,7 @@ bun add @lao-tseu-is-alive/geom-2d-drawing
 ### Basic Usage — Pure Math
 
 ```typescript
-import { Point, Line, Triangle, Circle, Angle } from "@lao-tseu-is-alive/geom-2d-core";
+import { Point, Line, Triangle, Circle, Angle, Polygon } from "@lao-tseu-is-alive/geom-2d-core";
 
 const A = new Point(0, 0, "A");
 const B = new Point(3, 0, "B");
@@ -93,7 +96,7 @@ console.log(triangle.getExtent());  // [0, 0, 3, 4]
 ### SVG Visualization
 
 ```typescript
-import { Point, Line, Triangle, Circle, Angle } from "@lao-tseu-is-alive/geom-2d-core";
+import { Point, Triangle, Circle } from "@lao-tseu-is-alive/geom-2d-core";
 import { Feature, DrawingBoard, SVGRenderDriver } from "@lao-tseu-is-alive/geom-2d-drawing";
 
 // 1. Create geometry
@@ -142,8 +145,8 @@ const svgString = board.render();
 The architecture is designed for extensibility. To target a different output (Canvas2D, WebGL, etc.), implement the `RenderDriver<T>` interface:
 
 ```typescript
-import { Point, Line, Triangle, Circle, Angle } from "@lao-tseu-is-alive/geom-2d-core";
-import { Feature, DrawingBoard, SVGRenderDriver, RenderDriver, RenderOptions, ComposeOptions  } from "@lao-tseu-is-alive/geom-2d-drawing";
+import { Point, Line, Triangle, Circle, Polygon } from "@lao-tseu-is-alive/geom-2d-core";
+import { Feature, DrawingBoard, RenderDriver, RenderOptions, ComposeOptions  } from "@lao-tseu-is-alive/geom-2d-drawing";
 import type { Extent } from "@lao-tseu-is-alive/geom-2d-drawing";
 
 class CanvasRenderDriver implements RenderDriver<void> {
@@ -160,6 +163,7 @@ class CanvasRenderDriver implements RenderDriver<void> {
   renderCircle(circle: Circle, options: RenderOptions, invertY: boolean): void { /* ... */ }
   renderLine(line: Line, options: RenderOptions, invertY: boolean): void { /* ... */ }
   renderTriangle(triangle: Triangle, options: RenderOptions, invertY: boolean): void { /* ... */ }
+  renderPolygon(polygon: Polygon, options: RenderOptions, invertY: boolean): void { /* ... */ }
   compose(elements: void[], viewBox: Extent, options: ComposeOptions): void { /* ... */ }
 }
 ```
@@ -168,7 +172,7 @@ class CanvasRenderDriver implements RenderDriver<void> {
 
 ### GeometryDriver Interface
 
-All geometry classes (`Point`, `Line`, `Circle`, `Triangle`) implement this contract:
+All geometry classes (`Point`, `Line`, `Circle`, `Triangle`, `Polygon`) implement this contract:
 
 | Method | Returns | Description |
 |--------|---------|-------------|
