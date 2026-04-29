@@ -32,6 +32,7 @@
   "scripts": {
     "build": "bun run build.ts",
     "dev": "bun example/index.html",
+    "predev": "bun run build.ts",
     "docs": "bun x typedoc --options typedoc.json",
     "lint": "eslint packages --ext .ts",
     "prepublishOnly": "bun run build",
