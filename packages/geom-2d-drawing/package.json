@@ -7,6 +7,6 @@
     "lit": "^3.0.0"
   },
   "peerDependencies": {
-    "@lao-tseu-is-alive/core": "workspace:*"
+    "@lao-tseu-is-alive/geom-2d-core": "workspace:*"
   }
 }
