@@ -2,11 +2,11 @@
 
 [![CI-Unit-Tests](https://github.com/lao-tseu-is-alive/geometry-2d/actions/workflows/ci-unit-test.yml/badge.svg)](https://github.com/lao-tseu-is-alive/geometry-2d/actions/workflows/ci-unit-test.yml)
 [![codecov](https://codecov.io/gh/lao-tseu-is-alive/geometry-2d/branch/main/graph/badge.svg)](https://codecov.io/gh/lao-tseu-is-alive/geometry-2d)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
 
 A zero-dependency 2D Geometry library written in strict TypeScript, featuring rigorous mathematical primitives and a pluggable **RenderDriver** architecture for SVG visualization.
 
