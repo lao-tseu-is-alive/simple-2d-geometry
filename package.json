@@ -8,8 +8,8 @@
   },
   "private": true,
   "workspaces": [
-    "packages/core",
-    "packages/drawing"
+    "packages/geom-2d-core",
+    "packages/geom-2d-drawing"
   ],
   "devDependencies": {
     "@types/bun": "latest",
