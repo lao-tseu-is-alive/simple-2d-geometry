@@ -2,7 +2,7 @@
 import { setupDrawPetals } from "./drawPetals.tsx";
 // @ts-ignore
 import { setupDriverDemo } from "./driverDemo.tsx";
-import {APP, BUILD_DATE, VERSION} from "../src";
+import { APP, BUILD_DATE, VERSION } from "../dist/geom-2d-core/geom-2d-core.esm.js";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>    

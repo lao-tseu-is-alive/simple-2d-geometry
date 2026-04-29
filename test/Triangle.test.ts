@@ -1,6 +1,6 @@
 import {describe, test, expect} from "bun:test";
-import { Point } from "../src";
-import Triangle, {type coordinatesTriangleArray } from "../src/Triangle";
+import { Point } from "../packages/geom-2d-core";
+import { Triangle, type coordinatesTriangleArray  } from "../packages/geom-2d-core";
 
 describe("Triangle module", () => {
   const PO = new Point(0, 0, "PO");

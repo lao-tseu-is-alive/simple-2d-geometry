@@ -1,10 +1,5 @@
-import Point from "../src/Point.ts";
-import Line from "../src/Line.ts";
-import Circle from "../src/Circle.ts";
-import Triangle from "../src/Triangle.ts";
-import Feature from "../src/Feature.ts";
-import DrawingBoard from "../src/DrawingBoard.ts";
-import SVGRenderDriver from "../src/SVGRenderDriver.ts";
+import { Feature, DrawingBoard, SVGRenderDriver } from "../dist/geom-2d-drawing/geom-2d-drawing.esm.js";
+import { Point, Line, Circle,Triangle,  } from "../dist/geom-2d-core/geom-2d-core.esm.js";
 
 /**
  * RenderDriver Pattern demo — DrawingBoard + Feature + SVGRenderDriver

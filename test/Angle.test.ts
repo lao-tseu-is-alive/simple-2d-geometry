@@ -1,5 +1,5 @@
 import {describe, test, expect} from "bun:test";
-import Angle from "../src/Angle";
+import { Angle } from "../packages/geom-2d-core";
 
 const A0 = new Angle(0)
 describe('Angle module', () => {

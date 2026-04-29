@@ -1,0 +1,15 @@
+test/Circle.test.ts(435,34): error TS2345: Argument of type '{ renderCircle(receivedCircle: Circle, receivedOptions: unknown, receivedInvertY: boolean): string; }' is not assignable to parameter of type 'RenderDriver<string>'.
+  Type '{ renderCircle(receivedCircle: Circle, receivedOptions: unknown, receivedInvertY: boolean): string; }' is missing the following properties from type 'RenderDriver<string>': renderPoint, renderLine, renderTriangle, renderPolygon, compose
+test/Converter.test.ts(22,62): error TS2345: Argument of type 'undefined' is not assignable to parameter of type 'Record<string, unknown>'.
+test/Converter.test.ts(68,61): error TS2345: Argument of type 'undefined' is not assignable to parameter of type 'Record<string, unknown>'.
+test/Converter.test.ts(93,65): error TS2345: Argument of type 'undefined' is not assignable to parameter of type 'Record<string, unknown>'.
+test/Polygon.test.ts(52,21): error TS2339: Property 'moveTo' does not exist on type 'ReadonlyPoint'.
+test/Polygon.test.ts(106,56): error TS2345: Argument of type 'Polygon' is not assignable to parameter of type 'Readonly<PolygonInterface>'.
+  Types of property 'points' are incompatible.
+    The type 'readonly ReadonlyPoint[]' is 'readonly' and cannot be assigned to the mutable type 'iPoint[]'.
+test/Polygon.test.ts(109,46): error TS2345: Argument of type 'Polygon' is not assignable to parameter of type 'Readonly<PolygonInterface>'.
+  Types of property 'points' are incompatible.
+    The type 'readonly ReadonlyPoint[]' is 'readonly' and cannot be assigned to the mutable type 'iPoint[]'.
+test/Polygon.test.ts(113,46): error TS2345: Argument of type 'Polygon' is not assignable to parameter of type 'Readonly<PolygonInterface>'.
+  Types of property 'points' are incompatible.
+    The type 'readonly ReadonlyPoint[]' is 'readonly' and cannot be assigned to the mutable type 'iPoint[]'.

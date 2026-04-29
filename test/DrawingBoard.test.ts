@@ -1,11 +1,11 @@
 import { describe, test, expect } from "bun:test";
-import Point from "../src/Point";
-import Line from "../src/Line";
-import Circle from "../src/Circle";
-import Triangle from "../src/Triangle";
-import Feature from "../src/Feature";
-import DrawingBoard from "../src/DrawingBoard";
-import SVGRenderDriver from "../src/SVGRenderDriver";
+import { Point } from "../packages/geom-2d-core";
+import { Line } from "../packages/geom-2d-core";
+import { Circle } from "../packages/geom-2d-core";
+import { Triangle } from "../packages/geom-2d-core";
+import { Feature } from "../packages/geom-2d-drawing";
+import { DrawingBoard } from "../packages/geom-2d-drawing";
+import { SVGRenderDriver } from "../packages/geom-2d-drawing";
 
 describe("DrawingBoard", () => {
   const renderer = new SVGRenderDriver();

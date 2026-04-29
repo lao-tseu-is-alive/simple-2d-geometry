@@ -1,7 +1,7 @@
 import {describe, test, expect} from "bun:test";
-import Point, {type coordinate2dArray} from "../src/Point";
-import Angle from "../src/Angle";
-import {EPSILON} from "../src";
+import { Point, type coordinate2dArray } from "../packages/geom-2d-core";
+import { Angle } from "../packages/geom-2d-core";
+import {EPSILON} from "../packages/geom-2d-core";
 
 const P0 = new Point();
 describe("Point module", () => {

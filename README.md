@@ -1,17 +1,17 @@
-# simple-2d-geometry
+# geometry-2d
 
-[![CI-Unit-Tests](https://github.com/lao-tseu-is-alive/simple-2d-geometry/actions/workflows/ci-unit-test.yml/badge.svg)](https://github.com/lao-tseu-is-alive/simple-2d-geometry/actions/workflows/ci-unit-test.yml)
-[![codecov](https://codecov.io/gh/lao-tseu-is-alive/simple-2d-geometry/branch/main/graph/badge.svg)](https://codecov.io/gh/lao-tseu-is-alive/simple-2d-geometry)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_simple-2d-geometry&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_simple-2d-geometry)
+[![CI-Unit-Tests](https://github.com/lao-tseu-is-alive/geometry-2d/actions/workflows/ci-unit-test.yml/badge.svg)](https://github.com/lao-tseu-is-alive/geometry-2d/actions/workflows/ci-unit-test.yml)
+[![codecov](https://codecov.io/gh/lao-tseu-is-alive/geometry-2d/branch/main/graph/badge.svg)](https://codecov.io/gh/lao-tseu-is-alive/geometry-2d)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=lao-tseu-is-alive_geometry-2d&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=lao-tseu-is-alive_geometry-2d)
 
 A zero-dependency 2D Geometry library written in strict TypeScript, featuring rigorous mathematical primitives and a pluggable **RenderDriver** architecture for SVG visualization.
 
-* [Documentation](https://lao-tseu-is-alive.github.io/simple-2d-geometry/)
-* [Examples](https://github.com/lao-tseu-is-alive/simple-2d-geometry/tree/main/example)
+* [Documentation](https://lao-tseu-is-alive.github.io/geometry-2d/)
+* [Examples](https://github.com/lao-tseu-is-alive/geometry-2d/tree/main/example)
 
 ## Features
 
@@ -71,13 +71,13 @@ graph LR
 ### Installation
 
 ```bash
-bun add ts-simple-2d-geometry
+bun add ts-geometry-2d
 ```
 
 ### Basic Usage — Pure Math
 
 ```typescript
-import { Point, Line, Triangle, Circle, Angle } from "ts-simple-2d-geometry";
+import { Point, Line, Triangle, Circle, Angle } from "ts-geometry-2d";
 
 const A = new Point(0, 0, "A");
 const B = new Point(3, 0, "B");
@@ -95,7 +95,7 @@ console.log(triangle.getExtent());  // [0, 0, 3, 4]
 import {
   Point, Line, Circle, Triangle,
   Feature, DrawingBoard, SVGRenderDriver
-} from "ts-simple-2d-geometry";
+} from "ts-geometry-2d";
 
 // 1. Create geometry
 const circle = new Circle(new Point(50, 50), 30);
@@ -143,9 +143,9 @@ const svgString = board.render();
 The architecture is designed for extensibility. To target a different output (Canvas2D, WebGL, etc.), implement the `RenderDriver<T>` interface:
 
 ```typescript
-import type { RenderDriver, RenderOptions, ComposeOptions } from "ts-simple-2d-geometry";
-import type { Point, Line, Circle, Triangle } from "ts-simple-2d-geometry";
-import type { Extent } from "ts-simple-2d-geometry";
+import type { RenderDriver, RenderOptions, ComposeOptions } from "ts-geometry-2d";
+import type { Point, Line, Circle, Triangle } from "ts-geometry-2d";
+import type { Extent } from "ts-geometry-2d";
 
 class CanvasRenderDriver implements RenderDriver<void> {
   constructor(private ctx: CanvasRenderingContext2D) {}
@@ -205,8 +205,8 @@ All geometry classes (`Point`, `Line`, `Circle`, `Triangle`) implement this cont
 ### Run locally
 
 ```bash
-git clone https://github.com/lao-tseu-is-alive/simple-2d-geometry.git
-cd simple-2d-geometry
+git clone https://github.com/lao-tseu-is-alive/geometry-2d.git
+cd geometry-2d
 bun install
 bun run build
 bun run dev
@@ -229,7 +229,7 @@ Here is an excerpt of the code in drawPetal.tsx that creates a 6 petals flower u
     TempPoint.moveRel(offsetX,offsetY)
 ```
 
-![alt text](https://raw.githubusercontent.com/lao-tseu-is-alive/simple-2d-geometry/main/images/simple-2d-geometry_example_polar_equation_flower.png "Using the Point class to create a nice 6 petal's flowers from a polar equation")
+![alt text](https://raw.githubusercontent.com/lao-tseu-is-alive/geometry-2d/main/images/geometry-2d_example_polar_equation_flower.png "Using the Point class to create a nice 6 petal's flowers from a polar equation")
 
 ## License
 

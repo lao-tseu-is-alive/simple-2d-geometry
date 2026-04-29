@@ -1,5 +1,4 @@
-import Angle from "../src/Angle";
-import Point from "../src/Point.ts";
+import { Angle, Point } from "../dist/geom-2d-core/geom-2d-core.esm.js";
 
 /**
  * Polar equation flower demo — using Point.fromPolar() and Angle math
@@ -12,7 +11,7 @@ export function setupDrawPetals(element: HTMLDivElement) {
     const svgCenterX = svgWidth / 2;
     const svgCenterY = svgHeight / 2;
     let coordinatesString = ""; // to accumulate the points coordinates
-    // let's center the drawing on the svg
+    // let's center the geom-2d-drawing on the svg
     const offsetX = svgCenterX;
     const offsetY = svgCenterY;
     console.log(`PetalCount : ${petalNumber}`);

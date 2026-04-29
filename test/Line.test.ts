@@ -1,7 +1,7 @@
 import {describe, test, expect} from "bun:test";
-import {Point, Angle} from "../src";
-import Line, {type coordinatesLineArray} from "../src/Line";
-import type {RenderDriver, RenderOptions} from "../src";
+import {Point, Angle} from "../packages/geom-2d-core";
+import { Line, type coordinatesLineArray } from "../packages/geom-2d-core";
+import type {RenderDriver, RenderOptions} from "../packages/geom-2d-core";
 
 const defaultOptions: RenderOptions = {
     stroke: "#000000",

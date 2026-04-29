@@ -2,54 +2,45 @@ import fs from "fs";
 import {$} from "bun";
 import {name, version} from "./package.json";
 
-// Reusing package.json name and converting from kebab-case to camelCase.
-const rawName = name.split('/').pop()!;
-const fileName = rawName.replace(/-([a-z0-9])/g, (_match, letter) => {
-  return letter ? letter.toUpperCase() : "";
-});
-console.log(`🐰 🏗️  Building ${fileName} v${version}...`);
+console.log(`🐰 🏗️  Building workspace packages v${version}...`);
 
 const outputDir = "./dist";
 console.log(`🐰 🧹 Cleanup of old ${outputDir} content...`);
 await $`rm -rf ${outputDir}`;
 
-const sharedConfig = {
-  entrypoints: ["./src/index.ts"],
-  outdir: outputDir,
-  minify: true,
-  external: ["lit"],
-  sourcemap: "external" as const,
+const buildPackage = async (pkgName: string, entrypoint: string, hasBrowser: boolean = false) => {
+    const pkgFileName = pkgName.split('/').pop()!;
+    const pkgOutputDir = `${outputDir}/${pkgFileName}`;
+    const sharedConfig = {
+      entrypoints: [entrypoint],
+      outdir: pkgOutputDir,
+      minify: true,
+      external: ["lit", "@lao-tseu-is-alive/geom-2d-core"],
+      sourcemap: "external" as const,
+    };
+
+    console.log(`🐰 📦 Generating bundles for ${pkgName}...`);
+    const builds = [
+      await Bun.build({...sharedConfig, format: "esm", naming: `${pkgFileName}.esm.js`}),
+      await Bun.build({...sharedConfig, format: "cjs", naming: `${pkgFileName}.cjs.js`})
+    ];
+    if (hasBrowser) {
+      builds.push(await Bun.build({
+          ...sharedConfig,
+          entrypoints: [entrypoint.replace('index.ts', 'browser.ts')],
+          format: "iife",
+          naming: `${pkgFileName}.umd.js`
+      }));
+    }
+    await Promise.all(builds);
 };
 
-console.log("🐰 📦 Generating bundles with Bun...");
-await Promise.all([
-  // Module ES (for modern bundlers)
-  Bun.build({...sharedConfig, format: "esm", naming: `${fileName}.esm.js`}),
+await buildPackage("@lao-tseu-is-alive/geom-2d-core", "./packages/geom-2d-core/src/index.ts", true);
+await buildPackage("@lao-tseu-is-alive/geom-2d-drawing", "./packages/geom-2d-drawing/src/index.ts", false);
 
-  // CommonJS (for Node.js)
-  Bun.build({...sharedConfig, format: "cjs", naming: `${fileName}.cjs.js`}),
-
-  // Browser (IIFE with specific entry point)
-  Bun.build({...sharedConfig, entrypoints: ["./src/browser.ts"], format: "iife", naming: `${fileName}.umd.js`})
-]);
 console.log("🐰 ✅ Bundles successfully generated !");
 console.log("🐰 🎓 Generating Type Definitions...");
-// We force --noEmit to false ==> override the config file
-await $`bun x tsc  --project tsconfig.json --noEmit false`;
-const dtsPath = `${outputDir}/index.d.ts`;
-const targetDtsPath = `${outputDir}/${fileName}.d.ts`;
-const typesToPrune = [
-  `${outputDir}/browser.d.ts`,
-  `${outputDir}/version.d.ts`,
-];
+// Generate type declarations using tsc
+await $`bun x tsc --project tsconfig.json --noEmit false --declaration --emitDeclarationOnly --outDir ${outputDir}/types`;
 
-console.log("🐰 🧹 Type cleanup...");
-for (const file of typesToPrune) {
-  if (fs.existsSync(file)) {
-    fs.unlinkSync(file);
-  }
-}
-if (fs.existsSync(dtsPath)) {
-  fs.renameSync(dtsPath, targetDtsPath);
-  console.log(`🐰 🏷️ Types renamed to ${targetDtsPath}`);
-}
+console.log("🐰 ✅ Build complete!");

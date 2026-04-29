@@ -1,0 +1,45 @@
+import Angle, {type AngleType} from "./Angle.ts";
+import {
+    EPSILON,
+    PRECISION,
+    isNumeric,
+    roundNumber,
+    getNumberOrFail,
+    fixDec,
+} from "./Geometry.ts";
+import Circle, {type CircleInterface} from "./Circle.ts";
+import Converters from "./Converters.ts";
+import type {GeometryDriver, Extent, BoundingBox} from "./Driver.ts";
+import Line, {type LineInterface, type coordinatesLineArray} from "./Line.ts";
+import Point, {type iPoint, type coordinate2dArray} from "./Point.ts";
+import Polygon, {type PolygonInterface, type coordinatesPolygonArray} from "./Polygon.ts";
+import type {RenderDriver, RenderOptions, ComposeOptions} from "./RenderDriver.ts";
+import Triangle, {type TriangleInterface, type coordinatesTriangleArray} from "./Triangle.ts";
+import {APP, VERSION, BUILD_DATE} from "./version.ts";
+
+export {
+    APP,
+    Angle,
+    BUILD_DATE,
+    Converters,
+    Point,
+    Line,
+    Triangle,
+    Polygon,
+    Circle,
+    EPSILON,
+    PRECISION,
+    isNumeric,
+    roundNumber,
+    getNumberOrFail,
+    fixDec,
+    VERSION
+};
+export type {
+    AngleType, iPoint, coordinate2dArray,
+    TriangleInterface, coordinatesTriangleArray, CircleInterface,
+    LineInterface, coordinatesLineArray,
+    PolygonInterface, coordinatesPolygonArray,
+    GeometryDriver, Extent, BoundingBox,
+    RenderDriver, RenderOptions, ComposeOptions
+};

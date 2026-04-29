@@ -1,5 +1,5 @@
 import {describe, it, expect} from "bun:test";
-import Converters from "../src/Converters";
+import { Converters } from "../packages/geom-2d-core";
 
 describe("Converter module", () => {
     describe("convertToPointArray", () => {
@@ -19,7 +19,7 @@ describe("Converter module", () => {
     });
     describe("convertToPoint", () => {
         it("should throw TypeError if data is undefined", () => {
-            expect(Converters.convertToPoint.bind(undefined, undefined)).toThrow(
+            expect(() => Converters.convertToPoint(undefined as unknown as any)).toThrow(
                 TypeError,
             );
         });
@@ -65,7 +65,7 @@ describe("Converter module", () => {
     });
     describe("convertToLine", () => {
         it("should throw TypeError if data is undefined", () => {
-            expect(Converters.convertToLine.bind(undefined, undefined)).toThrow(
+            expect(() => Converters.convertToLine(undefined as unknown as any)).toThrow(
                 TypeError,
             );
         });
@@ -90,7 +90,7 @@ describe("Converter module", () => {
     });
     describe("convertToTriangle", () => {
         it("should throw a Type Error if data is undefined", () => {
-            expect(Converters.convertToTriangle.bind(undefined, undefined)).toThrow(
+            expect(() => Converters.convertToTriangle(undefined as unknown as any)).toThrow(
                 TypeError,
             );
         });

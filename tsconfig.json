@@ -11,7 +11,6 @@
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
-    "rootDir": "src",
     "outDir": "./dist",
     "emitDeclarationOnly": true,
     "declaration": true,      /* Generates corresponding '.d.ts' file. */
@@ -20,9 +19,11 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true,
-
-    // Best practices
+    "paths": {
+      "@lao-tseu-is-alive/core": ["./packages/core/src/index.ts"],
+      "@lao-tseu-is-alive/drawing": ["./packages/drawing/src/index.ts"]
+    },
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
@@ -34,6 +35,6 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["packages/*/src/**/*", "test/**/*", "build.ts"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }

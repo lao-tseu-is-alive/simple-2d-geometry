@@ -1,8 +1,8 @@
 import { describe, test, expect } from "bun:test";
-import Point from "../src/Point";
-import Circle from "../src/Circle";
-import Feature from "../src/Feature";
-import SVGRenderDriver from "../src/SVGRenderDriver";
+import { Point } from "../packages/geom-2d-core";
+import { Circle } from "../packages/geom-2d-core";
+import { Feature } from "../packages/geom-2d-drawing";
+import { SVGRenderDriver } from "../packages/geom-2d-drawing";
 
 describe("Feature", () => {
   const renderer = new SVGRenderDriver();

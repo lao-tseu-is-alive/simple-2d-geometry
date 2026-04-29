@@ -1,10 +1,10 @@
 import { describe, test, expect } from "bun:test";
-import Point from "../src/Point";
-import Line from "../src/Line";
-import Circle from "../src/Circle";
-import Triangle from "../src/Triangle";
-import SVGRenderDriver from "../src/SVGRenderDriver";
-import type { RenderOptions } from "../src/RenderDriver";
+import { Point } from "../packages/geom-2d-core";
+import { Line } from "../packages/geom-2d-core";
+import { Circle } from "../packages/geom-2d-core";
+import { Triangle } from "../packages/geom-2d-core";
+import { SVGRenderDriver } from "../packages/geom-2d-drawing";
+import type { RenderOptions } from "../packages/geom-2d-core";
 
 const defaultOptions: RenderOptions = {
   stroke: "#000000",

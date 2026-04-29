@@ -1,7 +1,8 @@
 import {describe, test, expect, beforeEach} from "bun:test";
-import Angle from "../src/Angle";
-import Circle from "../src/Circle";
-import Point from "../src/Point";
+import { Angle } from "../packages/geom-2d-core";
+import { Circle } from "../packages/geom-2d-core";
+import { Point } from "../packages/geom-2d-core";
+import type { RenderDriver, RenderOptions } from "../packages/geom-2d-core";
 
 describe("Circle", () => {
     let circle: Circle;
@@ -430,9 +431,9 @@ describe("Circle", () => {
                     expect(receivedInvertY).toBe(true);
                     return "rendered-circle";
                 },
-            };
+            } as unknown as RenderDriver<string>;
 
-            expect(circle.accept(renderer, options, true)).toBe("rendered-circle");
+            expect(circle.accept<string>(renderer, options, true)).toBe("rendered-circle");
         });
     });
 

@@ -1,9 +1,9 @@
 import { describe, test, expect } from "bun:test";
-import Point from "../src/Point";
-import Line from "../src/Line";
-import Circle from "../src/Circle";
-import Triangle from "../src/Triangle";
-import type { GeometryDriver } from "../src/Driver";
+import { Point } from "../packages/geom-2d-core";
+import { Line } from "../packages/geom-2d-core";
+import { Circle } from "../packages/geom-2d-core";
+import { Triangle } from "../packages/geom-2d-core";
+import type { GeometryDriver } from "../packages/geom-2d-core";
 
 describe("GeometryDriver interface", () => {
   describe("Point as GeometryDriver", () => {

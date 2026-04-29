@@ -14,9 +14,27 @@
         "typescript": "^6.0.2",
       },
     },
+    "packages/core": {
+      "name": "@lao-tseu-is-alive/core",
+      "version": "1.0.0",
+    },
+    "packages/drawing": {
+      "name": "@lao-tseu-is-alive/drawing",
+      "version": "1.0.0",
+      "dependencies": {
+        "lit": "^3.0.0",
+      },
+      "peerDependencies": {
+        "@lao-tseu-is-alive/core": "workspace:*",
+      },
+    },
   },
   "packages": {
     "@gerrit0/mini-shiki": ["@gerrit0/mini-shiki@3.23.0", "", { "dependencies": { "@shikijs/engine-oniguruma": "^3.23.0", "@shikijs/langs": "^3.23.0", "@shikijs/themes": "^3.23.0", "@shikijs/types": "^3.23.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg=="],
+
+    "@lao-tseu-is-alive/core": ["@lao-tseu-is-alive/core@workspace:packages/core"],
+
+    "@lao-tseu-is-alive/drawing": ["@lao-tseu-is-alive/drawing@workspace:packages/drawing"],
 
     "@lit-labs/ssr-dom-shim": ["@lit-labs/ssr-dom-shim@1.5.1", "", {}, "sha512-Aou5UdlSpr5whQe8AA/bZG0jMj96CoJIWbGfZ91qieWu5AWUMKw8VR/pAkQkJYvBNhmCcWnZlyyk5oze8JIqYA=="],
 

@@ -1,13 +1,16 @@
 {
-  "name": "ts-simple-2d-geometry",
-  "version": "0.2.9",
+  "name": "geometry-2d",
+  "version": "0.3.0",
   "author": "CGil<lao.tseu.is.alive@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry.git"
   },
-  "main": "./dist/tsSimple2dGeometry.cjs.js",
-  "module": "./dist/tsSimple2dGeometry.esm.js",
+  "private": true,
+  "workspaces": [
+    "packages/core",
+    "packages/drawing"
+  ],
   "devDependencies": {
     "@types/bun": "latest",
     "lit": "^3.3.2",
@@ -17,20 +20,7 @@
     "typescript": "^6.0.2",
     "lit": "^3.0.0"
   },
-  "exports": {
-    ".": {
-      "import": "./dist/tsSimple2dGeometry.esm.js",
-      "require": "./dist/tsSimple2dGeometry.cjs.js",
-      "types": "./dist/tsSimple2dGeometry.d.ts"
-    }
-  },
   "description": "A Simple 2D Geometry Library with Point and Line classes written with TypeScript",
-  "files": [
-    "/dist",
-    "package.json",
-    "README.md",
-    "LICENSE"
-  ],
   "homepage": "https://github.com/lao-tseu-is-alive/simple-2d-geometry#readme",
   "keywords": [
     "html",
@@ -39,13 +29,11 @@
     "typescript"
   ],
   "license": "GNU General Public License v3.0",
-  "private": false,
   "scripts": {
     "build": "bun run build.ts",
-    "build2": "bun build src/index.ts --production --outfile=out.js",
-    "dev": "bun example/index.html ",
+    "dev": "bun example/index.html",
     "docs": "bun x typedoc --options typedoc.json",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint packages --ext .ts",
     "prepublishOnly": "bun run build",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
@@ -53,6 +41,5 @@
     "format": "prettier --write ."
   },
   "type": "module",
-  "types": "./dist/tsSimple2dGeometry.d.ts",
   "url": "https://github.com/lao-tseu-is-alive/simple-2d-geometry/issues"
 }

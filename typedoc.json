@@ -1,5 +1,5 @@
 {
-  "entryPoints": ["src/index.ts"],
+  "entryPoints": ["packages/geom-2d-core/src/index.ts", "packages/geom-2d-drawing/src/index.ts"],
   "out": "docs",
   "includeVersion": true,
   "readme": "none",

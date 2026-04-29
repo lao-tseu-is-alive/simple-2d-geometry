@@ -1,7 +1,7 @@
 import {describe, test, expect} from "bun:test";
-import {Point, Angle} from "../src";
-import Polygon, {type coordinatesPolygonArray} from "../src/Polygon";
-import type {RenderDriver, RenderOptions} from "../src";
+import {Point, Angle} from "../packages/geom-2d-core";
+import { Polygon, type coordinatesPolygonArray } from "../packages/geom-2d-core";
+import type {RenderDriver, RenderOptions} from "../packages/geom-2d-core";
 
 const defaultOptions: RenderOptions = {
     stroke: "#000000",
@@ -49,7 +49,8 @@ describe("Polygon module", () => {
             expect(pts.length).toBe(4);
             expect(pts[0]!.isSameLocation(P0)).toBe(true);
             // Ensure clones
-            pts[0]!.moveTo(100, 100);
+            // @ts-expect-error test the readonly seal
+            square.points[0]!.moveTo(99, 99);
             expect(square.getVertex(0).isSameLocation(P0)).toBe(true);
         });
         test("points setter should store new points", () => {
