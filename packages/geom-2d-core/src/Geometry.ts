@@ -35,6 +35,11 @@ export function isNumeric(n: any): boolean {
   return !Number.isNaN(Number.parseFloat(n)) && Number.isFinite(n);
 }
 
+export function clamp(x: number):number {
+  return Math.max(-1,Math.min(1,x));
+}
+
+
 /**
  * Guard will throw a TypeError if logical is not met
  */
