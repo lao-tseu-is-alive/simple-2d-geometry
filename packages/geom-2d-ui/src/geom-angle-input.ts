@@ -23,6 +23,7 @@ export class GeomAngleInput extends LitElement {
     mode: { type: String },
     size: { type: Number },
     disabled: { type: Boolean, reflect: true },
+    integerOnly: { type: Boolean, attribute: 'integer-only' },
   };
 
   /** Current angle value (in the active mode's unit). */
@@ -36,6 +37,9 @@ export class GeomAngleInput extends LitElement {
 
   /** When true, all interaction is disabled. */
   declare disabled: boolean;
+
+  /** When true, the angle snaps to integer degrees. */
+  declare integerOnly: boolean;
 
   /* ──────────────── Internal state ──────────────── */
 
@@ -64,6 +68,7 @@ export class GeomAngleInput extends LitElement {
     this.mode = "degrees";
     this.size = 200;
     this.disabled = false;
+    this.integerOnly = false;
   }
 
   /* ──────────────── Lifecycle ──────────────── */
@@ -137,7 +142,9 @@ export class GeomAngleInput extends LitElement {
     if (radians < 0) radians += 2 * Math.PI;
 
     if (this.mode === "degrees") {
-      this._setValue((radians * 180) / Math.PI);
+      let deg = (radians * 180) / Math.PI;
+      if (this.integerOnly) deg = Math.round(deg);
+      this._setValue(deg);
     } else {
       this._setValue(radians);
     }
@@ -147,8 +154,9 @@ export class GeomAngleInput extends LitElement {
 
   private _onInputChange(e: Event): void {
     const input = e.target as HTMLInputElement;
-    const raw = parseFloat(input.value);
+    let raw = parseFloat(input.value);
     if (Number.isFinite(raw)) {
+      if (this.mode === "degrees" && this.integerOnly) raw = Math.round(raw);
       this._setValue(raw);
     }
   }
@@ -161,9 +169,19 @@ export class GeomAngleInput extends LitElement {
       this.value = (this.value * Math.PI) / 180;
     } else {
       this.value = (this.value * 180) / Math.PI;
+      if (this.integerOnly) this.value = Math.round(this.value);
     }
     this.mode = newMode;
     this._emitChange();
+  }
+
+  private _toggleIntegerOnly(e: Event): void {
+    if (this.mode !== "degrees") return;
+    const checkbox = e.target as HTMLInputElement;
+    this.integerOnly = checkbox.checked;
+    if (this.integerOnly) {
+      this._setValue(Math.round(this.value));
+    }
   }
 
   /* ──────────────── Shared value setter ──────────────── */
@@ -460,6 +478,74 @@ export class GeomAngleInput extends LitElement {
       font-weight: 500;
       min-width: 28px;
     }
+
+    /* ── Switch Toggle ── */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 10px;
+    }
+
+    .switch-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .3s;
+      border-radius: 24px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--text-primary);
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    input:checked + .slider {
+      background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+      border-color: transparent;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px var(--accent-from);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+      background-color: white;
+    }
   `;
 
   /* ──────────────── Template ──────────────── */
@@ -467,7 +553,7 @@ export class GeomAngleInput extends LitElement {
   override render() {
     const displayValue =
       this.mode === "degrees"
-        ? parseFloat(this.value.toFixed(2))
+        ? parseFloat(this.value.toFixed(this.integerOnly ? 0 : 2))
         : parseFloat(this.value.toFixed(4));
 
     const step = this.mode === "degrees" ? 1 : 0.01;
@@ -533,6 +619,17 @@ export class GeomAngleInput extends LitElement {
             RAD
           </button>
         </div>
+
+        <!-- Integer-Only Switch (Degrees Mode Only) -->
+        ${this.mode === "degrees" ? html`
+          <div class="switch-row">
+            <span class="switch-label">Integer values only</span>
+            <label class="switch">
+              <input type="checkbox" .checked=${this.integerOnly} @change=${this._toggleIntegerOnly} ?disabled=${this.disabled}>
+              <span class="slider"></span>
+            </label>
+          </div>
+        ` : ''}
 
         <!-- Numeric Input -->
         <div class="input-row">

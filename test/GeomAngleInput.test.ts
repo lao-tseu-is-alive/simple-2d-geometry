@@ -42,5 +42,42 @@ describe('GeomAngleInput', () => {
         expect(el.angle.type).toBe("radians");
         expect(el.angle.toDegrees()).toBe(180);
     });
+
+    test('snaps value to integer when integerOnly is toggled on in degrees mode', () => {
+        const el = new GeomAngleInput();
+        el.mode = "degrees";
+        el.value = 45.67;
+        
+        // Mock the toggle event
+        const mockEvent = { target: { checked: true } } as unknown as Event;
+        (el as any)._toggleIntegerOnly(mockEvent);
+        
+        expect(el.integerOnly).toBe(true);
+        expect(el.value).toBe(46);
+    });
+
+    test('ignores integerOnly toggle when in radians mode', () => {
+        const el = new GeomAngleInput();
+        el.mode = "radians";
+        el.value = Math.PI / 4; // ~0.785
+        
+        const mockEvent = { target: { checked: true } } as unknown as Event;
+        (el as any)._toggleIntegerOnly(mockEvent);
+        
+        // Value shouldn't be rounded, and integerOnly shouldn't be activated
+        expect(el.integerOnly).toBe(false);
+        expect(el.value).toBe(Math.PI / 4);
+    });
+
+    test('input change respects integerOnly in degrees mode', () => {
+        const el = new GeomAngleInput();
+        el.mode = "degrees";
+        el.integerOnly = true;
+
+        const mockEvent = { target: { value: "33.7" } } as unknown as Event;
+        (el as any)._onInputChange(mockEvent);
+
+        expect(el.value).toBe(34); // Should be rounded to nearest integer
+    });
 });
 
