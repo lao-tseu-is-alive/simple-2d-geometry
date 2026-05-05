@@ -145,6 +145,10 @@ export class GeomAngleInput extends LitElement {
       let deg = (radians * 180) / Math.PI;
       if (this.integerOnly) deg = Math.round(deg);
       this._setValue(deg);
+    } else if (this.mode === "gradians") {
+      let grad = (radians * 200) / Math.PI;
+      if (this.integerOnly) grad = Math.round(grad);
+      this._setValue(grad);
     } else {
       this._setValue(radians);
     }
@@ -156,7 +160,7 @@ export class GeomAngleInput extends LitElement {
     const input = e.target as HTMLInputElement;
     let raw = parseFloat(input.value);
     if (Number.isFinite(raw)) {
-      if (this.mode === "degrees" && this.integerOnly) raw = Math.round(raw);
+      if (this.mode !== "radians" && this.integerOnly) raw = Math.round(raw);
       this._setValue(raw);
     }
   }
@@ -166,17 +170,21 @@ export class GeomAngleInput extends LitElement {
   private _setMode(newMode: AngleType): void {
     if (newMode === this.mode) return;
     if (newMode === "radians") {
-      this.value = (this.value * Math.PI) / 180;
+      this.value = this._angle.toRadians();
+    } else if (newMode === "gradians") {
+      this.value = this._angle.toGradians();
     } else {
-      this.value = (this.value * 180) / Math.PI;
-      if (this.integerOnly) this.value = Math.round(this.value);
+      this.value = this._angle.toDegrees();
+    }
+    if (this.integerOnly && newMode !== "radians") {
+      this.value = Math.round(this.value);
     }
     this.mode = newMode;
     this._emitChange();
   }
 
   private _toggleIntegerOnly(e: Event): void {
-    if (this.mode !== "degrees") return;
+    if (this.mode === "radians") return;
     const checkbox = e.target as HTMLInputElement;
     this.integerOnly = checkbox.checked;
     if (this.integerOnly) {
@@ -216,18 +224,20 @@ export class GeomAngleInput extends LitElement {
 
   /* ──────────────── SVG cadran rendering ──────────────── */
 
-  private _renderTicks() {
+  private _renderTicks(mode:AngleType) {
     const ticks = [];
-    const totalTicks = 36; // every 10°
+    const angleInterval = 5
+    let totalTicks = 360 / angleInterval; // every 10°
+    if (mode=="gradians") totalTicks = 400 / angleInterval
     for (let i = 0; i < totalTicks; i++) {
-      const angleDeg = i * 10;
+      const angleDeg = i * angleInterval;
       const rad = (angleDeg * Math.PI) / 180;
-      const isMajor = angleDeg % 30 === 0;
+      const isMajor =  (mode=="gradians")?angleDeg % 45 === 0:angleDeg % 30 === 0;
       const innerR = isMajor ? this._majorTickInner : this._minorTickInner;
       const x1 = Math.cos(rad) * innerR;
       const y1 = -Math.sin(rad) * innerR;
-      const x2 = Math.cos(rad) * this._outerR;
-      const y2 = -Math.sin(rad) * this._outerR;
+      const x2 = Math.cos(rad) * (this._outerR);
+      const y2 = -Math.sin(rad) * (this._outerR);
       ticks.push(svg`
         <line
           x1=${x1} y1=${y1} x2=${x2} y2=${y2}
@@ -239,20 +249,29 @@ export class GeomAngleInput extends LitElement {
   }
 
   private _renderLabels() {
-    const labelsData =
-      this.mode === "degrees"
-        ? [
-            { angle: 0, text: "0°" },
-            { angle: 90, text: "90°" },
-            { angle: 180, text: "180°" },
-            { angle: 270, text: "270°" },
-          ]
-        : [
-            { angle: 0, text: "0" },
-            { angle: 90, text: "π/2" },
-            { angle: 180, text: "π" },
-            { angle: 270, text: "3π/2" },
-          ];
+    let labelsData;
+    if (this.mode === "degrees") {
+      labelsData = [
+        { angle: 0, text: "0°" },
+        { angle: 90, text: "90°" },
+        { angle: 180, text: "180°" },
+        { angle: 270, text: "270°" },
+      ];
+    } else if (this.mode === "gradians") {
+      labelsData = [
+        { angle: 0, text: "0g" },
+        { angle: 90, text: "100g" },
+        { angle: 180, text: "200g" },
+        { angle: 270, text: "300g" },
+      ];
+    } else {
+      labelsData = [
+        { angle: 0, text: "0" },
+        { angle: 90, text: "π/2" },
+        { angle: 180, text: "π" },
+        { angle: 270, text: "3π/2" },
+      ];
+    }
 
     return labelsData.map(({ angle, text }) => {
       const rad = (angle * Math.PI) / 180;
@@ -551,14 +570,14 @@ export class GeomAngleInput extends LitElement {
   /* ──────────────── Template ──────────────── */
 
   override render() {
-    const displayValue =
-      this.mode === "degrees"
-        ? parseFloat(this.value.toFixed(this.integerOnly ? 0 : 2))
-        : parseFloat(this.value.toFixed(4));
+    const isIntMode = this.mode !== "radians" && this.integerOnly;
+    const displayValue = this.mode === "radians"
+        ? parseFloat(this.value.toFixed(4))
+        : parseFloat(this.value.toFixed(isIntMode ? 0 : 2));
 
-    const step = this.mode === "degrees" ? 1 : 0.01;
-    const suffix = this.mode === "degrees" ? "°" : "rad";
-    const max = this.mode === "degrees" ? 360 : 2 * Math.PI;
+    const step = this.mode === "radians" ? 0.01 : 1;
+    const suffix = this.mode === "degrees" ? "°" : (this.mode === "gradians" ? "grad" : "rad");
+    const max = this.mode === "degrees" ? 360 : (this.mode === "gradians" ? 400 : 2 * Math.PI);
 
     return html`
       <div class="card">
@@ -589,7 +608,7 @@ export class GeomAngleInput extends LitElement {
           <line x1="0" y1="0" x2="${this._outerR}" y2="0" class="zero-line" />
 
           <!-- Tick marks -->
-          ${this._renderTicks()}
+          ${this._renderTicks(this.mode)}
 
           <!-- Labels -->
           ${this._renderLabels()}
@@ -618,10 +637,16 @@ export class GeomAngleInput extends LitElement {
           >
             RAD
           </button>
+          <button
+            class="toggle-btn ${this.mode === "gradians" ? "active" : ""}"
+            @click=${() => this._setMode("gradians")}
+          >
+            GRAD
+          </button>
         </div>
 
-        <!-- Integer-Only Switch (Degrees Mode Only) -->
-        ${this.mode === "degrees" ? html`
+        <!-- Integer-Only Switch (Degrees/Gradians Mode Only) -->
+        ${this.mode !== "radians" ? html`
           <div class="switch-row">
             <span class="switch-label">Integer values only</span>
             <label class="switch">

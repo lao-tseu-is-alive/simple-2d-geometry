@@ -118,5 +118,60 @@ describe('Angle module', () => {
             expect(A1.type).toBe("degrees")
         })
     })
+    describe('Angle.fromGradians', () => {
+        const A1 = Angle.fromGradians(100)
+        test('from 100 gradians should work', () => {
+            expect(A1.toDegrees()).toBe(90);
+            expect(A1.toRadians()).toBe(Math.PI / 2);
+            expect(A1.toGradians()).toBe(100);
+            expect(A1.type).toBe('gradians');
+            expect(A1.angle).toBe(100);
+        });
+        const A2 = Angle.fromGradians(0)
+        test('from 0 gradians should work', () => {
+            expect(A2.toDegrees()).toBe(0);
+            expect(A2.toRadians()).toBe(0);
+            expect(A2.toGradians()).toBe(0);
+            expect(A2.type).toBe('gradians');
+            expect(A2.angle).toBe(0);
+        });
+    })
+
+    describe('Angle normalization (gradians)', () => {
+        const A1 = Angle.fromGradians(500)
+        const A2 = new Angle(-500, 'gradians')
+        test('angle 500 gradians should be normalized to 100 gradians', () => {
+            expect(A1.toGradians()).toBe(100);
+            expect(A1.toDegrees()).toBe(90);
+            expect(A1.type).toBe('gradians');
+            expect(A1.angle).toBe(100);
+        });
+        test('angle -500 gradians should be normalized to 300 gradians', () => {
+            expect(A2.toGradians()).toBe(300);
+            expect(A2.toDegrees()).toBe(270);
+            expect(A2.type).toBe('gradians');
+            expect(A2.angle).toBe(300);
+        });
+    })
+
+    describe('Angle add (gradians)', ()=>{
+        const A0 = new Angle(0, "gradians")
+        test('adding 90 degrees to gradians angle should return 100 gradians angle', ()=>{
+            const A1=A0.add(90, "degrees")
+            expect(A1.angle).toBe(100)
+            expect(A1.type).toBe("gradians")
+        })
+        test('adding PI/2 radians to gradians angle should return 100 gradians angle', ()=>{
+            const A1=A0.add(Math.PI / 2, "radians")
+            expect(A1.angle).toBe(100)
+            expect(A1.type).toBe("gradians")
+        })
+        const AD = new Angle(0, "degrees")
+        test('adding 100 gradians to degrees angle should return 90 degrees angle', ()=>{
+            const A1=AD.add(100, "gradians")
+            expect(A1.angle).toBeCloseTo(90)
+            expect(A1.type).toBe("degrees")
+        })
+    })
 
 })

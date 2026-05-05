@@ -79,5 +79,44 @@ describe('GeomAngleInput', () => {
 
         expect(el.value).toBe(34); // Should be rounded to nearest integer
     });
+
+    test('updates angle instance when mode is set to gradians', () => {
+        const el = new GeomAngleInput();
+        el.value = Math.PI;
+        el.mode = "radians";
+        
+        const changedProperties = new Map();
+        changedProperties.set('mode', 'gradians');
+        changedProperties.set('value', 0);
+        el.willUpdate(changedProperties);
+        
+        expect(el.angle.angle).toBe(Math.PI);
+        expect(el.angle.type).toBe("radians");
+        expect(el.angle.toGradians()).toBe(200);
+    });
+
+    test('snaps value to integer when integerOnly is toggled on in gradians mode', () => {
+        const el = new GeomAngleInput();
+        el.mode = "gradians";
+        el.value = 145.67;
+        
+        // Mock the toggle event
+        const mockEvent = { target: { checked: true } } as unknown as Event;
+        (el as any)._toggleIntegerOnly(mockEvent);
+        
+        expect(el.integerOnly).toBe(true);
+        expect(el.value).toBe(146);
+    });
+
+    test('input change respects integerOnly in gradians mode', () => {
+        const el = new GeomAngleInput();
+        el.mode = "gradians";
+        el.integerOnly = true;
+
+        const mockEvent = { target: { value: "333.7" } } as unknown as Event;
+        (el as any)._onInputChange(mockEvent);
+
+        expect(el.value).toBe(334);
+    });
 });
 
