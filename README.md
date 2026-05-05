@@ -20,7 +20,8 @@ A 2D Geometry library written in strict TypeScript, featuring rigorous mathemati
 - **Multiple Renderers** — Built-in `SVGRenderDriver` producing pure SVG strings and `LitRenderDriver` for reactive web components, both with automatic Cartesian-to-Screen Y-inversion
 - **Feature Orchestrator** — `Feature` class wrapping any geometry with visual state (stroke, fill, opacity, zIndex) via dependency injection
 - **DrawingBoard** — Canvas manager aggregating features with automatic `viewBox` computation, z-ordering, and visibility control
-- **Zero Dependencies (Core)** — `@lao-tseu-is-alive/geom-2d-core` is pure TypeScript math without external libraries. *(Note: `@lao-tseu-is-alive/geom-2d-drawing` leverages Lit for reactive DOM rendering)*
+- **UI Components** — Ready-to-use Lit web components for interactive geometry input (e.g., `<geom-angle-input>`)
+- **Zero Dependencies (Core)** — `@lao-tseu-is-alive/geom-2d-core` is pure TypeScript math without external libraries. *(Note: `@lao-tseu-is-alive/geom-2d-drawing` and `@lao-tseu-is-alive/geom-2d-ui` leverage Lit for reactive DOM rendering)*
 - **Strictly Typed** — No `any` types. Full `strict` mode TypeScript.
 
 ## Architecture
@@ -76,6 +77,7 @@ graph LR
 ```bash
 bun add @lao-tseu-is-alive/geom-2d-core
 bun add @lao-tseu-is-alive/geom-2d-drawing
+bun add @lao-tseu-is-alive/geom-2d-ui
 ```
 
 ### Basic Usage — Pure Math
@@ -138,6 +140,30 @@ const svgString = board.render();
 //     <polygon points="..." stroke="#e74c3c" .../>
 //     <circle cx="50" cy="-50" r="30" stroke="#3498db" .../>
 //   </svg>
+```
+
+### UI Components (Web Components)
+
+The `@lao-tseu-is-alive/geom-2d-ui` package provides interactive Lit-based web components to allow users to input geometry parameters graphically.
+
+```typescript
+import "@lao-tseu-is-alive/geom-2d-ui";
+// Or specific components:
+import { GeomAngleInput } from "@lao-tseu-is-alive/geom-2d-ui";
+```
+
+```html
+<!-- Interactive SVG dial with mode toggle (degrees/radians) and text input -->
+<geom-angle-input value="45" mode="degrees" size="200"></geom-angle-input>
+
+<script>
+  const angleInput = document.querySelector('geom-angle-input');
+  angleInput.addEventListener('angle-change', (e) => {
+    const { angle, mode, value } = e.detail; // angle is an Angle instance from geom-2d-core
+    console.log(`New angle: ${value} ${mode}`);
+    console.log(`Radians: ${angle.toRadians()}`);
+  });
+</script>
 ```
 
 ### Custom Render Driver
@@ -213,6 +239,9 @@ cd geometry-2d
 bun install
 bun run build
 bun run dev
+
+# Or to view the UI components demo:
+bun run dev:ui
 ```
 
 ### Run tests

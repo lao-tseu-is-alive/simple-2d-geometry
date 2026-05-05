@@ -28,6 +28,16 @@
         "@lao-tseu-is-alive/geom-2d-core": "workspace:*",
       },
     },
+    "packages/geom-2d-ui": {
+      "name": "@lao-tseu-is-alive/geom-2d-ui",
+      "version": "0.1.0",
+      "dependencies": {
+        "lit": "^3.0.0",
+      },
+      "peerDependencies": {
+        "@lao-tseu-is-alive/geom-2d-core": "workspace:*",
+      },
+    },
   },
   "packages": {
     "@gerrit0/mini-shiki": ["@gerrit0/mini-shiki@3.23.0", "", { "dependencies": { "@shikijs/engine-oniguruma": "^3.23.0", "@shikijs/langs": "^3.23.0", "@shikijs/themes": "^3.23.0", "@shikijs/types": "^3.23.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg=="],
@@ -35,6 +45,8 @@
     "@lao-tseu-is-alive/geom-2d-core": ["@lao-tseu-is-alive/geom-2d-core@workspace:packages/geom-2d-core"],
 
     "@lao-tseu-is-alive/geom-2d-drawing": ["@lao-tseu-is-alive/geom-2d-drawing@workspace:packages/geom-2d-drawing"],
+
+    "@lao-tseu-is-alive/geom-2d-ui": ["@lao-tseu-is-alive/geom-2d-ui@workspace:packages/geom-2d-ui"],
 
     "@lit-labs/ssr-dom-shim": ["@lit-labs/ssr-dom-shim@1.5.1", "", {}, "sha512-Aou5UdlSpr5whQe8AA/bZG0jMj96CoJIWbGfZ91qieWu5AWUMKw8VR/pAkQkJYvBNhmCcWnZlyyk5oze8JIqYA=="],
 

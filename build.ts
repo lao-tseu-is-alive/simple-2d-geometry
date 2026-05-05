@@ -36,6 +36,7 @@ const buildPackage = async (pkgName: string, entrypoint: string, hasBrowser: boo
 
 await buildPackage("@lao-tseu-is-alive/geom-2d-core", "./packages/geom-2d-core/src/index.ts", true);
 await buildPackage("@lao-tseu-is-alive/geom-2d-drawing", "./packages/geom-2d-drawing/src/index.ts", false);
+await buildPackage("@lao-tseu-is-alive/geom-2d-ui", "./packages/geom-2d-ui/src/index.ts", false);
 
 console.log("🐰 ✅ Bundles successfully generated !");
 console.log("🐰 🎓 Generating Type Definitions...");

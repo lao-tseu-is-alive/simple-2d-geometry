@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive demo of the geom-angle-input Lit web component for precise angle entry" />
+  <title>Angle Input — geom-2d-ui Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f0a1a 0%, #1a1030 40%, #0d1520 100%);
+      color: #f0f0f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 32px;
+      padding: 32px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: rgba(240, 240, 245, 0.5);
+      font-size: 0.9rem;
+      margin-top: -16px;
+    }
+
+    .demo-row {
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .output-card {
+      padding: 20px 28px;
+      border-radius: 16px;
+      background: rgba(15, 15, 25, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      min-width: 260px;
+    }
+
+    .output-card h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(240, 240, 245, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .output-card .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .output-card .row:last-child {
+      border-bottom: none;
+    }
+
+    .output-card .label {
+      color: rgba(240, 240, 245, 0.6);
+      font-size: 0.85rem;
+    }
+
+    .output-card .val {
+      font-weight: 600;
+      font-size: 1rem;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body>
+  <h1>⟨geom-angle-input⟩</h1>
+  <p class="subtitle">Interactive angle input component — click, drag, or type</p>
+
+  <div class="demo-row">
+    <geom-angle-input id="angle1" value="45" mode="degrees" size="220"></geom-angle-input>
+
+    <div class="output-card">
+      <h2>Live Values</h2>
+      <div class="row">
+        <span class="label">Degrees</span>
+        <span class="val" id="out-deg">45.00°</span>
+      </div>
+      <div class="row">
+        <span class="label">Radians</span>
+        <span class="val" id="out-rad">0.7854 rad</span>
+      </div>
+      <div class="row">
+        <span class="label">Mode</span>
+        <span class="val" id="out-mode">degrees</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/packages/geom-2d-ui/demo/main.ts"></script>
+</body>
+</html>
